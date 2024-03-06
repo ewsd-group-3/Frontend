@@ -1,6 +1,7 @@
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Department } from '@/types/department'
 import { ColumnDef } from '@tanstack/react-table'
+import { Delete, Edit, Trash2 } from 'lucide-react'
 
 export const departments = [
   { name: 'Engineering' },
@@ -33,5 +34,22 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
   {
     accessorKey: 'name',
     header: () => FilterHeader({ title: 'name' }),
+    enableSorting: true,
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => {
+      return (
+        <div className="flex space-x-2 gap-2">
+          <div>
+            <Edit />
+          </div>
+          <div className="ml-3">
+            <Trash2 />
+          </div>
+        </div>
+      )
+    },
   },
 ]
