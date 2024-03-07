@@ -102,7 +102,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
           <main
             className={`flex-1 p-5 pt-3 duration-300 ${
-              open ? `md:ml-72` : `md:ml-20}`
+              open ? `md:ml-72` : `md:ml-20`
             }`}
           >
             {children}
