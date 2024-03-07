@@ -10,9 +10,6 @@ function getLocalIsSidebarOpen() {
   return localStorage.getItem("isSidebarOpen") === "true" ? true : false;
 }
 
-const FULL_WIDTH = 72;
-const COLLAPSED_WIDTH = 20;
-
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [mount, setMount] = useState(false);
   const pathName = usePathname();
@@ -30,8 +27,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         <div className='flex'>
           <div
             className={`${
-              open ? `w-${FULL_WIDTH}` : `w-${COLLAPSED_WIDTH}`
-            } bg-primary h-screen p-5 pt-7 duration-300 fixed flex flex-col justify-between`}
+              open ? `w-72` : `w-20`
+            } bg-primary h-screen p-5 pt-7 duration-300 fixed flex-col justify-between hidden md:flex`}
           >
             <div
               className={`absolute cursor-pointer -right-3 top-9 w-6 h-6 grid place-items-center ring-2 ring-background bg-accent rounded-full  ${
@@ -105,7 +102,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
           <main
             className={`flex-1 p-5 pt-3 duration-300 ${
-              open ? `ml-${FULL_WIDTH}` : `ml-${COLLAPSED_WIDTH}`
+              open ? `md:ml-72` : `md:ml-20}`
             }`}
           >
             {children}
