@@ -1,10 +1,10 @@
 import DialogCenter from '@/components/shared/DialogCenter'
 import RecoilStatePortal from '@/lib/RecoilStatePortal'
 import '@/styles/globals.css'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { AppProps } from 'next/app'
 import { Poppins } from 'next/font/google'
-import { RecoilRoot, atom, selector, useRecoilState, useRecoilValue } from 'recoil'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RecoilRoot } from 'recoil'
 
 export const poppins = Poppins({
   subsets: ['latin'],
