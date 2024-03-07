@@ -3,7 +3,7 @@ import RecoilStatePortal from '@/lib/RecoilStatePortal'
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { Poppins } from 'next/font/google'
-import { RecoilRoot, atom, selector, useRecoilState, useRecoilValue } from 'recoil'
+import { RecoilRoot } from 'recoil'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Sidebar from '@/components/Sidebar/side-bar'
 
