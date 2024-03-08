@@ -7,6 +7,13 @@ export type Dialog = { title: string } & Partial<{
   className: string
   defaultValues: any
   formSchema: any
-  cancel?: ReactNode
+  cancel?: {
+    label: string
+    onClick?: () => void
+  }
+  action?: {
+    label: string
+    onClick?: () => void
+  }
   onSubmit: (data: any) => void
 }>

@@ -3,17 +3,40 @@ import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { departments } from '@/constants/departments'
+import { useFetch, useMutate } from '@/hooks/useQuery'
 import { showDialog } from '@/lib/utils'
 import { dialogState } from '@/states/dialog'
-import { Department } from '@/types/department'
+import { Department } from '@/types'
+import { DepartmentRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { Edit, Trash2 } from 'lucide-react'
 import { useRecoilValue } from 'recoil'
 import { z } from 'zod'
 
-export const departmentColumns: ColumnDef<Partial<Department>>[] = [
+const Actions = ({ row }: any) => {
+  const { mutateAsync } = useMutate()
+
+  const handleDelete = (id: number) => {
+    mutateAsync({
+      url: `http://localhost:3000/v1/departments/${id}`,
+      method: 'delete',
+      invalidateUrls: ['http://localhost:3000/v1/departments'],
+    })
+  }
+
+  return (
+    <div className="flex space-x-2 gap-2 items-center">
+      <Edit className="cursor-pointer" size={20} />
+      <Button onClick={() => handleDelete(row.original.id)}>
+        <Trash2 className="cursor-pointer" size={20} />
+      </Button>
+    </div>
+  )
+}
+
+export const departmentColumns: ColumnDef<Partial<DepartmentRes>>[] = [
   {
-    accessorKey: 'no',
+    accessorKey: 'id',
     header: 'no.',
   },
   {
@@ -22,25 +45,16 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
   },
   {
     id: 'actions',
-    accessorKey: 'actions',
     header: 'Actions',
-    cell: () => {
-      return (
-        <div className="flex space-x-2 gap-2 items-center">
-          <Edit size={20} />
-          <Trash2 size={20} />
-        </div>
-      )
-    },
+    cell: ({ row }) => <Actions row={row} />,
   },
 ]
 
 const DepartmentC = () => {
-  const dialog = useRecoilValue(dialogState)
-  const transformedData = departments.map((depart, idx) => ({
-    no: idx + 1,
-    ...depart,
-  }))
+  const { data, isLoading } = useFetch<Department, true>('http://localhost:3000/v1/departments')
+  const { mutateAsync } = useMutate()
+
+  const departments = data?.data?.departments ?? []
 
   return (
     <section className="p-5">
@@ -49,7 +63,7 @@ const DepartmentC = () => {
         <Button
           onClick={() =>
             showDialog({
-              title: 'Create department',
+              title: 'Create department form',
               defaultValues: {
                 name: '',
               },
@@ -58,9 +72,25 @@ const DepartmentC = () => {
               }),
               children: (
                 <div className="mt-5">
-                  <Input.Field name="name" label="Name" />
+                  <Input.Field name="name" label="Department name" />
                 </div>
               ),
+              cancel: {
+                label: 'Cancel',
+              },
+              action: {
+                label: 'Submit',
+              },
+              onSubmit: (values) => {
+                mutateAsync({
+                  url: 'http://localhost:3000/v1/departments',
+                  method: 'POST',
+                  payload: {
+                    name: values.name,
+                  },
+                  invalidateUrls: ['http://localhost:3000/v1/departments'],
+                })
+              },
             })
           }
         >
@@ -68,7 +98,7 @@ const DepartmentC = () => {
         </Button>
       </div>
       <div className="mt-3">
-        <DataTable columns={departmentColumns} data={transformedData} />
+        <DataTable columns={departmentColumns} data={departments} isLoading={isLoading} />
       </div>
     </section>
   )

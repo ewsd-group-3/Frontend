@@ -29,14 +29,24 @@ const DialogCenter = () => {
                   {typeof dialog.children === 'function' ? dialog.children(values) : dialog.children}
 
                   <div className="mt-7 text-right space-x-3">
-                    {dialog.cancel ?? (
-                      <Button type="button" variant={'outline'} onClick={() => handleCloseDialog()}>
-                        Cancel
+                    {dialog.cancel && (
+                      <Button
+                        type="button"
+                        variant={'outline'}
+                        onClick={() => {
+                          if (dialog.cancel?.onClick) {
+                            dialog.cancel?.onClick()
+                          } else {
+                            handleCloseDialog()
+                          }
+                        }}
+                      >
+                        {dialog?.cancel?.label ?? 'Cancel'}
                       </Button>
                     )}
-                    {dialog.cancel ?? (
+                    {dialog.action && (
                       <Button variant={'default'} type="submit">
-                        Submit
+                        {dialog?.action?.label ?? 'Submit'}
                       </Button>
                     )}
                   </div>

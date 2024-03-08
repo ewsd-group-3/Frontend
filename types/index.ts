@@ -1,11 +1,11 @@
+import { DepartmentRes, StaffRes } from './api'
+
 export type Department = {
-  id: string
-  name: string
+  count: number
+  departments: DepartmentRes[]
 }
 
 export type Staff = {
-  id: string
-  name: string
-  email: string
-  department: string
+  count: number
+  staffs: StaffRes[]
 }

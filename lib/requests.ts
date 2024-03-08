@@ -14,8 +14,8 @@ export type Request = AxiosRequestConfig & {
 
 export type Response<T = any> = {
   data: T
-  code: number
   message: string
+  statusCode: number
 }
 
 export type ResponseError = {
@@ -57,6 +57,7 @@ export default function request<T = unknown>(url: string, config?: Request): Axi
   return axios({
     url,
     method,
+    baseURL: 'http://localhost:3000/v1/',
     timeout: 50000,
     headers,
     [method !== 'GET' ? 'data' : 'params']:

@@ -1,13 +1,14 @@
+import { z } from 'zod'
 import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
 import { departments } from '@/constants/departments'
 import { staff } from '@/constants/staffs'
 
-import { useFetch } from '@/hooks/useQuery'
+import { useFetch, useMutate } from '@/hooks/useQuery'
 import { showDialog } from '@/lib/utils'
 import { dialogState } from '@/states/dialog'
-import { Staff } from '@/types'
+
 import { ColumnDef } from '@tanstack/react-table'
 import { Edit, MoreVertical, Trash2 } from 'lucide-react'
 import React from 'react'
@@ -22,6 +23,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Poppins } from 'next/font/google'
+import { Staff } from '@/types'
+import { StaffRes } from '@/types/api'
+import { Input } from '@/components/ui/input'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -31,9 +35,9 @@ export const poppins = Poppins({
   preload: true,
 })
 
-export const staffColumns: ColumnDef<Partial<Staff>>[] = [
+export const staffColumns: ColumnDef<Partial<StaffRes>>[] = [
   {
-    accessorKey: 'no',
+    accessorKey: 'id',
     header: 'no.',
   },
   {
@@ -46,7 +50,7 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
     header: () => FilterHeader({ title: 'email' }),
   },
   {
-    accessorKey: 'department',
+    accessorKey: 'department.name',
     header: () => FilterHeader({ title: 'department' }),
   },
   {
@@ -72,14 +76,16 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
     },
   },
 ]
-const Staff = () => {
-  const dialog = useRecoilValue(dialogState)
-  // const { showDialog } = useDialog()
 
-  const transformedData = staff.map((s, idx) => ({
-    no: idx + 1,
-    ...s,
-  }))
+const formSchema = z.object({
+  name: z.string(),
+})
+
+const Staff = () => {
+  const { data, isLoading } = useFetch<Staff, true>('http://localhost:3000/v1/staffs')
+  const staffs = data?.data.staffs ?? []
+
+  const { mutateAsync } = useMutate()
 
   return (
     <section className="p-5">
@@ -89,13 +95,31 @@ const Staff = () => {
           onClick={() =>
             showDialog({
               title: 'Create department form',
-              description: 'This is the description of the dialog',
+              defaultValues: {
+                name: '',
+              },
+              formSchema,
               children: (
                 <div className="mt-5">
-                  <p>Testing the children</p>
-                  <Button>Click here for button</Button>
+                  <Input.Field name="name" label="Department name" />
                 </div>
               ),
+              cancel: {
+                label: 'Cancel',
+              },
+              action: {
+                label: 'Submit',
+              },
+              onSubmit: async (values) => {
+                await mutateAsync({
+                  url: 'http://localhost:3000/v1/departments',
+                  method: 'POST',
+                  payload: {
+                    name: values.name,
+                  },
+                  invalidateUrls: ['http://localhost:3000/v1/staffs'],
+                })
+              },
             })
           }
         >
@@ -103,7 +127,7 @@ const Staff = () => {
         </Button>
       </div>
       <div className="mt-3">
-        <DataTable columns={staffColumns} data={transformedData} />
+        <DataTable columns={staffColumns} data={staffs} isLoading={isLoading} />
       </div>
     </section>
   )
