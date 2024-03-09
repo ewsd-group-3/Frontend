@@ -57,7 +57,7 @@ export default function request<T = unknown>(url: string, config?: Request): Axi
   return axios({
     url,
     method,
-    baseURL: 'http://localhost:3000/v1/',
+    baseURL: process.env.BASE_URL,
     timeout: 50000,
     headers,
     [method !== 'GET' ? 'data' : 'params']:

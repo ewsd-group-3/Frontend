@@ -61,6 +61,10 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
           await queryClient.invalidateQueries({ queryKey: [v] })
         }
         return res
+      }).catch((error) => {
+        if (error.response) {
+            return Promise.reject(error.response.data)
+        }
       })
     },
     ...options,

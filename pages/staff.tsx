@@ -82,7 +82,7 @@ const formSchema = z.object({
 })
 
 const Staff = () => {
-  const { data, isLoading } = useFetch<Staff, true>('http://localhost:3000/v1/staffs')
+  const { data, isLoading } = useFetch<Staff, true>(`${process.env.BASE_URL}/staffs`)
   const staffs = data?.data.staffs ?? []
 
   const { mutateAsync } = useMutate()
@@ -112,12 +112,12 @@ const Staff = () => {
               },
               onSubmit: async (values) => {
                 await mutateAsync({
-                  url: 'http://localhost:3000/v1/departments',
+                  url: `${process.env.BASE_URL}/staffs`,
                   method: 'POST',
                   payload: {
                     name: values.name,
                   },
-                  invalidateUrls: ['http://localhost:3000/v1/staffs'],
+                  invalidateUrls: [`${process.env.BASE_URL}/staffs`],
                 })
               },
             })
