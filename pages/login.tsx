@@ -7,19 +7,21 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { useMutate } from '@/hooks/useQuery'
-import { Vault } from 'lucide-react'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { useRecoilState } from 'recoil'
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address.' }),
-  password: z
-    .string()
+  email: z.string().min(1, { message: 'Please fill in email address.' }).email({ message: 'Invalid email address.' }),
+  password: z.string().min(1, { message: 'Please fill in password.' }),
 })
 
 const Login = () => {
+  const router = useRouter()
+  const [] = useRecoilState(index)
   const { mutateAsync, isLoading, isSuccess, data, isError, error } = useMutate()
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    mutateAsync({
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await mutateAsync({
       url: `${process.env.BASE_URL}/auth/login`,
       payload: values,
     })
@@ -27,13 +29,14 @@ const Login = () => {
 
   if (isSuccess) {
     console.log(data, "DATA")
+    router.push('/')
   }
 
   return (
-    <section className="h-screen w-full flex ">
-      <div className="h-full bg-accent flex-1">
+    <section className="h-screen w-full flex px-16">
+      <div className="h-full flex-1">
         <Image
-          src="https://images.unsplash.com/photo-1595411425732-e69c1abe2763?q=80&w=2001&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          src="https://images.unsplash.com/photo-1448584109583-8f5fe2e61544?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt='abstract'
           width={1000}
           height={1000}

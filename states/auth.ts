@@ -7,8 +7,8 @@ const persistAtomEffect: AtomEffect<any> = (param) => {
   param.getPromise(isClientSideState).then(() => persistAtom(param))
 }
 
-export const tokenState = atom<string | undefined>({
-  key: 'token',
+export const authState = atom<string | AuthType>({
+  key: 'auth',
   default: undefined,
   effects: [persistAtomEffect],
 })

@@ -1,4 +1,4 @@
-import { tokenState } from '../states/index'
+import { authState } from '../states/auth'
 import request, { Request, Response, ResponseError } from '../lib/requests'
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
@@ -9,7 +9,7 @@ type MutateOptions<TData> = UseMutationOptions<Response<TData>, ResponseError, R
 }
 
 function useClient() {
-  const [token, setToken] = useRecoilState(tokenState)
+  const [token, setToken] = useRecoilState(authState)
 
   return useCallback(
     <T = any>(url: string, config?: Request) => {
@@ -52,7 +52,7 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
   const mutation = useMutation({
     mutationFn: ({ url = '', invalidateUrls = [], awaitInvalidateUrls = [], statusCodeHandling = true, ...config }) => {
       return client<TData>(url, { method: 'POST', ...config }).then(async (res) => {
-        if (statusCodeHandling && res.code !== 0) return Promise.reject(res)
+        if (statusCodeHandling && res.statusCode !== 200) return Promise.reject(res)
         const invalidates = [...invalidateUrls, ...defaultInvalidateUrls]
         for (const v of invalidates) {
           queryClient.invalidateQueries({ queryKey: [v] })
@@ -60,8 +60,10 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
         for (const v of awaitInvalidateUrls) {
           await queryClient.invalidateQueries({ queryKey: [v] })
         }
+        console.log(res, 'RES')
         return res
       }).catch((error) => {
+        console.log(error, 'ERROR')
         if (error.response) {
             return Promise.reject(error.response.data)
         }
