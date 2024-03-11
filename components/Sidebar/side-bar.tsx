@@ -6,12 +6,15 @@ import PlaceHolderImg from "@/public/placeholder-img.png";
 import Image from "next/image";
 import MenuLink from "./menu-link";
 import MobileMenu from "./mobile-menu";
+import { useRecoilState } from "recoil";
+import { authState } from "@/states/auth";
 
 function getLocalIsSidebarOpen() {
   return localStorage.getItem("isSidebarOpen") === "true" ? true : false;
 }
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
+  const [auth] = useRecoilState(authState);
   const [mount, setMount] = useState(false);
   const pathName = usePathname();
   const [open, setOpen] = useState(
@@ -87,7 +90,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                   }}
                   path={"/profile"}
                   pathName={pathName}
-                  title={"User Name"}
+                  title={auth?.staff.name || "User Name"}
                   open={open}
                 />
                 <MenuLink

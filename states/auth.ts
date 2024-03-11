@@ -1,3 +1,4 @@
+import { LoggedInData } from '@/types/auth'
 import { AtomEffect, atom } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 
@@ -7,7 +8,7 @@ const persistAtomEffect: AtomEffect<any> = (param) => {
   param.getPromise(isClientSideState).then(() => persistAtom(param))
 }
 
-export const authState = atom<string | AuthType>({
+export const authState = atom<LoggedInData | undefined>({
   key: 'auth',
   default: undefined,
   effects: [persistAtomEffect],

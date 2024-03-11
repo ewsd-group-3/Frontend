@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,6 +10,8 @@ import { useMutate } from '@/hooks/useQuery'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useRecoilState } from 'recoil'
+import { authState } from '@/states/auth'
+import { LoggedInData } from '@/types/auth'
 
 const formSchema = z.object({
   email: z.string().min(1, { message: 'Please fill in email address.' }).email({ message: 'Invalid email address.' }),
@@ -18,8 +20,8 @@ const formSchema = z.object({
 
 const Login = () => {
   const router = useRouter()
-  const [] = useRecoilState(index)
-  const { mutateAsync, isLoading, isSuccess, data, isError, error } = useMutate()
+  const [auth, setAuth] = useRecoilState(authState)
+  const { mutateAsync, isLoading, isSuccess, data, isError, error } = useMutate<LoggedInData>()
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await mutateAsync({
       url: `${process.env.BASE_URL}/auth/login`,
@@ -27,10 +29,15 @@ const Login = () => {
     })
   }
 
-  if (isSuccess) {
-    console.log(data, "DATA")
-    router.push('/')
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      setAuth({
+        staff: data.data.staff,
+        tokens: data.data.tokens,
+      })
+      router.push('/')
+    }
+  }, [data, isSuccess, router, setAuth])
 
   return (
     <section className="h-screen w-full flex px-16">

@@ -11,16 +11,17 @@ type MutateOptions<TData> = UseMutationOptions<Response<TData>, ResponseError, R
 function useClient() {
   const [token, setToken] = useRecoilState(authState)
 
+  // token.tokens.access
   return useCallback(
     <T = any>(url: string, config?: Request) => {
-      return request<T>(url, { token, ...config })
+      return request<T>(url, { token: token?.tokens.access.token, ...config })
         .then((res) => res.data)
         .catch((err) => {
           if (err?.response?.status === 401) setToken(undefined)
           return err
         })
     },
-    [token]
+    [setToken, token?.tokens.access.token]
   )
 }
 
