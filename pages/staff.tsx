@@ -61,12 +61,12 @@ export const staffColumns: ColumnDef<Partial<StaffRes>>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreVertical className="h-4 w-4" />
+            <Button variant='ghost' className='h-8 w-8 p-0'>
+              <span className='sr-only'>Open menu</span>
+              <MoreVertical className='h-4 w-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className={poppins.className}>
+          <DropdownMenuContent align='end' className={poppins.className}>
             <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuItem>Reset Password</DropdownMenuItem>
             <DropdownMenuItem>Disable User</DropdownMenuItem>
@@ -88,29 +88,24 @@ const Staff = () => {
   const { mutateAsync } = useMutate()
 
   return (
-    <section className="p-5">
-      <div className="flex justify-between">
-        <h2 className="font-bold text-xl">Staff</h2>
+    <section className='p-5'>
+      <div className='flex justify-between'>
+        <h2 className='font-bold text-xl'>Staff</h2>
         <Button
           onClick={() =>
             showDialog({
-              title: 'Create department form',
+              title: 'Create staff form',
               defaultValues: {
                 name: '',
               },
               formSchema,
               children: (
-                <div className="mt-5">
-                  <Input.Field name="name" label="Department name" />
+                <div className='mt-5'>
+                  <Input.Field name='name' label='Department name' />
                 </div>
               ),
-              cancel: {
-                label: 'Cancel',
-              },
-              action: {
-                label: 'Submit',
-              },
-              onSubmit: async (values) => {
+              cancel: true,
+              onSubmit: async values => {
                 await mutateAsync({
                   url: `${process.env.BASE_URL}/staffs`,
                   method: 'POST',
@@ -126,7 +121,7 @@ const Staff = () => {
           Create
         </Button>
       </div>
-      <div className="mt-3">
+      <div className='mt-3'>
         <DataTable columns={staffColumns} data={staffs} isLoading={isLoading} />
       </div>
     </section>

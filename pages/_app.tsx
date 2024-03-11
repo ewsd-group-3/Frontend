@@ -1,3 +1,4 @@
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import DialogCenter from '@/components/shared/DialogCenter'
 import RecoilStatePortal from '@/lib/RecoilStatePortal'
 import '@/styles/globals.css'
@@ -34,6 +35,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </Sidebar>
         </main>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </RecoilRoot>
   )

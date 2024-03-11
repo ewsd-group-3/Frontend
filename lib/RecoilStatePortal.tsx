@@ -28,7 +28,7 @@ export default function RecoilStatePortal() {
       function <T>(atom: RecoilValue<T>) {
         return snapshot.getLoadable(atom).contents
       },
-    []
+    [],
   )
 
   portal.getPromise = useRecoilCallback<[atom: RecoilValue<any>], Promise<any>>(
@@ -36,7 +36,7 @@ export default function RecoilStatePortal() {
       function <T>(atom: RecoilValue<T>) {
         return snapshot.getPromise(atom)
       },
-    []
+    [],
   )
 
   portal.set = useRecoilCallback(({ transact_UNSTABLE }) => {
