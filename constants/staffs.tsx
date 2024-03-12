@@ -100,3 +100,5 @@ export const staff = [
     department: 'Payroll',
   },
 ]
+
+export const roles = ['STAFF', 'ADMIN', 'QA_MANAGER', 'QA_COORDINATOR']

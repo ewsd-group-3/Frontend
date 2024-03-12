@@ -1,17 +1,20 @@
 import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
+import { SelectField } from '@/components/ui/select'
 import { z } from 'zod'
 
 import { useFetch, useMutate } from '@/hooks/useQuery'
-import { showDialog } from '@/lib/utils'
+import { hideDialog, showDialog } from '@/lib/utils'
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Staff, StaffRes } from '@/types/api'
+import { DepartmentRes, Staff, StaffRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreVertical } from 'lucide-react'
 import { Poppins } from 'next/font/google'
+import { toast } from 'sonner'
+import { roles } from '@/constants/staffs'
 import { useDataTableSorting } from '@/hooks/useDataTableSorting'
 import { useRouter } from 'next/router'
 
@@ -74,10 +77,13 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
 ]
 
 const formSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, { message: 'Please fill the department name' }),
+  email: z.string().min(1, { message: 'Please fill in email address.' }).email({ message: 'Invalid email address.' }),
+  department: z.string(),
 })
 
 const Staff = () => {
+  const { data: departments, isLoading: departmentLoading } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`)
   const router = useRouter()
   // const { isSorted } = useDataTableSorting({ sortBy: String(router.query.sortBy) })
   const { data, isLoading } = useFetch<StaffRes, true>(
@@ -97,23 +103,54 @@ const Staff = () => {
               title: 'Create staff form',
               defaultValues: {
                 name: '',
+                email: '',
+                department: '1',
               },
               formSchema,
               children: (
-                <div className='mt-5'>
-                  <Input.Field name='name' label='Department name' />
+                <div>
+                  <div className='mt-5'>
+                    <Input.Field name='name' label='Name' placeholder='John Doe' />
+                  </div>
+
+                  <div className='mt-5'>
+                    <Input.Field name='email' label='Email' type='email' placeholder='example@gre.uk' />
+                  </div>
+
+                  <div className='mt-5'>
+                    <SelectField items={roles.map(role => ({ label: role, value: role }))} name='role' label='Role' placeholder='Select a role' />
+                  </div>
+
+                  <div className='mt-5'>
+                    <SelectField
+                      items={
+                        departments
+                          ? departments?.data.departments.map(d => ({
+                              label: d.name,
+                              value: d.id,
+                            }))
+                          : []
+                      }
+                      name='department'
+                      label='Department'
+                      placeholder='Select a department'
+                    />
+                  </div>
                 </div>
               ),
               cancel: true,
               onSubmit: async values => {
-                await mutateAsync({
+                const res = await mutateAsync({
                   url: `${process.env.BASE_URL}/staffs`,
                   method: 'POST',
-                  payload: {
-                    name: values.name,
-                  },
+                  payload: { email: values.email, name: values.name, departmentId: values.department, role: 'STAFF' },
                   invalidateUrls: [`${process.env.BASE_URL}/staffs`],
                 })
+
+                if (res.statusCode === 201) {
+                  toast('Created staff successfully')
+                  hideDialog()
+                }
               },
             })
           }

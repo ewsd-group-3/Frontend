@@ -4,5 +4,5 @@ module.exports = {
   singleQuote: true,
   arrowParens: 'avoid',
   jsxSingleQuote: true,
-  plugins: ['prettier-plugin-tailwindcss'],
+  // plugins: ['prettier-plugin-tailwindcss'],
 }
