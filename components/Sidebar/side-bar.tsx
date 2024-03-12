@@ -25,7 +25,6 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(typeof window !== 'undefined' ? getLocalIsSidebarOpen : null)
 
   useEffect(() => {
-    console.log('AUTH', auth)
     setMount(true)
     if (mount) {
       if (auth === undefined) {
@@ -35,7 +34,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth, router.pathname])
+  }, [auth, mount])
 
   const handleLogout = () => {
     setAuth(undefined)
