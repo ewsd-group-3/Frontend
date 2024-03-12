@@ -1,93 +1,89 @@
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useFetch, useMutate } from '@/hooks/useQuery'
-import { showDialog } from '@/lib/utils' 
+import { hideDialog, showDialog } from '@/lib/utils'
 import { dialogState } from '@/states/dialog'
 import { Department, DepartmentRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, MoreVertical, Trash2 } from 'lucide-react'
 import { useSetRecoilState } from 'recoil'
 import { z } from 'zod'
+import { toast } from 'sonner'
 
 const Actions = ({ row }: any) => {
   const { mutateAsync } = useMutate()
   const setDialogState = useSetRecoilState(dialogState)
   const { mutateAsync: deleteMutateAsync } = useMutate()
 
-  const handleDelete = (id: number) => {
-    deleteMutateAsync({
-      url: `${process.env.BASE_URL}/departments/${id}`,
-      method: 'delete',
-      invalidateUrls: [`${process.env.BASE_URL}/departments`],
-    }).then(() => {
-      setDialogState(undefined)
+  const handleUpdate = (value: any) => {
+    showDialog({
+      title: 'Update department form',
+      defaultValues: value,
+      formSchema: z.object({
+        name: z.string().min(1, { message: 'Department name is required.' }),
+      }),
+      children: (
+        <div className='mt-5'>
+          <Input.Field name='name' label='Department name' />
+        </div>
+      ),
+      cancel: {
+        label: 'Cancel',
+      },
+      action: {
+        label: 'Submit',
+      },
+      onSubmit: async values => {
+        const res = await mutateAsync({
+          url: `${process.env.BASE_URL}/departments/${row.original.id}`,
+          method: 'PATCH',
+          payload: {
+            name: values.name,
+          },
+          invalidateUrls: [`${process.env.BASE_URL}/departments`],
+        })
+
+        if (res.statusCode === 200) {
+          hideDialog()
+        }
+      },
     })
   }
 
+  const handleDelete = async (id: number) => {
+    // TODO: ask BE to give the message
+    const res = await deleteMutateAsync({
+      url: `${process.env.BASE_URL}/departments/${id}`,
+      method: 'delete',
+      invalidateUrls: [`${process.env.BASE_URL}/departments`],
+    })
+
+    toast('Deleted department successfully.')
+  }
+
   return (
-    <div className='flex space-x-2 gap-2 items-center'>
-      <Edit
-        className='cursor-pointer'
-        size={20}
-        onClick={() =>
-          showDialog({
-            title: 'Update department form',
-            defaultValues: {
-              name: '',
-            },
-            formSchema: z.object({
-              name: z.string().min(5, { message: 'Must be 5 or more characters long' }),
-            }),
-            children: (
-              <div className='mt-5'>
-                <Input.Field name='name' label='Department name' />
-              </div>
-            ),
-            cancel: {
-              label: 'Cancel',
-            },
-            action: {
-              label: 'Submit',
-            },
-            onSubmit: values => {
-              mutateAsync({
-                url: `${process.env.BASE_URL}/departments/${row.original.id}`,
-                method: 'PATCH',
-                payload: {
-                  name: values.name,
-                },
-                invalidateUrls: [`${process.env.BASE_URL}/departments`],
-              })
-            },
-          })
-        }
-      />
-      <Button
-        onClick={() =>
-          showDialog({
-            title: 'Confirmation box',
-            children: (
-              <div className='mt-5'>
-                <p>Are you sure you want to delete this department?</p>
-              </div>
-            ),
-            cancel: true,
-            action: { label: 'Submit', onClick: () => handleDelete(row.original.id) },
-          })
-        }
-      >
-        <Trash2 className='cursor-pointer' size={20} />
-      </Button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' className='h-8 w-8 p-0'>
+          <span className='sr-only'>Open menu</span>
+          <MoreVertical className='h-4 w-4' />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align='end'>
+        <DropdownMenuItem onClick={() => handleUpdate({ name: row.original.name })}>Update</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleDelete(row.original.id)}>Delete</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
 export const departmentColumns: ColumnDef<Partial<Department>>[] = [
   {
     accessorKey: 'id',
-    header: 'no.',
+    header: 'Id',
   },
   {
     accessorKey: 'name',
@@ -95,7 +91,7 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
   },
   {
     id: 'actions',
-    header: 'Actions',
+    enableHiding: false,
     cell: ({ row }) => <Actions row={row} />,
   },
 ]
