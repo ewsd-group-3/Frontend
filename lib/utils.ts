@@ -11,3 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 export function showDialog(dialog: Dialog) {
   setRecoil(dialogState, dialog)
 }
+
+export function hideDialog() {
+  setRecoil(dialogState, undefined)
+}
