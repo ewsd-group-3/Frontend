@@ -6,6 +6,7 @@ import { Poppins } from 'next/font/google'
 import { RecoilRoot } from 'recoil'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Sidebar from '@/components/Sidebar/side-bar'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -34,6 +35,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </Sidebar>
         </main>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </RecoilRoot>
   )

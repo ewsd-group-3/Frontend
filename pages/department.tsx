@@ -4,10 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { departments } from '@/constants/departments'
 import { useFetch, useMutate } from '@/hooks/useQuery'
-import { showDialog } from '@/lib/utils'
-import { dialogState } from '@/states/dialog'
-import { Department } from '@/types'
-import { DepartmentRes } from '@/types/api'
+import { showDialog } from '@/lib/utils' 
+import { Department, DepartmentRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { Edit, Trash2 } from 'lucide-react'
 import { useRecoilValue } from 'recoil'
@@ -34,7 +32,7 @@ const Actions = ({ row }: any) => {
   )
 }
 
-export const departmentColumns: ColumnDef<Partial<DepartmentRes>>[] = [
+export const departmentColumns: ColumnDef<Partial<Department>>[] = [
   {
     accessorKey: 'id',
     header: 'no.',
@@ -51,7 +49,7 @@ export const departmentColumns: ColumnDef<Partial<DepartmentRes>>[] = [
 ]
 
 const DepartmentC = () => {
-  const { data, isLoading } = useFetch<Department, true>('http://localhost:3000/v1/departments')
+  const { data, isLoading } = useFetch<DepartmentRes, true>('http://localhost:3000/v1/departments')
   const { mutateAsync } = useMutate()
 
   const departments = data?.data?.departments ?? []

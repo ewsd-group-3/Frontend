@@ -1,4 +1,8 @@
-export type StaffRes = {
+export type ListingRes = {
+  count: number
+} 
+ 
+export type Staff = {
   id: number
   email: string
   name: string
@@ -11,12 +15,19 @@ export type StaffRes = {
   department: {
     id: string
     name: string
-  }
+}}
+
+export type StaffRes = ListingRes & {
+  staffs: Staff[]
 }
 
-export type DepartmentRes = {
+export type Department = {
   id: string
   name: string
   createdAt: string
   updatedAt: string
+}
+
+export type DepartmentRes = ListingRes & {
+  departments: Department[]
 }

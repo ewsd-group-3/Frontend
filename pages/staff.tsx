@@ -1,31 +1,22 @@
-import { z } from 'zod'
 import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
-import { departments } from '@/constants/departments'
-import { staff } from '@/constants/staffs'
+import { z } from 'zod'
 
 import { useFetch, useMutate } from '@/hooks/useQuery'
 import { showDialog } from '@/lib/utils'
-import { dialogState } from '@/states/dialog'
 
-import { ColumnDef } from '@tanstack/react-table'
-import { Edit, MoreVertical, Trash2 } from 'lucide-react'
-import React from 'react'
-import { useRecoilValue } from 'recoil'
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Poppins } from 'next/font/google'
-import { Staff } from '@/types'
-import { StaffRes } from '@/types/api'
 import { Input } from '@/components/ui/input'
+import { Staff, StaffRes } from '@/types/api'
+import { ColumnDef } from '@tanstack/react-table'
+import { MoreVertical } from 'lucide-react'
+import { Poppins } from 'next/font/google'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -35,7 +26,7 @@ export const poppins = Poppins({
   preload: true,
 })
 
-export const staffColumns: ColumnDef<Partial<StaffRes>>[] = [
+export const staffColumns: ColumnDef<Partial<Staff>>[] = [
   {
     accessorKey: 'id',
     header: 'no.',
@@ -82,7 +73,7 @@ const formSchema = z.object({
 })
 
 const Staff = () => {
-  const { data, isLoading } = useFetch<Staff, true>('http://localhost:3000/v1/staffs')
+  const { data, isLoading } = useFetch<StaffRes, true>('http://localhost:3000/v1/staffs')
   const staffs = data?.data.staffs ?? []
 
   const { mutateAsync } = useMutate()
