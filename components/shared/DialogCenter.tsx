@@ -22,33 +22,35 @@ const DialogCenter = () => {
           <DialogOverlay />
           <DialogContent className={poppins.className}>
             <Form defaultValues={dialog.defaultValues} formSchema={dialog.formSchema} onSubmit={dialog.onSubmit}>
-              {(values) => (
+              {values => (
                 <div>
-                  <h3 className="font-bold text-2xl">{dialog.title}</h3>
-                  {dialog.description && <p className="text-base mt-2">{dialog.description}</p>}
+                  <h3 className='font-bold text-2xl'>{dialog.title}</h3>
+                  {dialog.description && <p className='text-base mt-2'>{dialog.description}</p>}
                   {typeof dialog.children === 'function' ? dialog.children(values) : dialog.children}
 
-                  <div className="mt-7 text-right space-x-3">
+                  <div className='mt-7 text-right space-x-3'>
                     {dialog.cancel && (
                       <Button
-                        type="button"
+                        type='button'
                         variant={'outline'}
                         onClick={() => {
-                          if (dialog.cancel?.onClick) {
-                            dialog.cancel?.onClick()
-                          } else {
+                          if (typeof dialog.cancel === 'boolean' || !dialog.cancel?.onClick) {
                             handleCloseDialog()
+                          } else {
+                            dialog.cancel?.onClick()
                           }
                         }}
                       >
-                        {dialog?.cancel?.label ?? 'Cancel'}
+                        Cancel
                       </Button>
                     )}
-                    {dialog.action && (
-                      <Button variant={'default'} type="submit">
-                        {dialog?.action?.label ?? 'Submit'}
-                      </Button>
-                    )}
+                    <Button
+                      variant={'default'}
+                      type={dialog.formSchema ? 'submit' : 'button'}
+                      onClick={!!dialog.action?.onClick ? dialog.action.onClick : undefined}
+                    >
+                      {dialog?.action?.label || 'Submit'}
+                    </Button>
                   </div>
                 </div>
               )}

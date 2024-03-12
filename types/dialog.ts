@@ -1,17 +1,16 @@
 import { ReactNode } from 'react'
-
-// TODO: Remove any
+ 
 export type Dialog = { title: string } & Partial<{
   description: string
   children: ReactNode | Function
   className: string
   defaultValues: any
   formSchema: any
-  cancel?: {
+  cancel:  boolean | {
     label: string
     onClick?: () => void
   }
-  action?: {
+  action: {
     label: string
     onClick?: () => void
   }

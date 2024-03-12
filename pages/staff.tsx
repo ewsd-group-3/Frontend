@@ -52,12 +52,12 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreVertical className="h-4 w-4" />
+            <Button variant='ghost' className='h-8 w-8 p-0'>
+              <span className='sr-only'>Open menu</span>
+              <MoreVertical className='h-4 w-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className={poppins.className}>
+          <DropdownMenuContent align='end' className={poppins.className}>
             <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuItem>Reset Password</DropdownMenuItem>
             <DropdownMenuItem>Disable User</DropdownMenuItem>
@@ -73,42 +73,37 @@ const formSchema = z.object({
 })
 
 const Staff = () => {
-  const { data, isLoading } = useFetch<StaffRes, true>('http://localhost:3000/v1/staffs')
+  const { data, isLoading } = useFetch<StaffRes, true>(`${process.env.BASE_URL}/staffs`)
   const staffs = data?.data.staffs ?? []
 
   const { mutateAsync } = useMutate()
 
   return (
-    <section className="p-5">
-      <div className="flex justify-between">
-        <h2 className="font-bold text-xl">Staff</h2>
+    <section className='p-5'>
+      <div className='flex justify-between'>
+        <h2 className='font-bold text-xl'>Staff</h2>
         <Button
           onClick={() =>
             showDialog({
-              title: 'Create department form',
+              title: 'Create staff form',
               defaultValues: {
                 name: '',
               },
               formSchema,
               children: (
-                <div className="mt-5">
-                  <Input.Field name="name" label="Department name" />
+                <div className='mt-5'>
+                  <Input.Field name='name' label='Department name' />
                 </div>
               ),
-              cancel: {
-                label: 'Cancel',
-              },
-              action: {
-                label: 'Submit',
-              },
-              onSubmit: async (values) => {
+              cancel: true,
+              onSubmit: async values => {
                 await mutateAsync({
-                  url: 'http://localhost:3000/v1/departments',
+                  url: `${process.env.BASE_URL}/staffs`,
                   method: 'POST',
                   payload: {
                     name: values.name,
                   },
-                  invalidateUrls: ['http://localhost:3000/v1/staffs'],
+                  invalidateUrls: [`${process.env.BASE_URL}/staffs`],
                 })
               },
             })
@@ -117,7 +112,7 @@ const Staff = () => {
           Create
         </Button>
       </div>
-      <div className="mt-3">
+      <div className='mt-3'>
         <DataTable columns={staffColumns} data={staffs} isLoading={isLoading} />
       </div>
     </section>
