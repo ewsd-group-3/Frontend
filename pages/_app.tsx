@@ -7,6 +7,7 @@ import { RecoilRoot } from 'recoil'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Sidebar from '@/components/Sidebar/side-bar'
 import { Toaster } from '@/components/ui/sonner'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export const poppins = Poppins({
   subsets: ['latin'],

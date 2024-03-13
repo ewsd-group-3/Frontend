@@ -1,7 +1,10 @@
 export type ListingRes = {
   count: number
-} 
- 
+  limit: number
+  page: number
+  totalPages: number
+}
+
 export type Staff = {
   id: number
   email: string
@@ -15,7 +18,8 @@ export type Staff = {
   department: {
     id: string
     name: string
-}}
+  }
+}
 
 export type StaffRes = ListingRes & {
   staffs: Staff[]
@@ -30,4 +34,18 @@ export type Department = {
 
 export type DepartmentRes = ListingRes & {
   departments: Department[]
+}
+
+export type AcademicYearT = {
+  id: string
+  name: string
+  startDate: string
+  endDate: string
+  createdAt: string
+  updatedAt: string
+  semesters: { id: number; name: string; startDate: string }[]
+}
+
+export type AcademicYearRes = ListingRes & {
+  academicInfos: AcademicYearT[]
 }
