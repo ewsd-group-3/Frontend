@@ -37,7 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
           </Sidebar>
         </main>
         <Toaster />
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </RecoilRoot>
   )

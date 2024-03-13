@@ -40,49 +40,47 @@ const Login = () => {
   }, [data, isSuccess, router, setAuth])
 
   return (
-    <section className="h-screen w-full flex px-16">
-      <div className="h-full flex-1">
+    <section className='h-screen w-full flex px-16'>
+      <div className='h-full flex-1'>
         <Image
-          src="https://images.unsplash.com/photo-1448584109583-8f5fe2e61544?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          src='https://images.unsplash.com/photo-1448584109583-8f5fe2e61544?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
           alt='abstract'
           width={1000}
           height={1000}
           className='h-full w-full bg-cover'
         />
       </div>
-      <div className="h-full flex-1 grid place-items-center">
-        <div className="w-9/12 max-w-md mx-auto">
-          <h2 className="font-bold text-2xl mb-2">Login to Wyne School Portal</h2>
-          <small className="text-sm mb-5 block">
-            Share ideas, find helpful information, announcements, and collaborate with colleagues.
-          </small>
+      <div className='h-full flex-1 grid place-items-center'>
+        <div className='w-9/12 max-w-md mx-auto'>
+          <h2 className='font-bold text-2xl mb-2'>Login to Wyne School Portal</h2>
+          <small className='text-sm mb-5 block'>Share ideas, find helpful information, announcements, and collaborate with colleagues.</small>
           <div>
             <Form defaultValues={{ email: '', password: '' }} formSchema={formSchema} onSubmit={onSubmit}>
               {({}) => (
-                <div className="space-y-4">
+                <div className='space-y-4'>
                   <Input.Field
-                    name="email"
+                    name='email'
                     label={
                       <>
-                        Email Address <span className="text-red-400">*</span>
+                        Email Address <span className='text-red-400'>*</span>
                       </>
                     }
-                    placeholder="user@gmail.com"
+                    placeholder='user@gmail.com'
                   />
                   <Input.Field
-                    name="password"
-                    type="password"
+                    name='password'
+                    type='password'
                     label={
                       <>
-                        Password <span className="text-red-400">*</span>
+                        Password <span className='text-red-400'>*</span>
                       </>
                     }
-                    placeholder="********"
+                    placeholder='********'
                   />
-                  <Button type="submit" className="mt-1" disabled={isLoading}>
+                  <Button type='submit' className='mt-1' disabled={isLoading}>
                     Login
                   </Button>
-                  {isError && <p className="text-red-500">{error?.message}</p>}
+                  {isError && <p className='text-red-500'>{error?.message}</p>}
                 </div>
               )}
             </Form>

@@ -13,7 +13,7 @@ export default function MobileMenu({ pathName, auth, handleLogout }: { pathName:
   return (
     <div>
       {isHamburgerOpen && (
-        <div className='fixed z-10 h-screen w-full bg-primary'>
+        <div className='fixed z-50 h-screen w-full bg-primary'>
           <div className='flex h-16 justify-between p-5'>
             <BrandTitle />
             <div className='grid cursor-pointer place-items-center' onClick={() => setIsHamburgerOpen(!isHamburgerOpen)}>
@@ -42,7 +42,7 @@ export default function MobileMenu({ pathName, auth, handleLogout }: { pathName:
           </div>
         </div>
       )}
-      <div className='fixed flex h-16 w-full bg-primary md:hidden'>
+      <div className='fixed z-40 flex h-16 w-full bg-primary md:hidden'>
         <div className='flex w-full items-center justify-between bg-primary p-5'>
           <BrandTitle />
           <div className='grid cursor-pointer place-items-center' onClick={() => setIsHamburgerOpen(!isHamburgerOpen)}>

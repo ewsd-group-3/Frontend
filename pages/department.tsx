@@ -1,6 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
+import DataPagination from '@/components/Pagination/data-pagination'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useDataTableSorting } from '@/hooks/useDataTableSorting'
@@ -13,6 +14,7 @@ import { Edit, MoreVertical, Trash2 } from 'lucide-react'
 import { useSetRecoilState } from 'recoil'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { useRouter } from 'next/router'
 
 const Actions = ({ row }: any) => {
   const { mutateAsync } = useMutate()
@@ -98,12 +100,15 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
 ]
 
 const DepartmentC = () => {
+  const router = useRouter()
   const { isSorted } = useDataTableSorting({ sortBy: 'name' })
-  const { data, isLoading } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments?sortBy=name&sortType=${isSorted ?? 'asc'}`)
+  const { data, isLoading } = useFetch<DepartmentRes, true>(
+    `${process.env.BASE_URL}/departments?sortBy=name&sortType=${isSorted ?? 'asc'}&page=${router.query.page ?? 1}`,
+  )
   const { mutateAsync } = useMutate()
   const departments = data?.data?.departments ?? []
   const setDialog = useSetRecoilState(dialogState)
-
+  console.log(data)
   return (
     <section className='p-5'>
       <div className='flex justify-between'>
@@ -143,6 +148,11 @@ const DepartmentC = () => {
       <div className='mt-3'>
         <DataTable columns={departmentColumns} data={departments} isLoading={isLoading} />
       </div>
+      {data && (
+        <div className='mt-3'>
+          <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
+        </div>
+      )}
     </section>
   )
 }
