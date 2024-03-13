@@ -3,6 +3,7 @@ import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useDataTableSorting } from '@/hooks/useDataTableSorting'
 import { useFetch, useMutate } from '@/hooks/useQuery'
 import { hideDialog, showDialog } from '@/lib/utils'
 import { dialogState } from '@/states/dialog'
@@ -97,7 +98,8 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
 ]
 
 const DepartmentC = () => {
-  const { data, isLoading } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`)
+  const { isSorted } = useDataTableSorting({ sortBy: 'name' })
+  const { data, isLoading } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments?sortBy=name&sortType=${isSorted ?? 'asc'}`)
   const { mutateAsync } = useMutate()
   const departments = data?.data?.departments ?? []
   const setDialog = useSetRecoilState(dialogState)
@@ -105,7 +107,7 @@ const DepartmentC = () => {
   return (
     <section className='p-5'>
       <div className='flex justify-between'>
-        <h2 className='font-bold text-xl'>Department</h2>
+        <h2 className='text-xl font-bold'>Department</h2>
         <Button
           onClick={() =>
             showDialog({

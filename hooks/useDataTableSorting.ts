@@ -1,29 +1,37 @@
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router'
 
-export const useDataTableSorting = (columnName: string) => {
-  const router = useRouter();
+interface DataTableSortingParams {
+  sortBy: string | undefined
+}
+
+export const useDataTableSorting = ({ sortBy }: DataTableSortingParams) => {
+  const router = useRouter()
 
   const handleClick = () => {
-    const currentSort = router.query[columnName] as string | undefined;
-    let newSort: string;
+    const currentSortBy = router.query.sortBy as string | undefined
+    const currentSortType = router.query.sortType as string | undefined
 
-    if (currentSort === "asc") {
-      newSort = "desc";
+    let newSortType: 'asc' | 'desc'
+
+    // If the column is already sorted, reverse the sort type, otherwise default to 'asc'
+    if (currentSortBy === sortBy && currentSortType === 'desc') {
+      newSortType = 'asc'
     } else {
-      newSort = "asc";
+      newSortType = 'desc'
     }
 
     router.push({
       pathname: router.pathname,
       query: {
         ...router.query,
-        [columnName]: newSort,
+        sortBy,
+        sortType: newSortType,
       },
-    });
-  };
+    })
+  }
 
   return {
     handleClick,
-    isSorted: router.query[columnName],
-  };
-};
+    isSorted: router.query.sortBy === sortBy ? router.query.sortType : undefined,
+  }
+}

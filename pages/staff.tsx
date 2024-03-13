@@ -15,6 +15,8 @@ import { MoreVertical } from 'lucide-react'
 import { Poppins } from 'next/font/google'
 import { toast } from 'sonner'
 import { roles } from '@/constants/staffs'
+import { useDataTableSorting } from '@/hooks/useDataTableSorting'
+import { useRouter } from 'next/router'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -40,7 +42,15 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
   },
   {
     accessorKey: 'department.name',
-    header: () => FilterHeader({ title: 'department' }),
+    header: () => 'Department',
+  },
+  {
+    accessorKey: 'role',
+    header: () => FilterHeader({ title: 'role' }),
+    cell: ({ row }) => {
+      const role = row.original.role
+      return <span className='capitalize'>{role?.toLocaleLowerCase().split('_').join(' ')}</span>
+    },
   },
   {
     id: 'actions',
@@ -74,15 +84,19 @@ const formSchema = z.object({
 
 const Staff = () => {
   const { data: departments, isLoading: departmentLoading } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`)
-  const { data, isLoading } = useFetch<StaffRes, true>(`${process.env.BASE_URL}/staffs`)
-  const staffs = data?.data.staffs ?? []
+  const router = useRouter()
+  // const { isSorted } = useDataTableSorting({ sortBy: String(router.query.sortBy) })
+  const { data, isLoading } = useFetch<StaffRes, true>(
+    `${process.env.BASE_URL}/staffs?sortBy=${router.query.sortBy || 'id'}&sortType=${router.query.sortType ?? 'asc'}`,
+  )
+  const staffs = data?.data?.staffs ?? []
 
   const { mutateAsync } = useMutate()
 
   return (
     <section className='p-5'>
       <div className='flex justify-between'>
-        <h2 className='font-bold text-xl'>Staff</h2>
+        <h2 className='text-xl font-bold'>Staff</h2>
         <Button
           onClick={() =>
             showDialog({
