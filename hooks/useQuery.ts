@@ -3,6 +3,7 @@ import request, { Request, Response, ResponseError } from '../lib/requests'
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useRecoilState } from 'recoil'
+import { toast } from 'sonner'
 
 type MutateOptions<TData> = UseMutationOptions<Response<TData>, ResponseError, Request, any> & {
   invalidateUrls?: string[]
@@ -59,6 +60,10 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
             }
             for (const v of awaitInvalidateUrls) {
               await queryClient.invalidateQueries({ queryKey: [v] })
+            }
+
+            if (res.statusCode === 200 || res.statusCode === 201) {
+              toast(res.message)
             }
             return res
           } else {

@@ -30,7 +30,7 @@ export const poppins = Poppins({
 export const staffColumns: ColumnDef<Partial<Staff>>[] = [
   {
     accessorKey: 'id',
-    header: 'no.',
+    header: 'Id',
   },
   {
     accessorKey: 'name',
