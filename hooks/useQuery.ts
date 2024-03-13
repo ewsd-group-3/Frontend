@@ -47,19 +47,27 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
   const defaultInvalidateUrls = options?.invalidateUrls || []
 
   const mutation = useMutation({
-    mutationFn: ({ url = '', invalidateUrls = [], awaitInvalidateUrls = [], statusCodeHandling = false, ...config }) => {
+    mutationFn: ({ url = '', invalidateUrls = [], awaitInvalidateUrls = [], ...config }) => {
       return client<TData>(url, { method: 'POST', ...config })
         .then(async res => {
-          if (statusCodeHandling && res.statusCode !== 200) return Promise.reject(res)
-          const invalidates = [...invalidateUrls, ...defaultInvalidateUrls]
-          for (const v of invalidates) {
-            queryClient.invalidateQueries({ queryKey: [v] })
-          }
-          for (const v of awaitInvalidateUrls) {
-            await queryClient.invalidateQueries({ queryKey: [v] })
-          }
           console.log(res, 'RES')
-          return res
+          const statusCode = res.statusCode
+          if (statusCode) {
+            const invalidates = [...invalidateUrls, ...defaultInvalidateUrls]
+            for (const v of invalidates) {
+              queryClient.invalidateQueries({ queryKey: [v] })
+            }
+            for (const v of awaitInvalidateUrls) {
+              await queryClient.invalidateQueries({ queryKey: [v] })
+            }
+            return res
+          } else {
+            if (res.response.status < 200 || res.response.status >= 300) {
+              return Promise.reject(res)
+            } else {
+              return res
+            }
+          }
         })
         .catch(error => {
           console.log(error, 'ERROR')

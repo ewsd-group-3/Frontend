@@ -1,7 +1,10 @@
 export type ListingRes = {
   count: number
-} 
- 
+  limit: number
+  page: number
+  totalPages: number
+}
+
 export type Staff = {
   id: number
   email: string
@@ -15,7 +18,8 @@ export type Staff = {
   department: {
     id: string
     name: string
-}}
+  }
+}
 
 export type StaffRes = ListingRes & {
   staffs: Staff[]

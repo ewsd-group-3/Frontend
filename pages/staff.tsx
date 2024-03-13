@@ -17,6 +17,7 @@ import { toast } from 'sonner'
 import { roles } from '@/constants/staffs'
 import { useDataTableSorting } from '@/hooks/useDataTableSorting'
 import { useRouter } from 'next/router'
+import DataPagination from '@/components/Pagination/data-pagination'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -87,9 +88,10 @@ const Staff = () => {
   const router = useRouter()
   // const { isSorted } = useDataTableSorting({ sortBy: String(router.query.sortBy) })
   const { data, isLoading } = useFetch<StaffRes, true>(
-    `${process.env.BASE_URL}/staffs?sortBy=${router.query.sortBy || 'id'}&sortType=${router.query.sortType ?? 'asc'}`,
+    `${process.env.BASE_URL}/staffs?sortBy=${router.query.sortBy || 'id'}&sortType=${router.query.sortType ?? 'asc'}&page=${router.query.page ?? 1}`,
   )
   const staffs = data?.data?.staffs ?? []
+  console.log(data)
 
   const { mutateAsync } = useMutate()
 
@@ -161,6 +163,11 @@ const Staff = () => {
       <div className='mt-3'>
         <DataTable columns={staffColumns} data={staffs} isLoading={isLoading} />
       </div>
+      {data && (
+        <div className='mt-3'>
+          <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
+        </div>
+      )}
     </section>
   )
 }

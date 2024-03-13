@@ -1,5 +1,6 @@
 import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
+import DataPagination from '@/components/Pagination/data-pagination'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useDataTableSorting } from '@/hooks/useDataTableSorting'
@@ -147,6 +148,11 @@ const DepartmentC = () => {
       <div className='mt-3'>
         <DataTable columns={departmentColumns} data={departments} isLoading={isLoading} />
       </div>
+      {data && (
+        <div className='mt-3'>
+          <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
+        </div>
+      )}
     </section>
   )
 }
