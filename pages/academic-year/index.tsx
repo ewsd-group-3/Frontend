@@ -8,6 +8,7 @@ import { showDialog } from '@/lib/utils'
 import { dialogState } from '@/states/dialog'
 import { AcademicYearRes, AcademicYearT } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
+import { useRouter } from 'next/router'
 import React from 'react'
 import { useSetRecoilState } from 'recoil'
 import { z } from 'zod'
@@ -44,6 +45,7 @@ export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
 ]
 
 const AcademicYear = () => {
+  const router = useRouter()
   const { mutateAsync } = useMutate()
   const setDialog = useSetRecoilState(dialogState)
 
@@ -55,37 +57,7 @@ const AcademicYear = () => {
     <section className='p-5'>
       <div className='flex justify-between'>
         <h2 className='font-bold text-xl'>Academic Year</h2>
-        <Button
-          onClick={() =>
-            showDialog({
-              title: 'Create department form',
-              defaultValues: {
-                name: '',
-              },
-              formSchema: z.object({
-                name: z.string().min(5, { message: 'Must be 5 or more characters long' }),
-              }),
-              children: (
-                <div className='mt-5'>
-                  <Input.Field name='name' label='Department name' />
-                </div>
-              ),
-              cancel: true,
-              onSubmit: values => {
-                mutateAsync({
-                  url: `${process.env.BASE_URL}/departments`,
-                  method: 'POST',
-                  payload: {
-                    name: values.name,
-                  },
-                  invalidateUrls: [`${process.env.BASE_URL}/departments`],
-                }).then(() => setDialog(undefined))
-              },
-            })
-          }
-        >
-          Create
-        </Button>
+        <Button onClick={() => router.push('/academic-year/create')}>Create</Button>
       </div>
       <div className='mt-3'>
         <DataTable columns={academicYearCols} data={academicYears} isLoading={isLoading} />
