@@ -4,6 +4,9 @@ import DatePicker from '@/components/ui/date-picker'
 import { Form } from '@/components/ui/form'
 import Divider from '@/components/ui/divider'
 import { Button } from '@/components/ui/button'
+import { useMutate } from '@/hooks/useQuery'
+import { useRouter } from 'next/router'
+import { format } from 'date-fns'
 
 const formSchema = z.object({
   startDate: z.date(),
@@ -17,6 +20,39 @@ const formSchema = z.object({
 })
 
 const CreateAcademicYear = () => {
+  const { mutateAsync } = useMutate()
+  const router = useRouter()
+
+  const handleCreateAcademicYear = async (values: z.infer<typeof formSchema>) => {
+    const payload = {
+      name: `${format(values.startDate, 'LLL yyyy')}  ~ ${format(values.endDate, 'LLL yyyy')}`,
+      startDate: values.startDate,
+      endDate: values.endDate,
+      semesters: [
+        {
+          name: `Semester 1 - ${values.firstSemStartDate.getFullYear()}-${values.firstSemEndDate.getFullYear()}`,
+          startDate: values.firstSemStartDate,
+          closureDate: values.firstSemEndDate,
+          finalClosureDate: values.firstSemFinalClosureDate,
+        },
+        {
+          name: `Semester 2 - ${values.secondSemStartDate.getFullYear()}-${values.secondSemEndDate.getFullYear()}`,
+          startDate: values.secondSemStartDate,
+          closureDate: values.secondSemEndDate,
+          finalClosureDate: values.secondSemFinalClosureDate,
+        },
+      ],
+    }
+    const res = await mutateAsync({
+      url: `${process.env.BASE_URL}/academicInfos`,
+      data: payload,
+    })
+
+    if (res.statusCode == 201) {
+      router.push('/academic-year')
+    }
+  }
+
   return (
     <div className='p-5'>
       <h2 className='font-bold text-2xl mb-5'>Create Academic Year</h2>
@@ -32,6 +68,7 @@ const CreateAcademicYear = () => {
           secondSemEndDate: undefined,
         }}
         formSchema={formSchema}
+        onSubmit={handleCreateAcademicYear}
       >
         {values => {
           const [startDate, endDate, firstSemStartDate, firstSemEndDate, firstSemFinalClosureDate, secondSemStartDate, secondSemEndDate] =
@@ -108,7 +145,7 @@ const CreateAcademicYear = () => {
 
               <div className='flex justify-center mt-16 gap-4 text-right w-full'>
                 <Button>Reset</Button>
-                <Button>Create</Button>
+                <Button type='submit'>Create</Button>
               </div>
             </>
           )

@@ -51,7 +51,7 @@ const AcademicYear = () => {
 
   const { data, isLoading } = useFetch<AcademicYearRes, true>(`${process.env.BASE_URL}/academicInfos`)
 
-  const academicYears = data?.data.academicInfos ?? []
+  const academicYears = data?.data?.academicInfos ?? []
 
   return (
     <section className='p-5'>
