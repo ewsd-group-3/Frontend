@@ -1,6 +1,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { LoadingSpinner } from '../ui/loading-spinner'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -35,8 +36,8 @@ export function DataTable<TData, TValue>({ columns, data, isLoading, onClickRow 
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={columns.length} className='h-24 text-center'>
-                Loading...
+              <TableCell colSpan={columns.length} className='h-24'>
+                <LoadingSpinner className='mx-auto' />
               </TableCell>
             </TableRow>
           ) : table.getRowModel().rows?.length ? (
