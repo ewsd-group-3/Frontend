@@ -8,7 +8,7 @@ import { Building2, Mail, Settings, Settings2 } from 'lucide-react'
 
 export default function Profile() {
   const [auth] = useRecoilState(authState)
-  const { data, isLoading } = useFetch<ProfileRes, true>(`${process.env.BASE_URL}/staffs/${auth?.staff.id}`)
+  const { data, isLoading } = useFetch<ProfileRes, true>(`staffs/${auth?.staff.id}`)
   const profile = data?.data.staff
 
   return (

@@ -56,7 +56,7 @@ const Login = () => {
   const { mutateAsync, isLoading, isSuccess, data, isError, error } = useMutate<LoggedInData>()
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await mutateAsync({
-      url: `${process.env.BASE_URL}/auth/login`,
+      url: `auth/login`,
       payload: values,
     })
   }

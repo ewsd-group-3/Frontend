@@ -44,7 +44,7 @@ const CreateAcademicYear = () => {
       ],
     }
     const res = await mutateAsync({
-      url: `${process.env.BASE_URL}/academicInfos`,
+      url: `academicInfos`,
       data: payload,
     })
 

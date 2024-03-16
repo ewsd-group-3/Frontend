@@ -41,7 +41,7 @@ const Actions = ({ row }: any) => {
       },
       onSubmit: async values => {
         const res = await mutateAsync({
-          url: `${process.env.BASE_URL}/departments/${row.original.id}`,
+          url: `departments/${row.original.id}`,
           method: 'PATCH',
           payload: {
             name: values.name,
@@ -60,7 +60,7 @@ const Actions = ({ row }: any) => {
     // TODO: ask BE to give the message
     try {
       const res = await deleteMutateAsync({
-        url: `${process.env.BASE_URL}/departments/${id}`,
+        url: `departments/${id}`,
         method: 'delete',
         invalidateUrls: [`departments`],
       })
@@ -133,12 +133,12 @@ const DepartmentC = () => {
               cancel: true,
               onSubmit: values => {
                 mutateAsync({
-                  url: `${process.env.BASE_URL}/departments`,
+                  url: `departments`,
                   method: 'POST',
                   payload: {
                     name: values.name,
                   },
-                  invalidateUrls: [`${process.env.BASE_URL}/departments`],
+                  invalidateUrls: [`departments`],
                 }).then(() => setDialog(undefined))
               },
             })

@@ -34,8 +34,8 @@ const StaffAction = ({ row }: any) => {
   const { mutateAsync } = useMutate()
 
   const [enabled, setEnabled] = useState(false)
-  const { data: departments } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`, {}, { enabled })
-  const { data } = useFetch<StaffDetail, true>(`${process.env.BASE_URL}/staffs/${row.original.id}`, {}, { enabled })
+  const { data: departments } = useFetch<DepartmentRes, true>(`departments`, {}, { enabled })
+  const { data } = useFetch<StaffDetail, true>(`staffs/${row.original.id}`, {}, { enabled })
   const staffDetail = data?.data?.staff
 
   const sortBy = (router.query.sortBy || 'id') as string
@@ -103,7 +103,7 @@ const StaffAction = ({ row }: any) => {
                 cancel: true,
                 onSubmit: async values => {
                   const res = await mutateAsync({
-                    url: `${process.env.BASE_URL}/staffs/${row.original.id}`,
+                    url: `staffs/${row.original.id}`,
                     method: 'PATCH',
                     payload: {
                       email: values.email,
@@ -172,7 +172,7 @@ const formSchema = z.object({
 })
 
 const Staff = () => {
-  const { data: departments } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`)
+  const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
   const router = useRouter()
   const { data, isLoading } = useFetchListing<StaffRes>('staffs')
   const staffs = data?.data?.staffs ?? []
@@ -226,10 +226,10 @@ const Staff = () => {
               cancel: true,
               onSubmit: async values => {
                 const res = await mutateAsync({
-                  url: `${process.env.BASE_URL}/staffs`,
+                  url: `staffs`,
                   method: 'POST',
                   payload: { email: values.email, name: values.name, departmentId: values.department, role: 'STAFF' },
-                  invalidateUrls: [`${process.env.BASE_URL}/staffs`],
+                  invalidateUrls: [`staffs`],
                 })
 
                 if (res.statusCode === 201) {

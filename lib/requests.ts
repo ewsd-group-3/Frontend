@@ -57,7 +57,6 @@ export default function request<T = unknown>(url: string, config?: Request): Axi
   return axios({
     url,
     method,
-    baseURL: process.env.BASE_URL,
     timeout: 50000,
     headers,
     [method !== 'GET' ? 'data' : 'params']: type === 'form' ? qs.stringify(payload) : type === 'multipart' ? formData : payload,

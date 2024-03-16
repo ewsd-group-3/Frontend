@@ -8,11 +8,7 @@ import React from 'react'
 
 const AcademicYearDetail = () => {
   const router = useRouter()
-  const { data, isLoading } = useFetch<AcademicYearDetail, true>(
-    `${process.env.BASE_URL}/academicInfos/${router.query.id}`,
-    {},
-    { enabled: !!router.query.id },
-  )
+  const { data, isLoading } = useFetch<AcademicYearDetail, true>(`academicInfos/${router.query.id}`, {}, { enabled: !!router.query.id })
 
   const academicYearData = data?.data
   if (isLoading || !academicYearData) return <p>Loading...</p>

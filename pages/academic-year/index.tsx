@@ -49,7 +49,7 @@ const AcademicYear = () => {
   const { mutateAsync } = useMutate()
   const setDialog = useSetRecoilState(dialogState)
 
-  const { data, isLoading } = useFetch<AcademicYearRes, true>(`${process.env.BASE_URL}/academicInfos`)
+  const { data, isLoading } = useFetch<AcademicYearRes, true>(`academicInfos`)
 
   const academicYears = data?.data?.academicInfos ?? []
 
