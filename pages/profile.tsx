@@ -5,11 +5,12 @@ import { ProfileRes } from '@/types/api'
 import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
 import { roleStringConvertor } from '@/utils/role-convertor'
 import { Building2, Mail, Settings, Settings2 } from 'lucide-react'
+import { formateDate } from '@/lib/date'
 
 export default function Profile() {
   const [auth] = useRecoilState(authState)
   const { data, isLoading } = useFetch<ProfileRes, true>(`staffs/${auth?.staff.id}`)
-  const profile = data?.data.staff
+  const profile = data?.data?.staff
 
   return (
     <div className='p-8'>
@@ -27,7 +28,7 @@ export default function Profile() {
             <div className='flex flex-col gap-1'>
               <h1 className='text-2xl font-semibold'>{profile.name}</h1>
               <span className='capitalize font-medium'>Role: {roleStringConvertor(profile.role)}</span>
-              <span>Last active: {profile.lastLoginDate}</span>
+              <span>Last active: {formateDate(profile.lastLoginDate, 'd MMM y, hh:mm:ss a')}</span>
             </div>
           </div>
           <div className='mt-12 grid grid-cols-1 md:grid-cols-2 gap-5'>
