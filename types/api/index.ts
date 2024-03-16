@@ -88,3 +88,7 @@ export type AcademicYearDetail = {
   updatedAt: string
   semesters: Semester[]
 }
+
+export type ProfileRes = {
+  staff: Staff
+}

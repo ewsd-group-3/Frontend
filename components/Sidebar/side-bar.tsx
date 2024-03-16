@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ChevronFirst, LogOut, Menu, User } from 'lucide-react'
 import { MenuLinks } from '@/constants/links'
-import PlaceHolderImg from '@/public/placeholder-img.png'
+import SchoolLogo from '@/public/wyne-school-logo.svg'
 import Image from 'next/image'
 import MenuLink from './menu-link'
 import MobileMenu from './mobile-menu'
@@ -66,7 +66,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
               <div>
                 <div className='flex items-center gap-x-4'>
-                  <Image src={PlaceHolderImg} className={`rounded-full ${!open && ''}`} width={40} height={40} alt='logo' />
+                  <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={40} height={40} alt='logo' />
                   <h1 className={`text-md origin-left whitespace-nowrap font-medium text-white duration-300 ${!open && 'hidden'}`}>
                     Wyne School Portal
                   </h1>
@@ -93,7 +93,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                 <MenuLink
                   icon={{
                     src: User,
-                    img: PlaceHolderImg.src,
+                    img: auth?.staff.name,
                   }}
                   path={'/profile'}
                   pathName={pathName}

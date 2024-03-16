@@ -110,7 +110,7 @@ const DepartmentC = () => {
   const { mutateAsync } = useMutate()
   const departments = data?.data?.departments ?? []
   const setDialog = useSetRecoilState(dialogState)
-  console.log(data)
+
   return (
     <section className='p-5'>
       <div className='flex justify-between'>

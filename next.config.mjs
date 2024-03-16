@@ -3,23 +3,27 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "images.unsplash.com",
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
       {
-        protocol: "https",
-        hostname: "unsplash.com",
+        protocol: 'https',
+        hostname: 'unsplash.com',
       },
       {
-        protocol: "https",
-        hostname: "utfs.io",
+        protocol: 'https',
+        hostname: 'utfs.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
       },
     ],
   },
   reactStrictMode: true,
   env: {
-    BASE_URL: process.env.NEXT_PUBLIC_BASE_URL
-  }
+    BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+  },
 }
 
 export default nextConfig
