@@ -103,7 +103,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                 <div
                   onClick={() =>
                     showDialog({
-                      title: 'Confirmation box',
+                      title: 'Loging out',
                       children: (
                         <div className='mt-5'>
                           <p>Are you sure you want to log out from the portal?</p>
