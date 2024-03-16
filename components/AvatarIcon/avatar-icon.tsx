@@ -10,7 +10,7 @@ export default function AvatarIcon({ name, size = 'sm' }: AvatarIconProps) {
   const profile = cva('profile', {
     variants: {
       size: {
-        sm: ['w-8', 'h-8'],
+        sm: ['w-6', 'h-6'],
         md: ['w-12', 'h-12'],
         lg: ['w-32', 'h-32'],
       },
