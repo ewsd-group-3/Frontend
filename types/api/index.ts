@@ -49,3 +49,7 @@ export type AcademicYearT = {
 export type AcademicYearRes = ListingRes & {
   academicInfos: AcademicYearT[]
 }
+
+export type ProfileRes = {
+  staff: Staff
+}

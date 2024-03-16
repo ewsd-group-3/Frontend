@@ -18,6 +18,7 @@ import { roles } from '@/constants/staffs'
 import { useDataTableSorting } from '@/hooks/useDataTableSorting'
 import { useRouter } from 'next/router'
 import DataPagination from '@/components/Pagination/data-pagination'
+import { roleStringConvertor } from '@/utils/role-convertor'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -50,7 +51,7 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
     header: () => FilterHeader({ title: 'role' }),
     cell: ({ row }) => {
       const role = row.original.role
-      return <span className='capitalize'>{role?.toLocaleLowerCase().split('_').join(' ')}</span>
+      return <span className='capitalize'>{roleStringConvertor(role!)}</span>
     },
   },
   {

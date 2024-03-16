@@ -1,8 +1,7 @@
 import { FC, useState } from 'react'
 import Link from 'next/link'
 import { LucideIcon } from 'lucide-react'
-import Image from 'next/image'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import AvatarIcon from '../AvatarIcon/avatar-icon'
 
 type MenuLinkProps = {
   path?: string
@@ -32,14 +31,7 @@ const MenuLink: FC<MenuLinkProps> = ({ path, icon, title, gap, pathName, open })
       }}
     >
       <span>
-        {icon.img !== undefined ? (
-          <Avatar className='h-7 w-7'>
-            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${icon.img}`} />
-            <AvatarFallback>{title}</AvatarFallback>
-          </Avatar>
-        ) : (
-          <icon.src size={22} color={hovered || pathName === path ? 'black' : 'white'} />
-        )}
+        {icon.img !== undefined ? <AvatarIcon name={title} /> : <icon.src size={22} color={hovered || pathName === path ? 'black' : 'white'} />}
       </span>
       <span className={`${!open && 'hidden'} group-hover:text-black whitespace-nowrap ${pathName === path ? 'text-black' : 'text-zinc-300'}`}>
         {title}

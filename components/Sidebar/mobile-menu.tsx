@@ -7,6 +7,8 @@ import { LoggedInData } from '@/types/auth'
 import Image from 'next/image'
 import SchoolLogo from '@/public/wyne-school-logo.svg'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import AvatarIcon from '../AvatarIcon/avatar-icon'
+import { title } from 'process'
 
 export default function MobileMenu({ pathName, auth, handleLogout }: { pathName: string; auth: LoggedInData; handleLogout: () => void }) {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false)
@@ -34,10 +36,7 @@ export default function MobileMenu({ pathName, auth, handleLogout }: { pathName:
               </Link>
             ))}
             <Link href={'/profile'} className={`flex items-center gap-4 rounded p-4 ${pathName === '/profile' ? 'bg-white ' : 'bg-primary'}`}>
-              <Avatar className='h-7 w-7'>
-                <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${auth.staff.name}`} />
-                <AvatarFallback>{auth.staff.name}</AvatarFallback>
-              </Avatar>
+              <AvatarIcon name={auth.staff.name} />
               <div className={`${pathName === '/profile' ? 'text-black' : 'text-white'}`}>{auth.staff.name}</div>
             </Link>
             <div className='flex cursor-pointer items-center gap-4 rounded bg-primary p-4 text-white' onClick={handleLogout}>
