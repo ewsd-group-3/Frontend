@@ -6,7 +6,7 @@ import { useRecoilState } from 'recoil'
 import { toast } from 'sonner'
 
 type MutateOptions<TData> = UseMutationOptions<Response<TData>, ResponseError, Request, any> & {
-  invalidateUrls?: string[]
+  invalidateUrls?: string[] | string[][]
 }
 
 function useClient() {
@@ -28,7 +28,7 @@ function useClient() {
 
 export function useFetch<TData extends any, TIncludeCode extends boolean = false>(
   url: string,
-  $config?: Request & { key?: string; query?: {}; includeStatusCode?: TIncludeCode },
+  $config?: Request & { key?: string[]; query?: {}; includeStatusCode?: TIncludeCode },
   options?: UseQueryOptions<
     TIncludeCode extends false ? TData : Response<TData>,
     ResponseError,
@@ -39,7 +39,7 @@ export function useFetch<TData extends any, TIncludeCode extends boolean = false
   const client = useClient()
   const { key, includeStatusCode = false, ...config } = { ...$config }
 
-  return useQuery(key ? [key] : [url, config?.payload], fetchConfig => client<TData>(url, { method: 'GET', ...fetchConfig, ...config }), options)
+  return useQuery(key ? key : [url, config?.payload], fetchConfig => client<TData>(url, { method: 'GET', ...fetchConfig, ...config }), options)
 }
 
 export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
@@ -51,7 +51,6 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
     mutationFn: ({ url = '', invalidateUrls = [], awaitInvalidateUrls = [], ...config }) => {
       return client<TData>(url, { method: 'POST', ...config })
         .then(async res => {
-          console.log(res, 'RES')
           const statusCode = res.statusCode
           if (statusCode) {
             const invalidates = [...invalidateUrls, ...defaultInvalidateUrls]
@@ -63,7 +62,7 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
             }
 
             if (res.statusCode === 200 || res.statusCode === 201) {
-              toast(res.message)
+              toast.success(res.message)
             }
             return res
           } else {
@@ -75,7 +74,6 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
           }
         })
         .catch(error => {
-          console.log(error, 'ERROR')
           if (error.response) {
             return Promise.reject(error.response.data)
           }

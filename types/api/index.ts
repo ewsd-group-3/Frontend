@@ -25,6 +25,24 @@ export type StaffRes = ListingRes & {
   staffs: Staff[]
 }
 
+export type StaffDetail = {
+  staff: {
+    id: number
+    email: string
+    name: string
+    role: string
+    isActive: boolean
+    departmentId: number
+    lastLoginDate: string
+    createdAt: string
+    updatedAt: string
+    department: {
+      id: number
+      name: string
+    }
+  }
+}
+
 export type Department = {
   id: string
   name: string
@@ -48,4 +66,25 @@ export type AcademicYearT = {
 
 export type AcademicYearRes = ListingRes & {
   academicInfos: AcademicYearT[]
+}
+
+export type Semester = {
+  id: number
+  name: string
+  startDate: string
+  closureDate: string
+  finalClosureDate: string
+  academicInfoId: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type AcademicYearDetail = {
+  id: string
+  name: string
+  startDate: string
+  endDate: string
+  createdAt: string
+  updatedAt: string
+  semesters: Semester[]
 }

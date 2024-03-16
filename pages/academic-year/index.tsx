@@ -60,7 +60,12 @@ const AcademicYear = () => {
         <Button onClick={() => router.push('/academic-year/create')}>Create</Button>
       </div>
       <div className='mt-3'>
-        <DataTable columns={academicYearCols} data={academicYears} isLoading={isLoading} />
+        <DataTable
+          columns={academicYearCols}
+          data={academicYears}
+          isLoading={isLoading}
+          onClickRow={(id: string) => router.push(`/academic-year/${id}`)}
+        />
       </div>
     </section>
   )

@@ -15,10 +15,10 @@ import { useSetRecoilState } from 'recoil'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { useRouter } from 'next/router'
+import { useFetchListing } from '@/hooks/useFetchListing'
 
 const Actions = ({ row }: any) => {
   const { mutateAsync } = useMutate()
-  const setDialogState = useSetRecoilState(dialogState)
   const { mutateAsync: deleteMutateAsync } = useMutate()
 
   const handleUpdate = (value: any) => {
@@ -46,7 +46,7 @@ const Actions = ({ row }: any) => {
           payload: {
             name: values.name,
           },
-          invalidateUrls: [`${process.env.BASE_URL}/departments`],
+          invalidateUrls: [`departments`],
         })
 
         if (res.statusCode === 200) {
@@ -58,13 +58,17 @@ const Actions = ({ row }: any) => {
 
   const handleDelete = async (id: number) => {
     // TODO: ask BE to give the message
-    const res = await deleteMutateAsync({
-      url: `${process.env.BASE_URL}/departments/${id}`,
-      method: 'delete',
-      invalidateUrls: [`${process.env.BASE_URL}/departments`],
-    })
+    try {
+      const res = await deleteMutateAsync({
+        url: `${process.env.BASE_URL}/departments/${id}`,
+        method: 'delete',
+        invalidateUrls: [`departments`],
+      })
 
-    toast('Deleted department successfully.')
+      toast.success('Deleted department successfully.')
+    } catch (err: any) {
+      toast.error(err.message, {})
+    }
   }
 
   return (
@@ -102,9 +106,7 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
 const DepartmentC = () => {
   const router = useRouter()
   const { isSorted } = useDataTableSorting({ sortBy: 'name' })
-  const { data, isLoading } = useFetch<DepartmentRes, true>(
-    `${process.env.BASE_URL}/departments?sortBy=name&sortType=${isSorted ?? 'asc'}&page=${router.query.page ?? 1}`,
-  )
+  const { data, isLoading } = useFetchListing<DepartmentRes>('departments')
   const { mutateAsync } = useMutate()
   const departments = data?.data?.departments ?? []
   const setDialog = useSetRecoilState(dialogState)

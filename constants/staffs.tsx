@@ -101,4 +101,4 @@ export const staff = [
   },
 ]
 
-export const roles = ['STAFF', 'ADMIN', 'QA_MANAGER', 'QA_COORDINATOR']
+export const roles = ['STAFF', 'ADMIN', 'QA_MANAGER', 'QA_COORDINATOR'] as const

@@ -9,15 +9,17 @@ import { hideDialog, showDialog } from '@/lib/utils'
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { DepartmentRes, Staff, StaffRes } from '@/types/api'
+import { DepartmentRes, Staff, StaffDetail, StaffRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreVertical } from 'lucide-react'
 import { Poppins } from 'next/font/google'
 import { toast } from 'sonner'
 import { roles } from '@/constants/staffs'
-import { useDataTableSorting } from '@/hooks/useDataTableSorting'
 import { useRouter } from 'next/router'
 import DataPagination from '@/components/Pagination/data-pagination'
+import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useFetchListing } from '@/hooks/useFetchListing'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -26,6 +28,108 @@ export const poppins = Poppins({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   preload: true,
 })
+
+const StaffAction = ({ row }: any) => {
+  const router = useRouter()
+  const { mutateAsync } = useMutate()
+
+  const [enabled, setEnabled] = useState(false)
+  const { data: departments } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`, {}, { enabled })
+  const { data } = useFetch<StaffDetail, true>(`${process.env.BASE_URL}/staffs/${row.original.id}`, {}, { enabled })
+  const staffDetail = data?.data?.staff
+
+  const sortBy = (router.query.sortBy || 'id') as string
+  const sortType = (router.query.sortType ?? 'asc') as string
+  const page = (router.query.page ?? '1') as string
+
+  return (
+    <DropdownMenu
+      onOpenChange={() => {
+        if (!enabled) {
+          setEnabled(true)
+        }
+      }}
+    >
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' className='h-8 w-8 p-0'>
+          <span className='sr-only'>Open menu</span>
+          <MoreVertical className='h-4 w-4' onClick={() => setEnabled(true)} />
+        </Button>
+      </DropdownMenuTrigger>
+      {enabled && (
+        <DropdownMenuContent align='end' className={poppins.className}>
+          <DropdownMenuItem
+            onClick={() => {
+              showDialog({
+                title: 'Edit staff',
+                defaultValues: {
+                  name: staffDetail?.name,
+                  email: staffDetail?.email,
+                  role: staffDetail?.role,
+                  department: staffDetail?.departmentId.toString(),
+                },
+                formSchema,
+                children: (
+                  <div>
+                    <div className='mt-5'>
+                      <Input.Field name='name' label='Name' placeholder='John Doe' />
+                    </div>
+
+                    <div className='mt-5'>
+                      <Input.Field name='email' label='Email' type='email' placeholder='example@gre.uk' />
+                    </div>
+
+                    <div className='mt-5'>
+                      <SelectField items={roles.map(role => ({ label: role, value: role }))} name='role' label='Role' placeholder='Select a role' />
+                    </div>
+
+                    <div className='mt-5'>
+                      <SelectField
+                        items={
+                          departments
+                            ? departments?.data.departments.map(d => ({
+                                label: d.name,
+                                value: d.id,
+                              }))
+                            : []
+                        }
+                        name='department'
+                        label='Department'
+                        placeholder='Select a department'
+                      />
+                    </div>
+                  </div>
+                ),
+                cancel: true,
+                onSubmit: async values => {
+                  const res = await mutateAsync({
+                    url: `${process.env.BASE_URL}/staffs/${row.original.id}`,
+                    method: 'PATCH',
+                    payload: {
+                      email: values.email,
+                      name: values.name,
+                      departmentId: +values.department,
+                      role: values.role,
+                    },
+                    invalidateUrls: ['staffs'],
+                  })
+
+                  if (res.statusCode === 200) {
+                    hideDialog()
+                  }
+                },
+              })
+            }}
+          >
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem>Reset Password</DropdownMenuItem>
+          <DropdownMenuItem>Disable User</DropdownMenuItem>
+        </DropdownMenuContent>
+      )}
+    </DropdownMenu>
+  )
+}
 
 export const staffColumns: ColumnDef<Partial<Staff>>[] = [
   {
@@ -56,24 +160,7 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreVertical className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className={poppins.className}>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Reset Password</DropdownMenuItem>
-            <DropdownMenuItem>Disable User</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    cell: ({ row }) => <StaffAction row={row} />,
   },
 ]
 
@@ -81,18 +168,14 @@ const formSchema = z.object({
   name: z.string().min(1, { message: 'Please fill the department name' }),
   email: z.string().min(1, { message: 'Please fill in email address.' }).email({ message: 'Invalid email address.' }),
   department: z.string(),
+  role: z.enum(roles),
 })
 
 const Staff = () => {
-  const { data: departments, isLoading: departmentLoading } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`)
+  const { data: departments } = useFetch<DepartmentRes, true>(`${process.env.BASE_URL}/departments`)
   const router = useRouter()
-  // const { isSorted } = useDataTableSorting({ sortBy: String(router.query.sortBy) })
-  const { data, isLoading } = useFetch<StaffRes, true>(
-    `${process.env.BASE_URL}/staffs?sortBy=${router.query.sortBy || 'id'}&sortType=${router.query.sortType ?? 'asc'}&page=${router.query.page ?? 1}`,
-  )
+  const { data, isLoading } = useFetchListing<StaffRes>('staffs')
   const staffs = data?.data?.staffs ?? []
-  console.log(data)
-
   const { mutateAsync } = useMutate()
 
   return (
@@ -150,7 +233,6 @@ const Staff = () => {
                 })
 
                 if (res.statusCode === 201) {
-                  toast('Created staff successfully')
                   hideDialog()
                 }
               },

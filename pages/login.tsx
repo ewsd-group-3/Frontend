@@ -18,6 +18,38 @@ const formSchema = z.object({
   password: z.string().min(1, { message: 'Please fill in password.' }),
 })
 
+const images = [
+  [
+    'https://images.unsplash.com/photo-1448584109583-8f5fe2e61544?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2626&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  ],
+  [
+    'https://images.unsplash.com/photo-1585763465881-62c5d70627bc?q=80&w=2505&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1629945252011-4d226301d226?q=80&w=2865&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1591710110747-dfeae9fa762a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  ],
+  [
+    'https://images.unsplash.com/photo-1519452575417-564c1401ecc0?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1555116505-38ab61800975?q=80&w=2835&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  ],
+]
+
+const ImageContainer = () => {
+  return (
+    <div className='flex gap-4'>
+      {images.map((row, idx) => (
+        <div className='flex flex-col gap-4 justify-center' key={idx}>
+          {row.map(img => (
+            <div key={img} className='w-[150px] h-[200px] rounded-lg overflow-hidden justify-center'>
+              <Image quality={50} width={150} height={200} src={img} alt='univeristy' style={{ objectFit: 'cover', height: '100%', width: '100%' }} />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 const Login = () => {
   const router = useRouter()
   const [auth, setAuth] = useRecoilState(authState)
@@ -41,15 +73,8 @@ const Login = () => {
 
   return (
     <section className='h-screen w-full flex px-16'>
-      <div className='h-full flex-1'>
-        <Image
-          src='https://images.unsplash.com/photo-1448584109583-8f5fe2e61544?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-          alt='abstract'
-          width={1000}
-          height={1000}
-          className='h-full w-full bg-cover'
-        />
-      </div>
+      <ImageContainer />
+
       <div className='h-full flex-1 grid place-items-center'>
         <div className='w-9/12 max-w-md mx-auto'>
           <h2 className='font-bold text-2xl mb-2'>Login to Wyne School Portal</h2>
