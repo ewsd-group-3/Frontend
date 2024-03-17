@@ -9,8 +9,11 @@ import SchoolLogo from '@/public/wyne-school-logo.svg'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
 import { title } from 'process'
+import { authState } from '@/states/auth'
+import { useRecoilValue } from 'recoil'
 
-export default function MobileMenu({ pathName, auth, handleLogout }: { pathName: string; auth: LoggedInData; handleLogout: () => void }) {
+export default function MobileMenu({ pathName, handleLogout }: { pathName: string; auth: LoggedInData; handleLogout: () => void }) {
+  const auth = useRecoilValue(authState)
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false)
 
   return (
@@ -36,8 +39,8 @@ export default function MobileMenu({ pathName, auth, handleLogout }: { pathName:
               </Link>
             ))}
             <Link href={'/profile'} className={`flex items-center gap-4 rounded p-4 ${pathName === '/profile' ? 'bg-white ' : 'bg-primary'}`}>
-              <AvatarIcon name={auth.staff.name} />
-              <div className={`${pathName === '/profile' ? 'text-black' : 'text-white'}`}>{auth.staff.name}</div>
+              <AvatarIcon name={auth?.staff?.name ?? ''} />
+              <div className={`${pathName === '/profile' ? 'text-black' : 'text-white'}`}>{auth?.staff?.name}</div>
             </Link>
             <div className='flex cursor-pointer items-center gap-4 rounded bg-primary p-4 text-white' onClick={handleLogout}>
               Logout
