@@ -1,5 +1,7 @@
+import { CustomBreadcrumb } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
 import Divider from '@/components/ui/divider'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { useFetch } from '@/hooks/useQuery'
 import { formateDate } from '@/lib/date'
 import { AcademicYearDetail } from '@/types/api'
@@ -11,11 +13,22 @@ const AcademicYearDetail = () => {
   const { data, isLoading } = useFetch<AcademicYearDetail, true>(`academicInfos/${router.query.id}`, {}, { enabled: !!router.query.id })
 
   const academicYearData = data?.data
-  if (isLoading || !academicYearData) return <p>Loading...</p>
+  if (isLoading || !academicYearData) return <LoadingSpinner />
 
   return (
     <div className='p-5'>
-      <div className='flex justify-between'>
+      <CustomBreadcrumb
+        links={[
+          {
+            label: 'Academic year',
+            href: '/academic-year',
+          },
+          {
+            label: academicYearData.name,
+          },
+        ]}
+      />
+      <div className='flex justify-between mt-5'>
         <h2 className='font-bold text-3xl mb-10'>{academicYearData.name}</h2>
         <Button onClick={() => alert('download data')}>Download Data</Button>
       </div>
