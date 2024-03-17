@@ -43,7 +43,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
       <div className='flex'>
         <div
-          className={`${open ? `w-72` : `w-20`} fixed h-screen flex-col justify-between bg-primary p-5 pt-7 duration-300 ${auth ? 'hidden md:flex' : 'hidden'}`}
+          className={`${open ? `w-72` : `w-20`} fixed z-50 h-screen flex-col justify-between bg-primary p-5 pt-7 duration-300 ${auth ? 'hidden md:flex' : 'hidden'}`}
         >
           <div
             className={`absolute -right-3 top-9 grid h-6 w-6 cursor-pointer place-items-center rounded-full bg-accent ring-2 ring-background  ${
@@ -57,23 +57,22 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             <ChevronFirst size={18} color='white' />
           </div>
 
-          <div>
+          <div className='overflow-hidden'>
             <div className='flex items-center gap-x-4'>
               <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={40} height={40} alt='logo' />
-              <h1 className={`text-md origin-left whitespace-nowrap font-medium text-white duration-300 ${!open && 'hidden'}`}>Wyne School Portal</h1>
+              <h1 className={`text-md origin-left whitespace-nowrap font-medium text-white duration-300 ${!open && 'hidden'}`}>
+                Wayne School Portal
+              </h1>
             </div>
             <ul className='pt-6'>
-              {MenuLinks.map(Menu => (
+              {MenuLinks.map(menu => (
                 <MenuLink
+                  key={menu.path}
                   icon={{
-                    src: Menu.src,
+                    src: menu.src,
                   }}
-                  path={Menu.path}
-                  title={Menu.title}
-                  gap={Menu.gap}
-                  key={Menu.path}
+                  {...menu}
                   pathName={pathName}
-                  open={open}
                 />
               ))}
             </ul>
@@ -89,7 +88,6 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
               path={'/profile'}
               pathName={pathName}
               title={auth?.staff.name || 'User Name'}
-              open={open}
             />
             <div
               onClick={() =>
@@ -111,7 +109,6 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                 }}
                 pathName={pathName}
                 title={'Logout'}
-                open={open}
               />
             </div>
           </div>
