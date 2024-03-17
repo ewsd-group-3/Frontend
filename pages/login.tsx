@@ -40,7 +40,7 @@ const ImageContainer = () => {
       {images.map((row, idx) => (
         <div className='flex flex-col gap-4 justify-center' key={idx}>
           {row.map(img => (
-            <div key={img} className='w-[150px] h-[200px] rounded-lg overflow-hidden justify-center'>
+            <div key={img} className='w-[100px] h-[120px] md:w-[150px] md:h-[200px] rounded-lg overflow-hidden justify-center'>
               <Image quality={50} width={150} height={200} src={img} alt='univeristy' style={{ objectFit: 'cover', height: '100%', width: '100%' }} />
             </div>
           ))}
@@ -72,11 +72,13 @@ const Login = () => {
   }, [data, isSuccess, router, setAuth])
 
   return (
-    <section className='h-screen w-full flex px-16'>
-      <ImageContainer />
+    <section className='h-screen w-full grid grid-cols-1 md:grid-cols-2 place-items-center md:px-16 gap-5'>
+      <div className='order-2 md:order-1'>
+        <ImageContainer />
+      </div>
 
-      <div className='h-full flex-1 grid place-items-center'>
-        <div className='w-9/12 max-w-md mx-auto'>
+      <div className='h-full w-full grid place-items-center order-1 md:order-2 max-sm:-mt-20'>
+        <div className='md:w-9/12 max-w-md mx-auto'>
           <h2 className='font-bold text-2xl mb-2'>Login to Wayne School Portal</h2>
           <small className='text-sm mb-5 block'>Share ideas, find helpful information, announcements, and collaborate with colleagues.</small>
           <div>
