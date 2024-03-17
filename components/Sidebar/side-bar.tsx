@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ChevronFirst, LogOut, Menu, User } from 'lucide-react'
 import { MenuLinks } from '@/constants/links'
-import SchoolLogo from '@/public/wyne-school-logo.svg'
+import SchoolLogo from '@/public/wayne-school-logo.svg'
 import Image from 'next/image'
 import MenuLink from './menu-link'
 import MobileMenu from './mobile-menu'
@@ -17,11 +17,12 @@ function getLocalIsSidebarOpen() {
 }
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
   const [auth, setAuth] = useRecoilState(authState)
   const [dialog, setDialog] = useRecoilState(dialogState)
   const pathName = usePathname()
-  const router = useRouter()
   const [open, setOpen] = useState(typeof window !== 'undefined' ? getLocalIsSidebarOpen : null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     if (auth === null) {
@@ -29,7 +30,11 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
     } else if (auth && router.pathname === '/login') {
       router.push('/')
     }
-  }, [auth, router])
+  }, [auth])
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogout = () => {
     setAuth(null)
@@ -43,7 +48,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
       <div className='flex'>
         <div
-          className={`${open ? `w-72` : `w-20`} fixed h-screen flex-col justify-between bg-primary p-5 pt-7 duration-300 ${auth ? 'hidden md:flex' : 'hidden'}`}
+          className={`${open ? `w-72` : `w-20`} fixed z-50 h-screen flex-col justify-between bg-primary p-5 pt-7 duration-300 ${auth ? 'hidden md:flex' : 'hidden'}`}
         >
           <div
             className={`absolute -right-3 top-9 grid h-6 w-6 cursor-pointer place-items-center rounded-full bg-accent ring-2 ring-background  ${
@@ -57,10 +62,12 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             <ChevronFirst size={18} color='white' />
           </div>
 
-          <div>
+          <div className='overflow-hidden'>
             <div className='flex items-center gap-x-4'>
-              <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={40} height={40} alt='logo' />
-              <h1 className={`text-md origin-left whitespace-nowrap font-medium text-white duration-300 ${!open && 'hidden'}`}>Wyne School Portal</h1>
+              <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={36} height={36} alt='logo' />
+              <h1 className={`text-md origin-left whitespace-nowrap font-medium text-white duration-300 ${!open && 'hidden'}`}>
+                Wayne School Portal
+              </h1>
             </div>
             <ul className='pt-6'>
               {MenuLinks.map(Menu => (
@@ -73,14 +80,13 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                   gap={Menu.gap}
                   key={Menu.path}
                   pathName={pathName}
-                  open={open}
                 />
               ))}
             </ul>
           </div>
 
-          <div>
-            <hr className='mb-6 mt-9' />
+          <div className='overflow-hidden'>
+            <hr />
             <MenuLink
               icon={{
                 src: User,
@@ -89,7 +95,6 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
               path={'/profile'}
               pathName={pathName}
               title={auth?.staff.name || 'User Name'}
-              open={open}
             />
             <div
               onClick={() =>
@@ -111,12 +116,10 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                 }}
                 pathName={pathName}
                 title={'Logout'}
-                open={open}
               />
             </div>
           </div>
         </div>
-
         <main className={`mt-16 flex-1 p-5 pt-3 duration-300 md:mt-0 ${auth ? (open ? `md:ml-72` : `md:ml-20`) : 'ml-0'}`}>{children}</main>
       </div>
     </>

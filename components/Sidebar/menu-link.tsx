@@ -1,7 +1,8 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LucideIcon } from 'lucide-react'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
+import { cn } from '@/lib/utils'
 
 type MenuLinkProps = {
   path?: string
@@ -12,28 +13,31 @@ type MenuLinkProps = {
     img?: string
   }
   pathName: string
-  open: boolean | null
 }
 
-const MenuLink: FC<MenuLinkProps> = ({ path, icon, title, gap, pathName, open }) => {
-  const [hovered, setHovered] = useState(false)
-
+const MenuLink: FC<MenuLinkProps> = ({ path, icon, title, gap, pathName }) => {
   const content = (
     <li
-      className={`group flex rounded-md p-2 cursor-pointer text-gray-300 text-sm items-center gap-x-4 font-medium ${
-        pathName === path ? 'bg-gray-100 text-black' : hovered ? 'hover:bg-background' : ''
+      className={`group flex rounded-md p-2 cursor-pointer text-gray-300 text-sm items-center gap-x-4 font-medium hover:bg-background ${
+        pathName === path && 'bg-gray-100 text-black'
       } ${gap ? 'mt-9' : 'mt-2'}`}
-      onMouseEnter={() => {
-        setHovered(true)
-      }}
-      onMouseLeave={() => {
-        setHovered(false)
-      }}
     >
       <span>
-        {icon.img !== undefined ? <AvatarIcon name={title} /> : <icon.src size={22} color={hovered || pathName === path ? 'black' : 'white'} />}
+        {icon.img !== undefined ? (
+          <AvatarIcon name={title} />
+        ) : (
+          <icon.src size={20} className='group-hover:stroke-black' color={pathName === path ? 'black' : 'white'} />
+        )}
       </span>
-      <span className={`${!open && 'hidden'} group-hover:text-black whitespace-nowrap ${pathName === path ? 'text-black' : 'text-zinc-300'}`}>
+      <span
+        className={cn([
+          'group-hover:text-black whitespace-nowrap',
+          {
+            'text-black': pathName === path,
+            'text-zinc-300': pathName !== path,
+          },
+        ])}
+      >
         {title}
       </span>
     </li>
