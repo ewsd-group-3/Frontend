@@ -30,6 +30,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
     } else if (auth && router.pathname === '/login') {
       router.push('/')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth])
 
   useEffect(() => {
