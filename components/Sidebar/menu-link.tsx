@@ -26,7 +26,7 @@ const MenuLink: FC<MenuLinkProps> = ({ path, icon, title, gap, pathName }) => {
         {icon.img !== undefined ? (
           <AvatarIcon name={title} />
         ) : (
-          <icon.src size={22} className='group-hover:stroke-black' color={pathName === path ? 'black' : 'white'} />
+          <icon.src size={20} className='group-hover:stroke-black' color={pathName === path ? 'black' : 'white'} />
         )}
       </span>
       <span

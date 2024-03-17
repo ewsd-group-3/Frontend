@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ChevronFirst, LogOut, Menu, User } from 'lucide-react'
 import { MenuLinks } from '@/constants/links'
-import SchoolLogo from '@/public/wyne-school-logo.svg'
+import SchoolLogo from '@/public/wayne-school-logo.svg'
 import Image from 'next/image'
 import MenuLink from './menu-link'
 import MobileMenu from './mobile-menu'
@@ -17,11 +17,12 @@ function getLocalIsSidebarOpen() {
 }
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
   const [auth, setAuth] = useRecoilState(authState)
   const [dialog, setDialog] = useRecoilState(dialogState)
   const pathName = usePathname()
-  const router = useRouter()
   const [open, setOpen] = useState(typeof window !== 'undefined' ? getLocalIsSidebarOpen : null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     if (auth === null) {
@@ -29,7 +30,11 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
     } else if (auth && router.pathname === '/login') {
       router.push('/')
     }
-  }, [auth, router])
+  }, [auth])
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogout = () => {
     setAuth(null)
@@ -59,27 +64,29 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
           <div className='overflow-hidden'>
             <div className='flex items-center gap-x-4'>
-              <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={40} height={40} alt='logo' />
+              <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={36} height={36} alt='logo' />
               <h1 className={`text-md origin-left whitespace-nowrap font-medium text-white duration-300 ${!open && 'hidden'}`}>
                 Wayne School Portal
               </h1>
             </div>
             <ul className='pt-6'>
-              {MenuLinks.map(menu => (
+              {MenuLinks.map(Menu => (
                 <MenuLink
-                  key={menu.path}
                   icon={{
-                    src: menu.src,
+                    src: Menu.src,
                   }}
-                  {...menu}
+                  path={Menu.path}
+                  title={Menu.title}
+                  gap={Menu.gap}
+                  key={Menu.path}
                   pathName={pathName}
                 />
               ))}
             </ul>
           </div>
 
-          <div>
-            <hr className='mb-6 mt-9' />
+          <div className='overflow-hidden'>
+            <hr />
             <MenuLink
               icon={{
                 src: User,
@@ -113,7 +120,6 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-
         <main className={`mt-16 flex-1 p-5 pt-3 duration-300 md:mt-0 ${auth ? (open ? `md:ml-72` : `md:ml-20`) : 'ml-0'}`}>{children}</main>
       </div>
     </>

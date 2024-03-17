@@ -4,11 +4,7 @@ import Link from 'next/link'
 import { MenuLinks } from '@/constants/links'
 import BrandTitle from './brand-title'
 import { LoggedInData } from '@/types/auth'
-import Image from 'next/image'
-import SchoolLogo from '@/public/wyne-school-logo.svg'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
-import { title } from 'process'
 import { authState } from '@/states/auth'
 import { useRecoilValue } from 'recoil'
 
@@ -23,7 +19,7 @@ export default function MobileMenu({ pathName, handleLogout }: { pathName: strin
           <div className='flex h-16 justify-between p-5'>
             <BrandTitle />
             <div className='grid cursor-pointer place-items-center' onClick={() => setIsHamburgerOpen(!isHamburgerOpen)}>
-              <X size={30} color='white' />B
+              <X size={30} color='white' />
             </div>
           </div>
           <div className='flex flex-col gap-y-2 px-5 pt-5'>
