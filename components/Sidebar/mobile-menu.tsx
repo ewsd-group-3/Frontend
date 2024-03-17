@@ -4,11 +4,7 @@ import Link from 'next/link'
 import { MenuLinks } from '@/constants/links'
 import BrandTitle from './brand-title'
 import { LoggedInData } from '@/types/auth'
-import Image from 'next/image'
-import SchoolLogo from '@/public/wyne-school-logo.svg'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
-import { title } from 'process'
 
 export default function MobileMenu({ pathName, auth, handleLogout }: { pathName: string; auth: LoggedInData; handleLogout: () => void }) {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false)

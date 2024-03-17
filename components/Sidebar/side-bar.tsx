@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ChevronFirst, LogOut, Menu, User } from 'lucide-react'
 import { MenuLinks } from '@/constants/links'
-import SchoolLogo from '@/public/wyne-school-logo.svg'
+import SchoolLogo from '@/public/wayne-school-logo.svg'
 import Image from 'next/image'
 import MenuLink from './menu-link'
 import MobileMenu from './mobile-menu'
@@ -50,7 +50,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
           <div className='flex'>
             <div
-              className={`${open ? `w-72` : `w-20`} fixed h-screen flex-col justify-between bg-primary p-5 pt-7 duration-300 ${auth ? 'hidden md:flex' : 'hidden'}`}
+              className={`${open ? `w-72` : `w-20`} sticky top-0 h-screen flex-col justify-between bg-primary p-5 pt-7 duration-300 ${auth ? 'hidden md:flex' : 'hidden'}`}
             >
               <div
                 className={`absolute -right-3 top-9 grid h-6 w-6 cursor-pointer place-items-center rounded-full bg-accent ring-2 ring-background  ${
@@ -66,9 +66,9 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
               <div>
                 <div className='flex items-center gap-x-4'>
-                  <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={40} height={40} alt='logo' />
+                  <Image src={SchoolLogo} className={`rounded-full ${!open && ''}`} width={36} height={36} alt='logo' />
                   <h1 className={`text-md origin-left whitespace-nowrap font-medium text-white duration-300 ${!open && 'hidden'}`}>
-                    Wyne School Portal
+                    Wayne School Portal
                   </h1>
                 </div>
                 <ul className='pt-6'>
@@ -89,7 +89,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
               </div>
 
               <div>
-                <hr className='mb-6 mt-9' />
+                <hr />
                 <MenuLink
                   icon={{
                     src: User,

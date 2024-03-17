@@ -31,7 +31,7 @@ const MenuLink: FC<MenuLinkProps> = ({ path, icon, title, gap, pathName, open })
       }}
     >
       <span>
-        {icon.img !== undefined ? <AvatarIcon name={title} /> : <icon.src size={22} color={hovered || pathName === path ? 'black' : 'white'} />}
+        {icon.img !== undefined ? <AvatarIcon name={title} /> : <icon.src size={20} color={hovered || pathName === path ? 'black' : 'white'} />}
       </span>
       <span className={`${!open && 'hidden'} group-hover:text-black whitespace-nowrap ${pathName === path ? 'text-black' : 'text-zinc-300'}`}>
         {title}
