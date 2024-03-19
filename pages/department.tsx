@@ -148,13 +148,14 @@ const DepartmentC = () => {
         </Button>
       </div>
       <div className='mt-3'>
-        <DataTable columns={departmentColumns} data={departments} isLoading={isLoading} />
+        <DataTable
+          currentPage={data?.data.page}
+          totalPage={data?.data.totalPages}
+          columns={departmentColumns}
+          data={departments}
+          isLoading={isLoading}
+        />
       </div>
-      {data && (
-        <div className='mt-3'>
-          <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
-        </div>
-      )}
     </section>
   )
 }

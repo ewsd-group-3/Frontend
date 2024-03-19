@@ -242,14 +242,10 @@ const Staff = () => {
           Create
         </Button>
       </div>
+
       <div className='mt-3'>
-        <DataTable columns={staffColumns} data={staffs} isLoading={isLoading} />
+        <DataTable columns={staffColumns} data={staffs} isLoading={isLoading} currentPage={data?.data.page} totalPage={data?.data.totalPages} />
       </div>
-      {data && (
-        <div className='mt-3'>
-          <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
-        </div>
-      )}
     </section>
   )
 }

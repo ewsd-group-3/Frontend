@@ -146,13 +146,14 @@ const CategoryC = () => {
         </Button>
       </div>
       <div className='mt-3'>
-        <DataTable columns={categoryColumns} data={categories} isLoading={isLoading} />
+        <DataTable
+          currentPage={data?.data.page}
+          totalPage={data?.data.totalPages}
+          columns={categoryColumns}
+          data={categories}
+          isLoading={isLoading}
+        />
       </div>
-      {data && (
-        <div className='mt-3'>
-          <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
-        </div>
-      )}
     </section>
   )
 }
