@@ -22,17 +22,17 @@ export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
   },
   {
     accessorKey: 'startDate',
-    header: 'Start Date',
+    header: () => FilterHeader({ title: 'startDate' }),
     cell: ({ row }) => <p>{formateDate(row.original.startDate)}</p>,
   },
   {
     accessorKey: 'endDate',
-    header: 'End Date',
+    header: () => FilterHeader({ title: 'endDate' }),
     cell: ({ row }) => <p>{formateDate(row.original.endDate)}</p>,
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: () => FilterHeader({ title: 'status' }),
     cell: ({ row }) => <p>{getAcademicYearStatus(new Date(), row.original.startDate, row.original.endDate)}</p>,
   },
   // {
