@@ -43,6 +43,18 @@ export type StaffDetail = {
   }
 }
 
+export type Category = {
+  id: number
+  name: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type CategoryRes = ListingRes & {
+  categories: Category[]
+}
+
 export type Department = {
   id: string
   name: string
