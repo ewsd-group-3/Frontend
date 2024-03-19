@@ -45,7 +45,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {auth && <MobileMenu auth={auth} handleLogout={handleLogout} pathName={pathName} />}
+      {auth && <MobileMenu handleLogout={handleLogout} pathName={pathName} />}
 
       <div className='flex'>
         <div

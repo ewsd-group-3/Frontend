@@ -5,12 +5,12 @@ import DataPagination from '@/components/Pagination/data-pagination'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useDataTableSorting } from '@/hooks/useDataTableSorting'
-import { useFetch, useMutate } from '@/hooks/useQuery'
+import { useMutate } from '@/hooks/useQuery'
 import { hideDialog, showDialog } from '@/lib/utils'
 import { dialogState } from '@/states/dialog'
-import { Department, DepartmentRes } from '@/types/api'
+import { Category, CategoryRes, Department, DepartmentRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
-import { Edit, MoreVertical, Trash2 } from 'lucide-react'
+import { MoreVertical } from 'lucide-react'
 import { useSetRecoilState } from 'recoil'
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -23,30 +23,28 @@ const Actions = ({ row }: any) => {
 
   const handleUpdate = (value: any) => {
     showDialog({
-      title: 'Update department form',
+      title: 'Update category form',
       defaultValues: value,
       formSchema: z.object({
-        name: z.string().min(1, { message: 'Department name is required.' }),
+        name: z.string().min(1, { message: 'Category name is required.' }),
       }),
       children: (
         <div className='mt-5'>
-          <Input.Field name='name' label='Department name' />
+          <Input.Field name='name' label='Category name' />
         </div>
       ),
-      cancel: {
-        label: 'Cancel',
-      },
+      cancel: true,
       action: {
         label: 'Submit',
       },
       onSubmit: async values => {
         const res = await mutateAsync({
-          url: `departments/${row.original.id}`,
+          url: `categories/${row.original.id}`,
           method: 'PATCH',
           payload: {
             name: values.name,
           },
-          invalidateUrls: [`departments`],
+          invalidateUrls: [`categories`],
         })
 
         if (res.statusCode === 200) {
@@ -60,12 +58,12 @@ const Actions = ({ row }: any) => {
     // TODO: ask BE to give the message
     try {
       const res = await deleteMutateAsync({
-        url: `departments/${id}`,
+        url: `categories/${id}`,
         method: 'delete',
-        invalidateUrls: [`departments`],
+        invalidateUrls: [`categories`],
       })
 
-      toast.success('Deleted department successfully.')
+      toast.success('Deleted category successfully.')
     } catch (err: any) {
       toast.error(err.message, {})
     }
@@ -87,7 +85,7 @@ const Actions = ({ row }: any) => {
   )
 }
 
-export const departmentColumns: ColumnDef<Partial<Department>>[] = [
+export const categoryColumns: ColumnDef<Partial<Category>>[] = [
   {
     accessorKey: 'id',
     header: 'Id',
@@ -103,22 +101,22 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
   },
 ]
 
-const DepartmentC = () => {
+const CategoryC = () => {
   const router = useRouter()
   const { isSorted } = useDataTableSorting({ sortBy: 'name' })
-  const { data, isLoading } = useFetchListing<DepartmentRes>('departments')
+  const { data, isLoading } = useFetchListing<CategoryRes>('categories')
   const { mutateAsync } = useMutate()
-  const departments = data?.data?.departments ?? []
+  const categories = data?.data?.categories ?? []
   const setDialog = useSetRecoilState(dialogState)
 
   return (
     <section className='p-5'>
       <div className='flex justify-between'>
-        <h2 className='text-xl font-bold'>Department</h2>
+        <h2 className='text-xl font-bold'>Category</h2>
         <Button
           onClick={() =>
             showDialog({
-              title: 'Create department form',
+              title: 'Create category form',
               defaultValues: {
                 name: '',
               },
@@ -127,18 +125,18 @@ const DepartmentC = () => {
               }),
               children: (
                 <div className='mt-5'>
-                  <Input.Field name='name' label='Department name' />
+                  <Input.Field name='name' label='Category name' />
                 </div>
               ),
               cancel: true,
               onSubmit: values => {
                 mutateAsync({
-                  url: `departments`,
+                  url: `categories`,
                   method: 'POST',
                   payload: {
                     name: values.name,
                   },
-                  invalidateUrls: [`departments`],
+                  invalidateUrls: [`categories`],
                 }).then(() => setDialog(undefined))
               },
             })
@@ -151,8 +149,8 @@ const DepartmentC = () => {
         <DataTable
           currentPage={data?.data.page}
           totalPage={data?.data.totalPages}
-          columns={departmentColumns}
-          data={departments}
+          columns={categoryColumns}
+          data={categories}
           isLoading={isLoading}
         />
       </div>
@@ -160,4 +158,4 @@ const DepartmentC = () => {
   )
 }
 
-export default DepartmentC
+export default CategoryC

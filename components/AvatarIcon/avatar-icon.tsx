@@ -3,7 +3,7 @@ import { cva } from 'class-variance-authority'
 
 interface AvatarIconProps {
   name: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'base' | 'md' | 'lg'
 }
 
 export default function AvatarIcon({ name, size = 'sm' }: AvatarIconProps) {
@@ -11,6 +11,7 @@ export default function AvatarIcon({ name, size = 'sm' }: AvatarIconProps) {
     variants: {
       size: {
         sm: ['w-6', 'h-6'],
+        base: ['w-9', 'h-9'],
         md: ['w-12', 'h-12'],
         lg: ['w-32', 'h-32'],
       },

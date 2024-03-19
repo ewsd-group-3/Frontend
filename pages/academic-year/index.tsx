@@ -1,17 +1,15 @@
 import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { useFetchListing } from '@/hooks/useFetchListing'
 import { useFetch, useMutate } from '@/hooks/useQuery'
 import { formateDate, getAcademicYearStatus } from '@/lib/date'
-import { showDialog } from '@/lib/utils'
 import { dialogState } from '@/states/dialog'
 import { AcademicYearRes, AcademicYearT } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useSetRecoilState } from 'recoil'
-import { z } from 'zod'
 
 export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
   {
@@ -20,21 +18,21 @@ export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
   },
   {
     accessorKey: 'name',
-    header: () => FilterHeader({ title: 'Name' }),
+    header: () => FilterHeader({ title: 'name' }),
   },
   {
     accessorKey: 'startDate',
-    header: 'Start Date',
+    header: () => FilterHeader({ title: 'startDate' }),
     cell: ({ row }) => <p>{formateDate(row.original.startDate)}</p>,
   },
   {
     accessorKey: 'endDate',
-    header: 'End Date',
+    header: () => FilterHeader({ title: 'endDate' }),
     cell: ({ row }) => <p>{formateDate(row.original.endDate)}</p>,
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: () => FilterHeader({ title: 'status' }),
     cell: ({ row }) => <p>{getAcademicYearStatus(new Date(), row.original.startDate, row.original.endDate)}</p>,
   },
   // {
@@ -48,8 +46,7 @@ const AcademicYear = () => {
   const router = useRouter()
   const { mutateAsync } = useMutate()
   const setDialog = useSetRecoilState(dialogState)
-
-  const { data, isLoading } = useFetch<AcademicYearRes, true>(`academicInfos`)
+  const { data, isLoading } = useFetchListing<AcademicYearRes>('academicInfos')
 
   const academicYears = data?.data?.academicInfos ?? []
 
@@ -61,6 +58,8 @@ const AcademicYear = () => {
       </div>
       <div className='mt-3'>
         <DataTable
+          currentPage={data?.data.page}
+          totalPage={data?.data.totalPages}
           columns={academicYearCols}
           data={academicYears}
           isLoading={isLoading}

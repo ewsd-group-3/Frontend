@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC } from 'react'
 import Link from 'next/link'
 import { LucideIcon } from 'lucide-react'
 import AvatarIcon from '../AvatarIcon/avatar-icon'

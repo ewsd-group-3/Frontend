@@ -3,12 +3,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { MenuLinks } from '@/constants/links'
 import BrandTitle from './brand-title'
-import { LoggedInData } from '@/types/auth'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
 import { authState } from '@/states/auth'
 import { useRecoilValue } from 'recoil'
 
-export default function MobileMenu({ pathName, handleLogout }: { pathName: string; auth: LoggedInData; handleLogout: () => void }) {
+export default function MobileMenu({ pathName, handleLogout }: { pathName: string; handleLogout: () => void }) {
   const auth = useRecoilValue(authState)
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false)
 
