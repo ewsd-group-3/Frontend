@@ -13,7 +13,7 @@ export default function Home() {
   const ideas = data?.data?.ideas ?? []
 
   return (
-    <main className='px-7 flex '>
+    <main className='flex'>
       <div className='w-full'>
         <div className='p-4 flex rounded-lg shadow-lg gap-3 items-center mb-10'>
           <AvatarIcon name='Admin' size='base' />
@@ -56,7 +56,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className='basis-1/3 h-10'></div>
+      {/* <div className='basis-1/3 h-10'></div> */}
     </main>
   )
 }

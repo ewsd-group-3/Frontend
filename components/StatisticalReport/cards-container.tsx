@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function CardsContainer({ children, size = 'full', title }: { children: React.ReactNode; size?: 'full' | 'fit'; title: string }) {
   return (
     <div className={`bg-white rounded p-4 ${size === 'fit' ? 'w-fit' : 'w-full'}`}>

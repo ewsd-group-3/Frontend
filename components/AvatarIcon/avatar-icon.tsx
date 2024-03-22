@@ -22,7 +22,7 @@ export default function AvatarIcon({ name, size = 'sm' }: AvatarIconProps) {
   })
   return (
     <Avatar className={profile({ size })}>
-      <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${name}`} />
+      <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${name}`} />
       <AvatarFallback>{name}</AvatarFallback>
     </Avatar>
   )
