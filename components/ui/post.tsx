@@ -6,23 +6,44 @@ import { useRouter } from 'next/router'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { MoreVertical } from 'lucide-react'
 import { Button } from './button'
+import { formatDistance } from 'date-fns'
+import { getDateDistance } from '@/lib/utils'
 
-const Post = () => {
+const Post = ({
+  id,
+  authorName,
+  title,
+  description,
+  likeCount,
+  dislikeCount,
+  commentCount,
+  createDate,
+}: {
+  id: number
+  authorName: string
+  title: string
+  description: string
+  likeCount: number
+  dislikeCount: number
+  commentCount: number
+  createDate: string
+}) => {
   const router = useRouter()
+
   return (
     <div>
       <div
         onClick={() => {
-          router.push('/ideas/1')
+          router.push(`/ideas/${id}`)
         }}
         className='w-full mt-2 text-black rounded-lg flex flex-col gap-3 p-4 hover:bg-lightgray'
       >
         <div className='flex justify-between'>
           <div className='flex gap-2 items-center text-sm'>
             <AvatarIcon name='John Doe' size='sm' />
-            <span>Posted by Henry </span>
+            <span>Posted by {authorName} </span>
             <div className='w-1 h-1 bg-black rounded-full' />
-            <time>16 hours ago</time>
+            <time>{getDateDistance(createDate)}</time>
           </div>
           <div>
             <DropdownMenu>
@@ -53,18 +74,15 @@ const Post = () => {
             </DropdownMenu>
           </div>
         </div>
-        <h4 className='font-bold text-lg'>Lorem title</h4>
-        <p className='text-sm'>
-          Lorem ipsum dolor sit amet consectetur. Posuere nec ut urna est lorem tellus eget tincidunt. Lorem ipsum dolor sit amet consectetur. Posuere
-          nec ut urna est lorem ....
-        </p>
+        <h4 className='font-bold text-lg'>{title}</h4>
+        <p className='text-sm'>{description}</p>
 
         <div className='flex text-sm gap-2'>
-          <p>23 likes</p>
+          <p>{likeCount} likes</p>
           <Divider intent={'vertical'} className='h-5' />
-          <p>10 dislikes</p>
+          <p>{dislikeCount} dislikes</p>
           <Divider intent={'vertical'} className='h-5' />
-          <p>3 comments</p>
+          <p>{commentCount} comments</p>
         </div>
       </div>
     </div>
