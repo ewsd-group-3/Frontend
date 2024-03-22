@@ -104,3 +104,149 @@ export type AcademicYearDetail = {
 export type ProfileRes = {
   staff: Staff
 }
+
+export type Idea = {
+  id: number
+  title: string
+  description: string
+  isAnonymous: boolean
+  isHidden: boolean
+  authorId: number
+  semesterId: number
+  createdAt: string
+  updatedAt: string
+  ideaCategories: {
+    id: number
+    ideaId: number
+    categoryId: number
+    createdAt: string
+    updatedAt: string
+    category: {
+      id: number
+      name: string
+      isActive: true
+      createdAt: string
+      updatedAt: string
+    }
+  }[]
+  author: {
+    id: number
+    email: string
+    name: string
+    // password: string
+    role: string
+    isActive: boolean
+    departmentId: number
+    profile: {
+      name: string
+      documenttype: string
+      documentDeleteUrl: string
+      documentDownloadUrl: string
+    }
+    lastLoginDate: string
+    createdAt: string
+    updatedAt: string
+  }
+  votes: {
+    id: number
+    isThumbUp: boolean
+    staffId: number
+    ideaId: number
+    createdAt: string
+    updatedAt: string
+  }[]
+  comments: {
+    id: number
+    content: string
+    isAnonymous: boolean
+    staffId: number
+    ideaId: number
+    createdAt: string
+    updatedAt: string
+  }[]
+  views: []
+}
+
+export type IdeaRes = ListingRes & {
+  ideas: Idea[]
+}
+
+interface IdeaCategory {
+  id: number
+  ideaId: number
+  categoryId: number
+  createdAt: string
+  updatedAt: string
+  category: {
+    id: number
+    name: string
+    isActive: boolean
+    createdAt: string
+    updatedAt: string
+  }
+}
+
+interface Author {
+  id: number
+  name: string
+  email: string
+}
+
+export interface CommentI {
+  id: number
+  content: string
+  isAnonymous: boolean
+  staffId: number
+  ideaId: number
+  createdAt: string
+  updatedAt: string
+  staff: Staff
+}
+
+export interface Vote {
+  id: number
+  isThumbUp: boolean
+  staffId: number
+  ideaId: number
+  createdAt: string
+  updatedAt: string
+}
+
+interface IdeaDocument {
+  id: number
+  name: string
+  documenttype: string
+  documentDownloadUrl: string
+  documentDeleteUrl: string
+  ideaId: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface IdeaDetail {
+  id: number
+  title: string
+  description: string
+  isAnonymous: boolean
+  isHidden: boolean
+  authorId: number
+  semesterId: number
+  createdAt: string
+  updatedAt: string
+  ideaCategories: IdeaCategory[]
+  author: Author
+  semester: {
+    id: number
+    name: string
+    startDate: string
+    closureDate: string
+    finalClosureDate: string
+    academicInfoId: number
+    createdAt: string
+    updatedAt: string
+  }
+  comments: CommentI[]
+  votes: Vote[]
+  views: any[] // You can define a type if views have a specific structure
+  ideaDocuments: IdeaDocument[]
+}

@@ -4,16 +4,18 @@ import Divider from '@/components/ui/divider'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { useFetch } from '@/hooks/useQuery'
 import { formateDate } from '@/lib/date'
-import { AcademicYearDetail } from '@/types/api'
+import { AcademicYearDetail, IdeaDetail } from '@/types/api'
 import { useRouter } from 'next/router'
 import React from 'react'
 
 const AcademicYearDetail = () => {
   const router = useRouter()
-  const { data, isLoading } = useFetch<AcademicYearDetail, true>(`academicInfos/${router.query.id}`, {}, { enabled: !!router.query.id })
+  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${router.query.id}`, {}, { enabled: !!router.query.id })
 
-  const academicYearData = data?.data
-  if (isLoading || !academicYearData) return <LoadingSpinner />
+  const ideaData = data?.data
+  if (isLoading || !ideaData) return <LoadingSpinner />
+
+  console.log(ideaData, 'here')
 
   return (
     <div className='p-5'>

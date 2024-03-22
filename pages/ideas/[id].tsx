@@ -15,13 +15,27 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/router'
+import { useFetch } from '@/hooks/useQuery'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { CommentI, Idea, IdeaDetail } from '@/types/api'
+import { getDateDistance } from '@/lib/utils'
+import { getIdeaCount } from '@/lib/ideas'
 
-const CategoryChip = () => {
-  return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>Category 1</div>
+const CategoryChip = ({ name }: { name: string }) => {
+  return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
 }
 
 const IdeaDetail = () => {
   const router = useRouter()
+  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${router.query.id}`, {}, { enabled: !!router.query.id })
+
+  const ideaData = data?.data
+  if (isLoading || !ideaData) return <LoadingSpinner />
+
+  console.log(ideaData.comments, 'here')
+
+  const { likeCount, dislikeCount } = getIdeaCount(ideaData.votes)
+
   return (
     <div className='max-w-3xl p-4'>
       <div className='flex justify-between'>
@@ -31,41 +45,30 @@ const IdeaDetail = () => {
           </button>
           <div className='flex gap-2 items-center text-sm'>
             <AvatarIcon name='John Doe' size='sm' />
-            <span>Posted by Henry </span>
+            <span>Posted by {ideaData.author.name} </span>
             <div className='w-1 h-1 bg-black rounded-full' />
-            <time>16 hours ago</time>
+            <time>{getDateDistance(ideaData.createdAt)}</time>
             <div className='w-1 h-1 bg-black rounded-full' />
-            <span>Physics Department</span>
+            <span>Department Name</span>
           </div>
         </div>
 
         <div className='flex gap-1 text-sm items-center'>
           <EyeIcon />
-          20
+          {ideaData.views.length}
         </div>
       </div>
 
       <div className='mt-4'>
-        <h3 className='my-2 font-semibold text-2xl'>Hello world this is the title</h3>
+        <h3 className='my-2 font-semibold text-2xl'>{ideaData.title}</h3>
         <div className='flex gap-2'>
-          <CategoryChip />
-          <CategoryChip />
+          {ideaData.ideaCategories.map(category => (
+            <CategoryChip key={category.id} name={category.category.name} />
+          ))}
         </div>
       </div>
 
-      <article className='mt-3 space-y-1'>
-        <p>
-          Lorem ipsum dolor sit amet consectetur. Viverra feugiat arcu consequat morbi. Massa laoreet velit in ipsum. Sit et turpis lacus eu blandit
-          mus aenean. Mauris facilisis amet porttitor sed etiam tempor lorem platea. Suspendisse commodo sit commodo consectetur leo. Orci cum lectus
-          aliquet pellentesque a sollicitudin lacus aliquam.
-        </p>
-        <p>
-          Pellentesque rhoncus non facilisis a vestibulum. Facilisi in non iaculis erat faucibus ullamcorper feugiat etiam. Dictumst interdum ipsum
-          vel venenatis viverra. Mauris facilisis amet porttitor sed etiam tempor lorem platea. Suspendisse commodo sit commodo consectetur leo. Orci
-          cum lectus aliquet pellentesque a sollicitudin lacus aliquam. Pellentesque rhoncus non facilisis a vestibulum. Facilisi in non iaculis erat
-          faucibus ullamcorper feugiat etiam. Dictumst interdum ipsum vel venenatis... See more
-        </p>
-      </article>
+      <article className='mt-3 space-y-1'>{ideaData.description}</article>
 
       <section className='mt-10'>
         <Swiper pagination={true} modules={[Pagination]} className='mySwiper rounded-lg'>
@@ -110,17 +113,17 @@ const IdeaDetail = () => {
 
       <div className='rounded-full flex border-black border-2 border-solid w-max mt-5 px-2'>
         <button className='p-2 flex items-center gap-1 text-sm'>
-          <ArrowUp /> 23 likes
+          <ArrowUp /> {likeCount} likes
         </button>
         <Divider intent={'vertical'} className='bg-black mx-2' />
         <button className='p-2 flex items-center gap-1 text-sm'>
           <ArrowDown />
-          10 dislikes
+          {dislikeCount} dislikes
         </button>
       </div>
 
       <div className='mt-10'>
-        <h3 className='font-bold text-xl'>3 Comments</h3>
+        <h3 className='font-bold text-xl'>{ideaData.comments.length} Comments</h3>
 
         <div className='flex gap-3 mt-4'>
           <AvatarIcon name='admin' size='base' />
@@ -144,10 +147,9 @@ const IdeaDetail = () => {
             </form>
 
             <div className='flex flex-col gap-3'>
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
+              {ideaData.comments.map(comment => (
+                <Comment key={comment.id} {...comment} />
+              ))}
             </div>
           </div>
         </div>
@@ -158,19 +160,16 @@ const IdeaDetail = () => {
 
 export default IdeaDetail
 
-const Comment = () => {
+const Comment = (props: CommentI) => {
   return (
     <div className='w-full bg-lightgray  text-black rounded-lg flex flex-col gap-3 p-4'>
       <div className='flex gap-2 items-center text-sm'>
         <AvatarIcon name='John Doe' size='sm' />
-        <span>Posted by Henry </span>
+        <span>Posted by {props.staff.name} </span>
         <div className='w-1 h-1 bg-black rounded-full' />
-        <time>16 hours ago</time>
+        <time>{getDateDistance(props.createdAt)}</time>
       </div>
-      <p className='ml-7 text-sm'>
-        Lorem ipsum dolor sit amet consectetur. Posuere nec ut urna est lorem tellus eget tincidunt. Lorem ipsum dolor sit amet consectetur. Posuere
-        nec ut urna est lorem
-      </p>
+      <p className='ml-7 text-sm'>{props.content}</p>
     </div>
   )
 }
