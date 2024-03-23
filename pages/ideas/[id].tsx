@@ -21,6 +21,7 @@ import { CommentI, Idea, IdeaDetail } from '@/types/api'
 import { getDateDistance } from '@/lib/utils'
 import { getIdeaCount } from '@/lib/ideas'
 import { authState } from '@/states/auth'
+import FullPageLoader from '@/components/shared/full-page-loader'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
@@ -32,7 +33,7 @@ const IdeaDetail = () => {
   const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${router.query.id}`, {}, { enabled: !!router.query.id })
 
   const ideaData = data?.data
-  if (isLoading || !ideaData) return <LoadingSpinner />
+  if (isLoading || !ideaData) return <FullPageLoader />
 
   console.log(ideaData.comments, 'here')
 
