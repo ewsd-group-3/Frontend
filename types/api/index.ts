@@ -275,3 +275,27 @@ export interface IdeaDetail {
   views: any[] // You can define a type if views have a specific structure
   ideaDocuments: IdeaDocument[]
 }
+
+type CategoryPercentage = {
+  category: Category
+  percentage: number
+}
+
+type DepartmentPercentage = {
+  department: Department
+  percentage: number
+}
+
+export type IdeaReportRes = {
+  ideasCount: number
+  commentsCount: number
+  upVotesCount: number
+  downVotesCount: number
+  contributorsCount: number
+  anonymousCount: number
+  anonymousCmtCount: number
+  noCommentCount: number
+  categoryPercentage: CategoryPercentage[]
+  departmentPercentage: DepartmentPercentage[]
+  contributorPercentage: DepartmentPercentage[]
+}

@@ -6,7 +6,7 @@ import { Bar } from 'react-chartjs-2'
 import ChartContainer from '@/components/StatisticalReport/chart-container'
 import ChartPercentageCard from '@/components/StatisticalReport/chart-percentage-card'
 import { useFetch } from '@/hooks/useQuery'
-import { DepartmentRes } from '@/types/api'
+import { AcademicYearRes, DepartmentRes } from '@/types/api'
 import { Select, SelectContent, SelectField, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 
@@ -14,10 +14,26 @@ ChartJS.register()
 
 export default function DepartmentReport() {
   const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
+  const { data: academicYears } = useFetch<AcademicYearRes, true>(`academicInfos`)
 
   return (
     <>
-      <form className='mb-4 flex items-center'>
+      <form className='mb-4 flex items-center gap-4'>
+        <Select>
+          <SelectTrigger className='w-[320px]'>
+            <SelectValue placeholder='Semester' />
+          </SelectTrigger>
+          <SelectContent>
+            {academicYears?.data.academicInfos.map(academicYear =>
+              academicYear.semesters.map(semester => (
+                <SelectItem key={semester.id} value={semester.id.toString()}>
+                  {academicYear.name} [{semester.name}]
+                </SelectItem>
+              )),
+            )}
+          </SelectContent>
+        </Select>
+
         <Select>
           <SelectTrigger className='w-[320px]'>
             <SelectValue placeholder='Department' />
@@ -31,9 +47,7 @@ export default function DepartmentReport() {
           </SelectContent>
         </Select>
 
-        <Button variant='default' className='ml-4'>
-          Search
-        </Button>
+        <Button variant='default'>Search</Button>
       </form>
 
       <CardsContainer title='Total contributors' size='fit'>
