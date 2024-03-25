@@ -19,7 +19,7 @@ export default function StatisticalReport() {
           className={`flex gap-4 items-center px-4 py-2 rounded text-sm ${!isIdeaTab && 'bg-primary text-white'}`}
           onClick={() => setIsIdeaTab(false)}
         >
-          <Building2 size={18} /> Project
+          <Building2 size={18} /> Department
         </button>
       </div>
       {isIdeaTab ? <IdeaReport /> : <DepartmentReport />}

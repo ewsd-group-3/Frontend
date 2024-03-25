@@ -11,7 +11,6 @@ ChartJS.register()
 export default function IdeaReport() {
   return (
     <>
-      <div></div>
       <CardsContainer title='Total contributors' size='fit'>
         <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={2} />
         <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={2} />
