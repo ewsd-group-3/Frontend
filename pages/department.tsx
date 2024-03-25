@@ -65,7 +65,7 @@ const Actions = ({ row }: any) => {
         invalidateUrls: [`departments`],
       })
 
-      toast.success('Deleted department successfully.')
+      // toast.success('Deleted department successfully.')
     } catch (err: any) {
       toast.error(err.message, {})
     }
