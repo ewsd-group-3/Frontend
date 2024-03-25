@@ -11,8 +11,6 @@ import { AcademicYearRes, IdeaReportRes } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import axios from 'axios'
-import uniqolor from 'uniqolor'
-import { categoryColumns } from '../category'
 import { colorGenerator } from '@/utils/color-generator'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
@@ -55,127 +53,129 @@ export default function IdeaReport() {
         </Button>
       </form>
 
-      {data && !isLoading ? (
-        <>
-          <CardsContainer title='Total contributors' size='fit'>
-            <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={data.ideasCount} />
-            <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={data.commentsCount} />
-            <StatisticalCard icon={{ src: ThumbsUp }} title='Up votes' value={data.upVotesCount} />
-            <StatisticalCard icon={{ src: ThumbsDown }} title='Down votes' value={data.downVotesCount} />
-            <StatisticalCard icon={{ src: Users }} title='Contributors' value={data.contributorsCount} />
-          </CardsContainer>
-          <div className='mt-4 flex flex-wrap items-center gap-4'>
-            <CardsContainer size='fit' title='Anonymous contributors'>
-              <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={data.anonymousCount} />
-              <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={data.anonymousCmtCount} />
-            </CardsContainer>
-
-            <CardsContainer size='fit' title='No comments ideas'>
-              <StatisticalCard icon={{ src: MessageSquareOff }} title='Ideas' value={data.noCommentCount} />
-            </CardsContainer>
-          </div>
-          <div className='mt-4 grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <ChartContainer title='Ideas by Category'>
-              <>
-                <div className='w-full'>
-                  <Bar
-                    width={100}
-                    height={360}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                    }}
-                    data={{
-                      labels: data.categoryPercentage.map(category => category.category.name),
-                      datasets: [
-                        {
-                          label: '% of Category',
-                          data: data.categoryPercentage.map(category => category.percentage),
-                          borderWidth: 2,
-                          borderColor: data.categoryPercentage.map(category => colorGenerator(category.category.name)),
-                          backgroundColor: data.categoryPercentage.map(category => colorGenerator(category.category.name, 30)),
-                        },
-                      ],
-                    }}
-                  />
-                </div>
-                <div className='flex flex-wrap gap-4 items-center'>
-                  {data.categoryPercentage.map(category => (
-                    <ChartPercentageCard
-                      key={category.category.id}
-                      title={category.category.name}
-                      value={category.percentage}
-                      color={colorGenerator(category.category.name)}
-                    />
-                  ))}
-                </div>
-              </>
-            </ChartContainer>
-
-            <CardsContainer title='Ideas / Contributors by Department'>
-              <>
-                <div className='w-full'>
-                  <Bar
-                    width={100}
-                    height={360}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                    }}
-                    data={{
-                      datasets: [
-                        {
-                          label: 'Ideas',
-                          data: data.departmentPercentage.map(department => department.percentage),
-                          backgroundColor: '#ffe0e6',
-                          borderColor: '#ff6384',
-                          borderWidth: 2,
-                          stack: 'Stack 0',
-                        },
-                        {
-                          label: 'Contributors',
-                          data: data.contributorPercentage.map(contributor => contributor.percentage),
-                          backgroundColor: '#c8dfdf',
-                          borderColor: '#42d09e',
-                          borderWidth: 2,
-                          stack: 'Stack 1',
-                        },
-                      ],
-                      labels: data.departmentPercentage.map(department => department.department.name),
-                    }}
-                  />
-                </div>
-                <h3>Percentage of Ideas</h3>
-                <div className='flex flex-wrap gap-4 items-center'>
-                  {data.departmentPercentage.map(department => (
-                    <ChartPercentageCard
-                      key={department.department.id}
-                      title={department.department.name}
-                      value={department.percentage}
-                      color={'#ff6384'}
-                    />
-                  ))}
-                </div>
-
-                <h3>Percentage of Contributors</h3>
-                <div className='flex flex-wrap gap-4 items-center'>
-                  {data.contributorPercentage.map(contributor => (
-                    <ChartPercentageCard
-                      key={contributor.department.id}
-                      title={contributor.department.name}
-                      value={contributor.percentage}
-                      color={'#42d09e'}
-                    />
-                  ))}
-                </div>
-              </>
-            </CardsContainer>
-          </div>
-        </>
-      ) : (
+      {isLoading ? (
         <div className='grid place-content-center h-[50vh]'>
           <LoadingSpinner />
         </div>
+      ) : (
+        data && (
+          <>
+            <CardsContainer title='Total contributors' size='fit'>
+              <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={data.ideasCount} />
+              <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={data.commentsCount} />
+              <StatisticalCard icon={{ src: ThumbsUp }} title='Up votes' value={data.upVotesCount} />
+              <StatisticalCard icon={{ src: ThumbsDown }} title='Down votes' value={data.downVotesCount} />
+              <StatisticalCard icon={{ src: Users }} title='Contributors' value={data.contributorsCount} />
+            </CardsContainer>
+            <div className='mt-4 flex flex-wrap items-center gap-4'>
+              <CardsContainer size='fit' title='Anonymous contributors'>
+                <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={data.anonymousCount} />
+                <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={data.anonymousCmtCount} />
+              </CardsContainer>
+
+              <CardsContainer size='fit' title='No comments ideas'>
+                <StatisticalCard icon={{ src: MessageSquareOff }} title='Ideas' value={data.noCommentCount} />
+              </CardsContainer>
+            </div>
+            <div className='mt-4 grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <ChartContainer title='Ideas by Category'>
+                <>
+                  <div className='w-full'>
+                    <Bar
+                      width={100}
+                      height={360}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                      }}
+                      data={{
+                        labels: data.categoryPercentage.map(category => category.category.name),
+                        datasets: [
+                          {
+                            label: '% of Category',
+                            data: data.categoryPercentage.map(category => category.percentage),
+                            borderWidth: 2,
+                            borderColor: data.categoryPercentage.map(category => colorGenerator(category.category.name)),
+                            backgroundColor: data.categoryPercentage.map(category => colorGenerator(category.category.name, 30)),
+                          },
+                        ],
+                      }}
+                    />
+                  </div>
+                  <div className='flex flex-wrap gap-4 items-center'>
+                    {data.categoryPercentage.map(category => (
+                      <ChartPercentageCard
+                        key={category.category.id}
+                        title={category.category.name}
+                        value={category.percentage}
+                        color={colorGenerator(category.category.name)}
+                      />
+                    ))}
+                  </div>
+                </>
+              </ChartContainer>
+
+              <CardsContainer title='Ideas / Contributors by Department'>
+                <>
+                  <div className='w-full'>
+                    <Bar
+                      width={100}
+                      height={360}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                      }}
+                      data={{
+                        datasets: [
+                          {
+                            label: 'Ideas',
+                            data: data.departmentPercentage.map(department => department.percentage),
+                            backgroundColor: '#ffe0e6',
+                            borderColor: '#ff6384',
+                            borderWidth: 2,
+                            stack: 'Stack 0',
+                          },
+                          {
+                            label: 'Contributors',
+                            data: data.contributorPercentage.map(contributor => contributor.percentage),
+                            backgroundColor: '#c8dfdf',
+                            borderColor: '#42d09e',
+                            borderWidth: 2,
+                            stack: 'Stack 1',
+                          },
+                        ],
+                        labels: data.departmentPercentage.map(department => department.department.name),
+                      }}
+                    />
+                  </div>
+                  <h3>Percentage of Ideas</h3>
+                  <div className='flex flex-wrap gap-4 items-center'>
+                    {data.departmentPercentage.map(department => (
+                      <ChartPercentageCard
+                        key={department.department.id}
+                        title={department.department.name}
+                        value={department.percentage}
+                        color={'#ff6384'}
+                      />
+                    ))}
+                  </div>
+
+                  <h3>Percentage of Contributors</h3>
+                  <div className='flex flex-wrap gap-4 items-center'>
+                    {data.contributorPercentage.map(contributor => (
+                      <ChartPercentageCard
+                        key={contributor.department.id}
+                        title={contributor.department.name}
+                        value={contributor.percentage}
+                        color={'#42d09e'}
+                      />
+                    ))}
+                  </div>
+                </>
+              </CardsContainer>
+            </div>
+          </>
+        )
       )}
     </>
   )

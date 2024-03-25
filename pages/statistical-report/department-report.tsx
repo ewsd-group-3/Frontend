@@ -5,21 +5,40 @@ import { Chart as ChartJS } from 'chart.js/auto'
 import { Bar } from 'react-chartjs-2'
 import ChartContainer from '@/components/StatisticalReport/chart-container'
 import ChartPercentageCard from '@/components/StatisticalReport/chart-percentage-card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useFetch } from '@/hooks/useQuery'
-import { AcademicYearRes, DepartmentRes } from '@/types/api'
-import { Select, SelectContent, SelectField, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AcademicYearRes, DepartmentReportRes, DepartmentRes } from '@/types/api'
 import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import axios from 'axios'
+import { colorGenerator } from '@/utils/color-generator'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 ChartJS.register()
 
 export default function DepartmentReport() {
-  const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
   const { data: academicYears } = useFetch<AcademicYearRes, true>(`academicInfos`)
+  const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
+  const [semesterId, setSemesterId] = useState<string | null>(null)
+  const [departmentId, setDepartmentId] = useState<string | null>(null)
+  const [data, setData] = useState<DepartmentReportRes | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsLoading(true)
+    const { data } = await axios.get(
+      process.env.NEXT_PUBLIC_API_ENDPOINT + `/statistical-reports/departments?departmentId=${departmentId}&semesterId=${semesterId}`,
+    )
+    console.log(data.data)
+    setData(data.data)
+    setIsLoading(false)
+  }
 
   return (
     <>
-      <form className='mb-4 flex items-center gap-4'>
-        <Select>
+      <form className='mb-4 flex items-center gap-4' onSubmit={handleSearch}>
+        <Select onValueChange={id => setSemesterId(id)}>
           <SelectTrigger className='w-[320px]'>
             <SelectValue placeholder='Semester' />
           </SelectTrigger>
@@ -34,7 +53,7 @@ export default function DepartmentReport() {
           </SelectContent>
         </Select>
 
-        <Select>
+        <Select onValueChange={id => setDepartmentId(id)}>
           <SelectTrigger className='w-[320px]'>
             <SelectValue placeholder='Department' />
           </SelectTrigger>
@@ -47,98 +66,76 @@ export default function DepartmentReport() {
           </SelectContent>
         </Select>
 
-        <Button variant='default'>Search</Button>
+        <Button variant='default' disabled={semesterId === null || departmentId === null || isLoading}>
+          Search
+        </Button>
       </form>
 
-      <CardsContainer title='Total contributors' size='fit'>
-        <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={2} />
-        <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={2} />
-        <StatisticalCard icon={{ src: ThumbsUp }} title='Up votes' value={2} />
-        <StatisticalCard icon={{ src: ThumbsDown }} title='Down votes' value={2} />
-        <StatisticalCard icon={{ src: Users }} title='Contributors' value={2} />
-      </CardsContainer>
-      <div className='mt-4 flex flex-wrap items-center gap-4'>
-        <CardsContainer size='fit' title='Anonymous contributors'>
-          <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={2} />
-          <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={2} />
-        </CardsContainer>
-
-        <CardsContainer size='fit' title='No comments ideas'>
-          <StatisticalCard icon={{ src: MessageSquareOff }} title='Ideas' value={2} />
-        </CardsContainer>
-      </div>
-      <div className='mt-4 grid grid-cols-1 md:grid-cols-2 gap-4'>
-        <ChartContainer title='Ideas by Category'>
+      {isLoading ? (
+        <div className='grid place-content-center h-[50vh]'>
+          <LoadingSpinner />
+        </div>
+      ) : (
+        data && (
           <>
-            <div>
-              <Bar
-                width={100}
-                height={360}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                }}
-                data={{
-                  labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                  datasets: [
-                    {
-                      label: '# of Votes',
-                      data: [12, 19, 3, 5, 2, 3],
-                      backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)',
-                      ],
-                      borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)',
-                      ],
-                      borderWidth: 1,
-                    },
-                  ],
-                }}
-              />
+            <CardsContainer title='Total contributors' size='fit'>
+              <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={data.ideasCount} />
+              <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={data.commentsCount} />
+              <StatisticalCard icon={{ src: ThumbsUp }} title='Up votes' value={data.upVotesCount} />
+              <StatisticalCard icon={{ src: ThumbsDown }} title='Down votes' value={data.downVotesCount} />
+              <StatisticalCard icon={{ src: Users }} title='Contributors' value={data.contributorsCount} />
+            </CardsContainer>
+            <div className='mt-4 flex flex-wrap items-center gap-4'>
+              <CardsContainer size='fit' title='Anonymous contributors'>
+                <StatisticalCard icon={{ src: Lightbulb }} title='Ideas' value={data.anonymousCount} />
+                <StatisticalCard icon={{ src: MessageSquare }} title='Comments' value={data.anonymousCmtCount} />
+              </CardsContainer>
+
+              <CardsContainer size='fit' title='No comments ideas'>
+                <StatisticalCard icon={{ src: MessageSquareOff }} title='Ideas' value={data.noCommentCount} />
+              </CardsContainer>
             </div>
-            <div className='flex flex-wrap gap-4 items-center'>
-              <ChartPercentageCard title='Category 1' value={16} />
+            <div className='mt-4 w-full'>
+              <ChartContainer title='Ideas by Category'>
+                <>
+                  <div className='w-full'>
+                    <Bar
+                      width={100}
+                      height={360}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                      }}
+                      data={{
+                        labels: data.categoryPercentage.map(category => category.category.name),
+                        datasets: [
+                          {
+                            label: '% of Category',
+                            data: data.categoryPercentage.map(category => category.percentage),
+                            borderWidth: 2,
+                            borderColor: data.categoryPercentage.map(category => colorGenerator(category.category.name)),
+                            backgroundColor: data.categoryPercentage.map(category => colorGenerator(category.category.name, 30)),
+                          },
+                        ],
+                      }}
+                    />
+                  </div>
+                  <div className='flex flex-wrap gap-4 items-center'>
+                    {data.categoryPercentage.map(category => (
+                      <ChartPercentageCard
+                        key={category.category.id}
+                        title={category.category.name}
+                        value={category.percentage}
+                        color={colorGenerator(category.category.name)}
+                      />
+                    ))}
+                  </div>
+                </>
+              </ChartContainer>
             </div>
           </>
-        </ChartContainer>
-        <CardsContainer title='Ideas / Contributors by Department'>
-          <Bar
-            width={100}
-            height={360}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-            }}
-            data={{
-              datasets: [
-                {
-                  label: 'Dataset 1',
-                  data: [10, 20, 30],
-                  backgroundColor: 'red',
-                  stack: 'Stack 0',
-                },
-                {
-                  label: 'Dataset 2',
-                  data: [40, 50, 60],
-                  backgroundColor: 'blue',
-                  stack: 'Stack 1',
-                },
-              ],
-              labels: ['Red', 'Blue', 'Green'],
-            }}
-          />
-        </CardsContainer>
-      </div>
+        )
+      )}
     </>
   )
 }

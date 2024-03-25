@@ -286,7 +286,7 @@ type DepartmentPercentage = {
   percentage: number
 }
 
-export type IdeaReportRes = {
+type StatisticalReport = {
   ideasCount: number
   commentsCount: number
   upVotesCount: number
@@ -295,7 +295,14 @@ export type IdeaReportRes = {
   anonymousCount: number
   anonymousCmtCount: number
   noCommentCount: number
+}
+
+export type IdeaReportRes = StatisticalReport & {
   categoryPercentage: CategoryPercentage[]
   departmentPercentage: DepartmentPercentage[]
   contributorPercentage: DepartmentPercentage[]
+}
+
+export type DepartmentReportRes = StatisticalReport & {
+  categoryPercentage: CategoryPercentage[]
 }
