@@ -66,6 +66,31 @@ export type DepartmentRes = ListingRes & {
   departments: Department[]
 }
 
+export type Announcement = {
+  id: number
+  subject: string
+  content: string
+  type: string
+  announcerId: number
+  createdAt: string
+  updatedAt: string
+  audiences: Audience[]
+}
+
+export type Audience = {
+  id: number
+  status: string
+  staffId: number
+  departmentId: number
+  announcementId: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type AnnouncementRes = ListingRes & {
+  announcements: Announcement[]
+}
+
 export type AcademicYearT = {
   id: string
   name: string
@@ -249,4 +274,35 @@ export interface IdeaDetail {
   votes: Vote[]
   views: any[] // You can define a type if views have a specific structure
   ideaDocuments: IdeaDocument[]
+}
+
+type CategoryPercentage = {
+  category: Category
+  percentage: number
+}
+
+type DepartmentPercentage = {
+  department: Department
+  percentage: number
+}
+
+type StatisticalReport = {
+  ideasCount: number
+  commentsCount: number
+  upVotesCount: number
+  downVotesCount: number
+  contributorsCount: number
+  anonymousCount: number
+  anonymousCmtCount: number
+  noCommentCount: number
+}
+
+export type IdeaReportRes = StatisticalReport & {
+  categoryPercentage: CategoryPercentage[]
+  departmentPercentage: DepartmentPercentage[]
+  contributorPercentage: DepartmentPercentage[]
+}
+
+export type DepartmentReportRes = StatisticalReport & {
+  categoryPercentage: CategoryPercentage[]
 }

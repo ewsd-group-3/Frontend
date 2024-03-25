@@ -13,13 +13,15 @@ import Divider from '@/components/ui/divider'
 import Image from 'next/image'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+import { useRecoilState } from 'recoil'
 import { useRouter } from 'next/router'
 import { useFetch } from '@/hooks/useQuery'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { CommentI, Idea, IdeaDetail } from '@/types/api'
 import { getDateDistance } from '@/lib/utils'
 import { getIdeaCount } from '@/lib/ideas'
+import { authState } from '@/states/auth'
+import FullPageLoader from '@/components/shared/full-page-loader'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
@@ -27,10 +29,11 @@ const CategoryChip = ({ name }: { name: string }) => {
 
 const IdeaDetail = () => {
   const router = useRouter()
+  const [auth] = useRecoilState(authState)
   const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${router.query.id}`, {}, { enabled: !!router.query.id })
 
   const ideaData = data?.data
-  if (isLoading || !ideaData) return <LoadingSpinner />
+  if (isLoading || !ideaData) return <FullPageLoader />
 
   console.log(ideaData.comments, 'here')
 
@@ -44,7 +47,7 @@ const IdeaDetail = () => {
             <ArrowLeft />
           </button>
           <div className='flex gap-2 items-center text-sm'>
-            <AvatarIcon name='John Doe' size='sm' />
+            <AvatarIcon name={ideaData.author.name} size='sm' />
             <span>Posted by {ideaData.author.name} </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(ideaData.createdAt)}</time>
@@ -126,7 +129,7 @@ const IdeaDetail = () => {
         <h3 className='font-bold text-xl'>{ideaData.comments.length} Comments</h3>
 
         <div className='flex gap-3 mt-4'>
-          <AvatarIcon name='admin' size='base' />
+          {auth && <AvatarIcon name={auth.staff.name} size='base' />}
           <div className='flex-1'>
             <form
               className='relative w-full mb-5'
@@ -164,7 +167,7 @@ const Comment = (props: CommentI) => {
   return (
     <div className='w-full bg-lightgray  text-black rounded-lg flex flex-col gap-3 p-4'>
       <div className='flex gap-2 items-center text-sm'>
-        <AvatarIcon name='John Doe' size='sm' />
+        <AvatarIcon name={props.staff.name} size='sm' />
         <span>Posted by {props.staff.name} </span>
         <div className='w-1 h-1 bg-black rounded-full' />
         <time>{getDateDistance(props.createdAt)}</time>
