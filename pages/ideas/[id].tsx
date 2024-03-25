@@ -1,6 +1,6 @@
 import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
-import { ArrowDown, ArrowLeft, ArrowUp, Divide, EyeIcon, Send } from 'lucide-react'
-import React, { useRef, useState } from 'react'
+import { ArrowBigDown, ArrowBigUp, ArrowDown, ArrowLeft, ArrowUp, Divide, EyeIcon, Send } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react'
 // Import Swiper styles
@@ -27,17 +27,62 @@ const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
 }
 
+type Reacted = {
+  like: number
+  dislike: number
+  type: 'like' | 'dislike' | 'none'
+}
+
 const IdeaDetail = () => {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
   const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${router.query.id}`, {}, { enabled: !!router.query.id })
 
+  const [reacted, setReacted] = useState<Reacted>({
+    like: 0,
+    dislike: 0,
+    type: 'none',
+  })
   const ideaData = data?.data
+
+  const { likeCount, dislikeCount } = getIdeaCount(ideaData?.votes ?? [])
+
+  useEffect(() => {
+    console.log('here')
+    setReacted({
+      like: likeCount,
+      dislike: dislikeCount,
+      type: 'none',
+    })
+  }, [likeCount, dislikeCount])
+
   if (isLoading || !ideaData) return <FullPageLoader />
 
-  console.log(ideaData.comments, 'here')
-
-  const { likeCount, dislikeCount } = getIdeaCount(ideaData.votes)
+  const handleReactPost = (type: 'like' | 'dislike') => {
+    if (reacted.type === 'none') {
+      setReacted({
+        ...reacted,
+        [type]: reacted[type] + 1,
+        type,
+      })
+    } else {
+      if (reacted.type === type) {
+        setReacted({
+          ...reacted,
+          [type]: reacted[type] - 1,
+          type: 'none',
+        })
+      } else {
+        const negatedReact = type === 'like' ? 'dislike' : 'like'
+        setReacted({
+          ...reacted,
+          [type]: reacted[type] + 1,
+          [negatedReact]: reacted[negatedReact] - 1,
+          type,
+        })
+      }
+    }
+  }
 
   return (
     <div className='max-w-3xl p-4'>
@@ -74,54 +119,25 @@ const IdeaDetail = () => {
       <article className='mt-3 space-y-1'>{ideaData.description}</article>
 
       <section className='mt-10'>
-        <Swiper pagination={true} modules={[Pagination]} className='mySwiper rounded-lg'>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710115929211-ae9646071f6b?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710390916960-3047fcdf561e?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710104434425-6ae10f736622?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710678245400-148ffb386d2e?q=80&w=2865&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-        </Swiper>
+        {ideaData.ideaDocuments.length > 0 && (
+          <Swiper pagination={true} modules={[Pagination]} className='mySwiper rounded-lg'>
+            {ideaData.ideaDocuments.map(document => (
+              <SwiperSlide key={document.id}>
+                <Image width={700} height={400} src={document.documentDownloadUrl} alt={document.name} className='w-full h-full' />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
       </section>
 
       <div className='rounded-full flex border-black border-2 border-solid w-max mt-5 px-2'>
-        <button className='p-2 flex items-center gap-1 text-sm'>
-          <ArrowUp /> {likeCount} likes
+        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('like')}>
+          <ArrowBigUp fill={reacted.type === 'like' ? '' : 'transparent'} /> {reacted.like} likes
         </button>
         <Divider intent={'vertical'} className='bg-black mx-2' />
-        <button className='p-2 flex items-center gap-1 text-sm'>
-          <ArrowDown />
-          {dislikeCount} dislikes
+        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('dislike')}>
+          <ArrowBigDown fill={reacted.type === 'dislike' ? '' : 'transparent'} />
+          {reacted.dislike} dislikes
         </button>
       </div>
 

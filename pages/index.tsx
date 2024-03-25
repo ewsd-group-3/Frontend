@@ -8,7 +8,9 @@ import { useRouter } from 'next/router'
 
 export default function Home() {
   const router = useRouter()
-  const { data, isLoading } = useFetchListing<IdeaRes>('/ideas')
+
+  const { data, isLoading } = useFetchListing<IdeaRes>('/ideas?limit=100')
+
   const ideas = data?.data?.ideas ?? []
 
   return (

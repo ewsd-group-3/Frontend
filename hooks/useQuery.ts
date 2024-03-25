@@ -67,13 +67,21 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
             return res
           } else {
             if (res.response.status < 200 || res.response.status >= 300) {
-              return Promise.reject(res)
+              if (res?.response?.message) {
+                toast.error(res.response.message)
+              } else {
+                return Promise.reject(res)
+              }
             } else {
               return res
             }
           }
         })
         .catch(error => {
+          if (error?.response?.data?.message) {
+            return toast.error(error.response.data.message)
+          }
+
           if (error.response) {
             return Promise.reject(error.response.data)
           }

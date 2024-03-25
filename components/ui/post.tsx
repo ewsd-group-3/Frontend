@@ -1,3 +1,4 @@
+import ReactHtmlParser from 'react-html-parser'
 import React from 'react'
 import { Avatar } from './avatar'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
@@ -75,8 +76,7 @@ const Post = ({
           </div>
         </div>
         <h4 className='font-bold text-lg'>{title}</h4>
-        <p className='text-sm'>{description}</p>
-
+        <div>{ReactHtmlParser(description)}</div>
         <div className='flex text-sm gap-2'>
           <p>{likeCount} likes</p>
           <Divider intent={'vertical'} className='h-5' />
