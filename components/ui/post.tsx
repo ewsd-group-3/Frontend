@@ -40,7 +40,7 @@ const Post = ({
       >
         <div className='flex justify-between'>
           <div className='flex gap-2 items-center text-sm'>
-            <AvatarIcon name='John Doe' size='sm' />
+            <AvatarIcon name={authorName} size='sm' />
             <span>Posted by {authorName} </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(createDate)}</time>
