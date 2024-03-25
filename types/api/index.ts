@@ -66,6 +66,31 @@ export type DepartmentRes = ListingRes & {
   departments: Department[]
 }
 
+export type Announcement = {
+  id: number
+  subject: string
+  content: string
+  type: string
+  announcerId: number
+  createdAt: string
+  updatedAt: string
+  audiences: Audience[]
+}
+
+export type Audience = {
+  id: number
+  status: string
+  staffId: number
+  departmentId: number
+  announcementId: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type AnnouncementRes = ListingRes & {
+  announcements: Announcement[]
+}
+
 export type AcademicYearT = {
   id: string
   name: string
