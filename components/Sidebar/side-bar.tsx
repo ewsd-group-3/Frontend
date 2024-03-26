@@ -22,10 +22,9 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [dialog, setDialog] = useRecoilState(dialogState)
   const pathName = usePathname()
   const [open, setOpen] = useState(typeof window !== 'undefined' ? getLocalIsSidebarOpen : null)
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (auth === null) {
+    if (auth === undefined) {
       router.push('/login')
     } else if (auth && router.pathname === '/login') {
       router.push('/')
@@ -33,12 +32,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth])
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   const handleLogout = () => {
-    setAuth(null)
+    setAuth(undefined)
     setDialog(undefined)
     router.push('/login')
   }
