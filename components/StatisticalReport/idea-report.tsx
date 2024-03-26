@@ -130,7 +130,7 @@ export default function IdeaReport() {
                           {
                             label: 'Ideas',
                             data: data.departmentPercentage.map(department => department.percentage),
-                            backgroundColor: '#ffe0e6',
+                            backgroundColor: '#ffe0e660',
                             borderColor: '#ff6384',
                             borderWidth: 2,
                             stack: 'Stack 0',
@@ -138,7 +138,7 @@ export default function IdeaReport() {
                           {
                             label: 'Contributors',
                             data: data.contributorPercentage.map(contributor => contributor.percentage),
-                            backgroundColor: '#c8dfdf',
+                            backgroundColor: '#c8dfdf60',
                             borderColor: '#42d09e',
                             borderWidth: 2,
                             stack: 'Stack 1',

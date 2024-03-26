@@ -1,7 +1,7 @@
 import { Building2, Lightbulb } from 'lucide-react'
 import { useState } from 'react'
-import IdeaReport from './idea-report'
-import DepartmentReport from './department-report'
+import IdeaReport from '../../components/StatisticalReport/idea-report'
+import DepartmentReport from '../../components/StatisticalReport/department-report'
 
 export default function StatisticalReport() {
   const [isIdeaTab, setIsIdeaTab] = useState(true)
