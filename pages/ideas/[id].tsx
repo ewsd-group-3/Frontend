@@ -3,11 +3,10 @@ import { ArrowBigDown, ArrowBigUp, ArrowLeft, EyeIcon, Paperclip, Send } from 'l
 import { useEffect, useState } from 'react'
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react'
-// Import Swiper styles
+
 import 'swiper/css'
 import 'swiper/css/pagination'
 
-// import required modules
 import FullPageLoader from '@/components/shared/full-page-loader'
 import Divider from '@/components/ui/divider'
 import { Form } from '@/components/ui/form'
