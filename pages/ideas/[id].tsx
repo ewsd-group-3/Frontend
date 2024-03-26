@@ -1,3 +1,4 @@
+import ReactHtmlParser from 'react-html-parser'
 import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
 import { ArrowBigDown, ArrowBigUp, ArrowLeft, EyeIcon, Paperclip, Send } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -140,7 +141,7 @@ const IdeaDetail = () => {
         </div>
       </div>
 
-      <article className='mt-3 space-y-1'>{ideaData.description}</article>
+      <article className='mt-3 space-y-1'>{ReactHtmlParser(ideaData.description)}</article>
 
       <section className='mt-10'>
         {documentImages.length > 0 && (
