@@ -1,13 +1,11 @@
-import React from 'react'
-import { Avatar } from './avatar'
-import AvatarIcon from '../AvatarIcon/avatar-icon'
-import Divider from './divider'
-import { useRouter } from 'next/router'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { MoreVertical } from 'lucide-react'
-import { Button } from './button'
-import { formatDistance } from 'date-fns'
 import { getDateDistance } from '@/lib/utils'
+import { MoreVertical } from 'lucide-react'
+import { useRouter } from 'next/router'
+import ReactHtmlParser from 'react-html-parser'
+import AvatarIcon from '../AvatarIcon/avatar-icon'
+import { Button } from './button'
+import Divider from './divider'
 
 const Post = ({
   id,
@@ -75,8 +73,7 @@ const Post = ({
           </div>
         </div>
         <h4 className='font-bold text-lg'>{title}</h4>
-        <p className='text-sm'>{description}</p>
-
+        <div>{ReactHtmlParser(description)}</div>
         <div className='flex text-sm gap-2'>
           <p>{likeCount} likes</p>
           <Divider intent={'vertical'} className='h-5' />

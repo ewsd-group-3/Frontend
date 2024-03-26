@@ -7,7 +7,7 @@ export function useFetchListing<TData>(url: string) {
   const sortType = (router.query.sortType ?? 'asc') as string
   const page = (router.query.page ?? '1') as string
 
-  const apiUrl = `${url}?sortBy=${sortBy}&sortType=${sortType}&page=${page}`
+  const apiUrl = `${url}${url.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortType=${sortType}&page=${page}`
   const { data, isLoading, refetch } = useFetch<TData, true>(
     apiUrl,
     {
