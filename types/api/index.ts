@@ -274,6 +274,8 @@ export interface IdeaDetail {
   votes: Vote[]
   views: any[] // You can define a type if views have a specific structure
   ideaDocuments: IdeaDocument[]
+
+  likeStatus: 'like' | 'dislike' | 'none'
 }
 
 type CategoryPercentage = {

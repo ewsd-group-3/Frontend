@@ -25,6 +25,8 @@
     "@tanstack/react-query-devtools": "^5.25.0",
     "@tanstack/react-table": "^8.13.2",
     "@types/qs": "^6.9.12",
+    "@types/react-html-parser": "^2.0.6",
+    "@uploadthing/react": "^6.4.0",
     "axios": "^1.6.7",
     "chart.js": "^4.4.2",
     "class-variance-authority": "^0.7.0",
@@ -41,6 +43,8 @@
     "react-day-picker": "^8.10.0",
     "react-dom": "^18",
     "react-hook-form": "^7.51.0",
+    "react-html-parser": "^2.0.2",
+    "react-quill": "^2.0.0",
     "recoil": "^0.7.7",
     "recoil-persist": "^5.1.0",
     "sonner": "^1.4.3",
@@ -48,6 +52,7 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "uniqolor": "^1.1.1",
+    "uploadthing": "^6.6.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

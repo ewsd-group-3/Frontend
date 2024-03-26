@@ -1,6 +1,6 @@
 import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
-import { ArrowDown, ArrowLeft, ArrowUp, Divide, EyeIcon, Send } from 'lucide-react'
-import React, { useRef, useState } from 'react'
+import { ArrowBigDown, ArrowBigUp, ArrowDown, ArrowLeft, ArrowUp, Divide, EyeIcon, Paperclip, Send } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react'
 // Import Swiper styles
@@ -11,33 +11,107 @@ import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
 import Divider from '@/components/ui/divider'
 import Image from 'next/image'
-import { Switch } from '@/components/ui/switch'
+import { SwitchField } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { useRecoilState } from 'recoil'
 import { useRouter } from 'next/router'
-import { useFetch } from '@/hooks/useQuery'
+import { useFetch, useMutate } from '@/hooks/useQuery'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { CommentI, Idea, IdeaDetail } from '@/types/api'
-import { getDateDistance } from '@/lib/utils'
+import { getDateDistance, isImage } from '@/lib/utils'
 import { getIdeaCount } from '@/lib/ideas'
 import { authState } from '@/states/auth'
 import FullPageLoader from '@/components/shared/full-page-loader'
+import { Form } from '@/components/ui/form'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import TextArea from '@/components/ui/textarea'
+import { Switch } from '@radix-ui/react-switch'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
 }
 
+type Reacted = {
+  like: number
+  dislike: number
+  type: 'like' | 'dislike' | 'none'
+}
+
 const IdeaDetail = () => {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
-  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${router.query.id}`, {}, { enabled: !!router.query.id })
+  const ideaId = router.query?.id
+  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${ideaId}`, {}, { enabled: !!ideaId })
 
+  const [reacted, setReacted] = useState<Reacted>({
+    like: 0,
+    dislike: 0,
+    type: 'none',
+  })
   const ideaData = data?.data
+
+  const { mutateAsync } = useMutate()
+
+  const { likeCount, dislikeCount } = getIdeaCount(ideaData?.votes ?? [])
+
+  useEffect(() => {
+    setReacted({
+      like: likeCount,
+      dislike: dislikeCount,
+      type: ideaData?.likeStatus ?? 'none',
+    })
+  }, [likeCount, dislikeCount, ideaData?.likeStatus])
+
   if (isLoading || !ideaData) return <FullPageLoader />
 
-  console.log(ideaData.comments, 'here')
+  const handleReactPost = (type: 'like' | 'dislike') => {
+    let voteStatus = 'like'
 
-  const { likeCount, dislikeCount } = getIdeaCount(ideaData.votes)
+    if (reacted.type === 'none') {
+      // Initailly no react
+      setReacted({
+        ...reacted,
+        [type]: reacted[type] + 1,
+        type,
+      })
+      voteStatus = type
+    } else {
+      // Already having react
+      if (reacted.type === type) {
+        // Unreact
+        setReacted({
+          ...reacted,
+          [type]: reacted[type] - 1,
+          type: 'none',
+        })
+
+        voteStatus = type === 'like' ? 'unlike' : 'undislike'
+      } else {
+        // Change react
+        const negatedReact = type === 'like' ? 'dislike' : 'like'
+        setReacted({
+          ...reacted,
+          [type]: reacted[type] + 1,
+          [negatedReact]: reacted[negatedReact] - 1,
+          type,
+        })
+
+        voteStatus = type
+      }
+    }
+
+    mutateAsync({
+      url: '/votes',
+      data: {
+        voteStatus,
+        ideaId,
+      },
+    })
+  }
+
+  const documentImages = ideaData.ideaDocuments.filter(doc => isImage(doc.documentDownloadUrl))
+  const documentFiles = ideaData.ideaDocuments.filter(doc => !isImage(doc.documentDownloadUrl))
 
   return (
     <div className='max-w-3xl p-4'>
@@ -47,8 +121,8 @@ const IdeaDetail = () => {
             <ArrowLeft />
           </button>
           <div className='flex gap-2 items-center text-sm'>
-            <AvatarIcon name={ideaData.author.name} size='sm' />
-            <span>Posted by {ideaData.author.name} </span>
+            <AvatarIcon name={ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} size='sm' />
+            <span>Posted by {ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(ideaData.createdAt)}</time>
             <div className='w-1 h-1 bg-black rounded-full' />
@@ -74,86 +148,104 @@ const IdeaDetail = () => {
       <article className='mt-3 space-y-1'>{ideaData.description}</article>
 
       <section className='mt-10'>
-        <Swiper pagination={true} modules={[Pagination]} className='mySwiper rounded-lg'>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710115929211-ae9646071f6b?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710390916960-3047fcdf561e?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710104434425-6ae10f736622?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Image
-              width={700}
-              height={400}
-              src='https://images.unsplash.com/photo-1710678245400-148ffb386d2e?q=80&w=2865&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              alt='Slide 1'
-              className='w-full h-full'
-            />
-          </SwiperSlide>
-        </Swiper>
+        {documentImages.length > 0 && (
+          <Swiper pagination={true} modules={[Pagination]} className='mySwiper rounded-lg'>
+            {documentImages.map(document => (
+              <SwiperSlide key={document.id}>
+                <Image width={700} height={400} src={document.documentDownloadUrl} alt={document.name} className='w-full h-full' />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
+
+        <div className='flex gap-2 flex-col mt-3'>
+          {documentFiles.map(file => (
+            <a
+              key={file.id}
+              href={file.documentDownloadUrl}
+              target='_blank'
+              className='flex gap-2 py-3 px-2 shadow-md items-center text-sm rounded-md '
+            >
+              <Paperclip className='w-4 h-4' />
+              <span className='text-blue-800'>{file.name}</span>
+            </a>
+          ))}
+        </div>
       </section>
 
       <div className='rounded-full flex border-black border-2 border-solid w-max mt-5 px-2'>
-        <button className='p-2 flex items-center gap-1 text-sm'>
-          <ArrowUp /> {likeCount} likes
+        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('like')}>
+          <ArrowBigUp fill={reacted.type === 'like' ? '' : 'transparent'} /> {reacted.like} likes
         </button>
         <Divider intent={'vertical'} className='bg-black mx-2' />
-        <button className='p-2 flex items-center gap-1 text-sm'>
-          <ArrowDown />
-          {dislikeCount} dislikes
+        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('dislike')}>
+          <ArrowBigDown fill={reacted.type === 'dislike' ? '' : 'transparent'} />
+          {reacted.dislike} dislikes
         </button>
       </div>
 
-      <div className='mt-10'>
-        <h3 className='font-bold text-xl'>{ideaData.comments.length} Comments</h3>
+      <Comment comments={ideaData.comments} staffName={auth?.staff?.name} />
+    </div>
+  )
+}
 
-        <div className='flex gap-3 mt-4'>
-          {auth && <AvatarIcon name={auth.staff.name} size='base' />}
-          <div className='flex-1'>
-            <form
-              className='relative w-full mb-5'
-              onSubmit={e => {
-                e.preventDefault()
-                alert('submitted')
-              }}
-            >
-              <textarea className='w-full bg-lightgray border rounded-2xl p-3' rows={7} placeholder='What do you think?' />
+export default IdeaDetail
+
+const commentFormSchema = z.object({
+  comment: z.string(),
+  isAnonymous: z.boolean(),
+})
+
+const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; staffName?: string }) => {
+  const router = useRouter()
+  const ideaId = router.query?.id
+  const { mutateAsync } = useMutate()
+
+  const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
+    const res = await mutateAsync({
+      url: 'comments',
+      data: {
+        content: values.comment,
+        ideaId: ideaId,
+        isAnonymous: values.isAnonymous,
+      },
+      invalidateUrls: [`ideas/${router.query.id}`],
+    })
+
+    if (res.statusCode === 201) {
+      reset && reset()
+    }
+  }
+  return (
+    <div className='mt-10'>
+      <h3 className='font-bold text-xl'>{comments.length} Comments</h3>
+
+      <div className='flex gap-3 mt-4'>
+        {staffName && <AvatarIcon name={staffName} size='base' />}
+        <div className='flex-1'>
+          <Form
+            defaultValues={{
+              comment: '',
+              isAnonymous: false,
+            }}
+            formSchema={commentFormSchema}
+            onSubmit={handleSubmit}
+          >
+            <div className='relative w-full mb-3'>
+              <TextArea className='w-full bg-lightgray border rounded-2xl p-3' rows={7} placeholder='What do you think?' name='comment' />
+
               <button type='submit' className='top-5 absolute right-5'>
                 <Send />
               </button>
-
-              <div className='flex items-center space-x-2'>
-                <Switch id='airplane-mode' />
-                <Label htmlFor='airplane-mode'>Comment as anonymous</Label>
-              </div>
-            </form>
-
-            <div className='flex flex-col gap-3'>
-              {ideaData.comments.map(comment => (
-                <Comment key={comment.id} {...comment} />
-              ))}
             </div>
+
+            <SwitchField name='isAnonymous' label='Comment as anonymous' />
+          </Form>
+
+          <div className='flex flex-col gap-3 mt-5'>
+            {comments.map(comment => (
+              <CommentItem key={comment.id} {...comment} />
+            ))}
           </div>
         </div>
       </div>
@@ -161,14 +253,13 @@ const IdeaDetail = () => {
   )
 }
 
-export default IdeaDetail
-
-const Comment = (props: CommentI) => {
+const CommentItem = (props: CommentI) => {
   return (
     <div className='w-full bg-lightgray  text-black rounded-lg flex flex-col gap-3 p-4'>
       <div className='flex gap-2 items-center text-sm'>
-        <AvatarIcon name={props.staff.name} size='sm' />
-        <span>Posted by {props.staff.name} </span>
+        <AvatarIcon name={props.isAnonymous ? 'Anonymous' : props.staff.name} size='sm' />
+        <span>Posted by {props.isAnonymous ? 'Anonymous' : props.staff.name} </span>
+
         <div className='w-1 h-1 bg-black rounded-full' />
         <time>{getDateDistance(props.createdAt)}</time>
       </div>
