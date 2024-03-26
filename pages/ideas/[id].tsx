@@ -1,5 +1,5 @@
 import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
-import { ArrowBigDown, ArrowBigUp, ArrowDown, ArrowLeft, ArrowUp, Divide, EyeIcon, Send } from 'lucide-react'
+import { ArrowBigDown, ArrowBigUp, ArrowDown, ArrowLeft, ArrowUp, Divide, EyeIcon, Paperclip, Send } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -11,17 +11,22 @@ import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
 import Divider from '@/components/ui/divider'
 import Image from 'next/image'
-import { Switch } from '@/components/ui/switch'
+import { SwitchField } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { useRecoilState } from 'recoil'
 import { useRouter } from 'next/router'
-import { useFetch } from '@/hooks/useQuery'
+import { useFetch, useMutate } from '@/hooks/useQuery'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { CommentI, Idea, IdeaDetail } from '@/types/api'
-import { getDateDistance } from '@/lib/utils'
+import { getDateDistance, isImage } from '@/lib/utils'
 import { getIdeaCount } from '@/lib/ideas'
 import { authState } from '@/states/auth'
 import FullPageLoader from '@/components/shared/full-page-loader'
+import { Form } from '@/components/ui/form'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import TextArea from '@/components/ui/textarea'
+import { Switch } from '@radix-ui/react-switch'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
@@ -36,7 +41,8 @@ type Reacted = {
 const IdeaDetail = () => {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
-  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${router.query.id}`, {}, { enabled: !!router.query.id })
+  const ideaId = router.query?.id
+  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${ideaId}`, {}, { enabled: !!ideaId })
 
   const [reacted, setReacted] = useState<Reacted>({
     like: 0,
@@ -45,34 +51,44 @@ const IdeaDetail = () => {
   })
   const ideaData = data?.data
 
+  const { mutateAsync } = useMutate()
+
   const { likeCount, dislikeCount } = getIdeaCount(ideaData?.votes ?? [])
 
   useEffect(() => {
-    console.log('here')
     setReacted({
       like: likeCount,
       dislike: dislikeCount,
-      type: 'none',
+      type: ideaData?.likeStatus ?? 'none',
     })
-  }, [likeCount, dislikeCount])
+  }, [likeCount, dislikeCount, ideaData?.likeStatus])
 
   if (isLoading || !ideaData) return <FullPageLoader />
 
   const handleReactPost = (type: 'like' | 'dislike') => {
+    let voteStatus = 'like'
+
     if (reacted.type === 'none') {
+      // Initailly no react
       setReacted({
         ...reacted,
         [type]: reacted[type] + 1,
         type,
       })
+      voteStatus = type
     } else {
+      // Already having react
       if (reacted.type === type) {
+        // Unreact
         setReacted({
           ...reacted,
           [type]: reacted[type] - 1,
           type: 'none',
         })
+
+        voteStatus = type === 'like' ? 'unlike' : 'undislike'
       } else {
+        // Change react
         const negatedReact = type === 'like' ? 'dislike' : 'like'
         setReacted({
           ...reacted,
@@ -80,9 +96,22 @@ const IdeaDetail = () => {
           [negatedReact]: reacted[negatedReact] - 1,
           type,
         })
+
+        voteStatus = type
       }
     }
+
+    mutateAsync({
+      url: '/votes',
+      data: {
+        voteStatus,
+        ideaId,
+      },
+    })
   }
+
+  const documentImages = ideaData.ideaDocuments.filter(doc => isImage(doc.documentDownloadUrl))
+  const documentFiles = ideaData.ideaDocuments.filter(doc => !isImage(doc.documentDownloadUrl))
 
   return (
     <div className='max-w-3xl p-4'>
@@ -92,8 +121,8 @@ const IdeaDetail = () => {
             <ArrowLeft />
           </button>
           <div className='flex gap-2 items-center text-sm'>
-            <AvatarIcon name={ideaData.author.name} size='sm' />
-            <span>Posted by {ideaData.author.name} </span>
+            <AvatarIcon name={ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} size='sm' />
+            <span>Posted by {ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(ideaData.createdAt)}</time>
             <div className='w-1 h-1 bg-black rounded-full' />
@@ -119,15 +148,29 @@ const IdeaDetail = () => {
       <article className='mt-3 space-y-1'>{ideaData.description}</article>
 
       <section className='mt-10'>
-        {ideaData.ideaDocuments.length > 0 && (
+        {documentImages.length > 0 && (
           <Swiper pagination={true} modules={[Pagination]} className='mySwiper rounded-lg'>
-            {ideaData.ideaDocuments.map(document => (
+            {documentImages.map(document => (
               <SwiperSlide key={document.id}>
                 <Image width={700} height={400} src={document.documentDownloadUrl} alt={document.name} className='w-full h-full' />
               </SwiperSlide>
             ))}
           </Swiper>
         )}
+
+        <div className='flex gap-2 flex-col mt-3'>
+          {documentFiles.map(file => (
+            <a
+              key={file.id}
+              href={file.documentDownloadUrl}
+              target='_blank'
+              className='flex gap-2 py-3 px-2 shadow-md items-center text-sm rounded-md '
+            >
+              <Paperclip className='w-4 h-4' />
+              <span className='text-blue-800'>{file.name}</span>
+            </a>
+          ))}
+        </div>
       </section>
 
       <div className='rounded-full flex border-black border-2 border-solid w-max mt-5 px-2'>
@@ -141,35 +184,68 @@ const IdeaDetail = () => {
         </button>
       </div>
 
-      <div className='mt-10'>
-        <h3 className='font-bold text-xl'>{ideaData.comments.length} Comments</h3>
+      <Comment comments={ideaData.comments} staffName={auth?.staff?.name} />
+    </div>
+  )
+}
 
-        <div className='flex gap-3 mt-4'>
-          {auth && <AvatarIcon name={auth.staff.name} size='base' />}
-          <div className='flex-1'>
-            <form
-              className='relative w-full mb-5'
-              onSubmit={e => {
-                e.preventDefault()
-                alert('submitted')
-              }}
-            >
-              <textarea className='w-full bg-lightgray border rounded-2xl p-3' rows={7} placeholder='What do you think?' />
+export default IdeaDetail
+
+const commentFormSchema = z.object({
+  comment: z.string(),
+  isAnonymous: z.boolean(),
+})
+
+const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; staffName?: string }) => {
+  const router = useRouter()
+  const ideaId = router.query?.id
+  const { mutateAsync } = useMutate()
+
+  const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
+    const res = await mutateAsync({
+      url: 'comments',
+      data: {
+        content: values.comment,
+        ideaId: ideaId,
+        isAnonymous: values.isAnonymous,
+      },
+      invalidateUrls: [`ideas/${router.query.id}`],
+    })
+
+    if (res.statusCode === 201) {
+      reset && reset()
+    }
+  }
+  return (
+    <div className='mt-10'>
+      <h3 className='font-bold text-xl'>{comments.length} Comments</h3>
+
+      <div className='flex gap-3 mt-4'>
+        {staffName && <AvatarIcon name={staffName} size='base' />}
+        <div className='flex-1'>
+          <Form
+            defaultValues={{
+              comment: '',
+              isAnonymous: false,
+            }}
+            formSchema={commentFormSchema}
+            onSubmit={handleSubmit}
+          >
+            <div className='relative w-full mb-3'>
+              <TextArea className='w-full bg-lightgray border rounded-2xl p-3' rows={7} placeholder='What do you think?' name='comment' />
+
               <button type='submit' className='top-5 absolute right-5'>
                 <Send />
               </button>
-
-              <div className='flex items-center space-x-2'>
-                <Switch id='airplane-mode' />
-                <Label htmlFor='airplane-mode'>Comment as anonymous</Label>
-              </div>
-            </form>
-
-            <div className='flex flex-col gap-3'>
-              {ideaData.comments.map(comment => (
-                <Comment key={comment.id} {...comment} />
-              ))}
             </div>
+
+            <SwitchField name='isAnonymous' label='Comment as anonymous' />
+          </Form>
+
+          <div className='flex flex-col gap-3 mt-5'>
+            {comments.map(comment => (
+              <CommentItem key={comment.id} {...comment} />
+            ))}
           </div>
         </div>
       </div>
@@ -177,14 +253,13 @@ const IdeaDetail = () => {
   )
 }
 
-export default IdeaDetail
-
-const Comment = (props: CommentI) => {
+const CommentItem = (props: CommentI) => {
   return (
     <div className='w-full bg-lightgray  text-black rounded-lg flex flex-col gap-3 p-4'>
       <div className='flex gap-2 items-center text-sm'>
-        <AvatarIcon name={props.staff.name} size='sm' />
-        <span>Posted by {props.staff.name} </span>
+        <AvatarIcon name={props.isAnonymous ? 'Anonymous' : props.staff.name} size='sm' />
+        <span>Posted by {props.isAnonymous ? 'Anonymous' : props.staff.name} </span>
+
         <div className='w-1 h-1 bg-black rounded-full' />
         <time>{getDateDistance(props.createdAt)}</time>
       </div>

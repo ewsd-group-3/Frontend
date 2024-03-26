@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import RichTextEditor from '@/components/ui/rich-text-editor'
-import { Switch } from '@/components/ui/switch'
+import { Switch, SwitchField } from '@/components/ui/switch'
 import { useFetchListing } from '@/hooks/useFetchListing'
 import { useMutate } from '@/hooks/useQuery'
 import { OurFileRouter } from '@/server/uploadthing'
@@ -35,6 +35,7 @@ export const ideaFormSchema = z.object({
     }),
   ),
   files: z.array(z.instanceof(File)),
+  isAnonymous: z.boolean(),
 })
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>()
@@ -55,9 +56,7 @@ const IdeaCreate = () => {
         data: {
           title: values.title,
           description: values.content,
-          authorId: 1,
-          semesterId: 4,
-          isAnonymous: false,
+          isAnonymous: values.isAnonymous,
           categoryIds: values.category.map(c => +c.value),
           documents: fileRes?.map(file => ({
             name: file.name,
@@ -84,14 +83,16 @@ const IdeaCreate = () => {
   return (
     <section className='max-w-3xl'>
       <h3 className='font-bold mb-3'>Create an idea</h3>
-      <Form defaultValues={{ title: '', content: '', category: [], documents: [], files: [] }} formSchema={ideaFormSchema} onSubmit={onSubmit}>
+      <Form
+        defaultValues={{ title: '', content: '', isAnonymous: false, category: [], documents: [], files: [] }}
+        formSchema={ideaFormSchema}
+        onSubmit={onSubmit}
+      >
         {props => {
-          console.log(props.formState.isValid)
           return (
             <>
               <div className='flex items-center space-x-2 justify-between bg-lightgray py-2 px-4 rounded-lg mb-5'>
-                <Label htmlFor='airplane-mode'>Post as anonymous</Label>
-                <Switch id='airplane-mode' />
+                <SwitchField name='isAnonymous' label='Post as anonymous' />
               </div>
 
               <div className='space-y-5'>

@@ -78,6 +78,7 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
           }
         })
         .catch(error => {
+          console.log(error)
           if (error?.response?.data?.message) {
             return toast.error(error.response.data.message)
           }
