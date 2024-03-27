@@ -11,6 +11,7 @@ import { authState } from '@/states/auth'
 import { showDialog } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { dialogState } from '@/states/dialog'
+import { LoadingSpinner } from '../ui/loading-spinner'
 
 function getLocalIsSidebarOpen() {
   return localStorage.getItem('isSidebarOpen') === 'true' ? true : false
@@ -18,14 +19,14 @@ function getLocalIsSidebarOpen() {
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const [isInitial, setIsInitial] = useState(true)
   const [auth, setAuth] = useRecoilState(authState)
   const [dialog, setDialog] = useRecoilState(dialogState)
   const pathName = usePathname()
   const [open, setOpen] = useState(typeof window !== 'undefined' ? getLocalIsSidebarOpen : null)
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (auth === null) {
+    if (auth === undefined) {
       router.push('/login')
     } else if (auth && router.pathname === '/login') {
       router.push('/')
@@ -34,14 +35,16 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   }, [auth])
 
   useEffect(() => {
-    setMounted(true)
+    setIsInitial(false)
   }, [])
 
   const handleLogout = () => {
-    setAuth(null)
+    setAuth(undefined)
     setDialog(undefined)
     router.push('/login')
   }
+
+  if (isInitial) return <LoadingSpinner />
 
   return (
     <>
