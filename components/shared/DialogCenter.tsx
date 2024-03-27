@@ -44,13 +44,16 @@ const DialogCenter = () => {
                         Cancel
                       </Button>
                     )}
-                    <Button
-                      variant={'default'}
-                      type={dialog.formSchema ? 'submit' : 'button'}
-                      onClick={!!dialog.action?.onClick ? dialog.action.onClick : undefined}
-                    >
-                      {dialog?.action?.label || 'Submit'}
-                    </Button>
+
+                    {dialog.submit === undefined && (
+                      <Button
+                        variant={'default'}
+                        type={dialog.formSchema ? 'submit' : 'button'}
+                        onClick={!!dialog.action?.onClick ? dialog.action.onClick : undefined}
+                      >
+                        {dialog?.action?.label || 'Submit'}
+                      </Button>
+                    )}
                   </div>
                 </div>
               )}
