@@ -172,7 +172,7 @@ const formSchema = z.object({
 })
 
 const Staff = () => {
-  const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
+  const { data: departments } = useFetchListing<DepartmentRes>(`departments`, 1000)
   const router = useRouter()
   const { data, isLoading } = useFetchListing<StaffRes>('staffs')
   const staffs = data?.data?.staffs ?? []

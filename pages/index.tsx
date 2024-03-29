@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 export default function Home() {
   const router = useRouter()
 
-  const { data, isLoading } = useFetchListing<IdeaRes>('/ideas?limit=100')
+  const { data, isLoading } = useFetchListing<IdeaRes>('ideas', 1000)
 
   const ideas = data?.data?.ideas ?? []
 
@@ -56,6 +56,7 @@ export default function Home() {
                   likeCount={likeCount}
                   dislikeCount={dislikeCount}
                   createDate={idea.createdAt}
+                  isAnonymous={idea.isAnonymous}
                 />
               )
             })}
