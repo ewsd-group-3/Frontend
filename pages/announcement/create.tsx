@@ -9,6 +9,7 @@ import { Staff, StaffRes } from '@/types/api'
 import { useFetchListing } from '@/hooks/useFetchListing'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useMutate } from '@/hooks/useQuery'
 
 const Seperator = () => <div className='h-[1px] bg-black my-4 opacity-50'></div>
 
@@ -19,10 +20,26 @@ export default function AccouncementCreate() {
   const { data: staffs } = useFetchListing<StaffRes>('staffs', 1000)
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
+  const { mutateAsync } = useMutate()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // console.log({ subject, type, selectedStaff, content })
+    console.log({ subject, type, selectedStaff, content })
+
+    const res = await mutateAsync({
+      url: `announcements/`,
+      method: 'POST',
+      payload: {
+        announcerId: auth?.staff.id,
+        subject,
+        content,
+        type,
+        staffIds: selectedStaff.map(staff => staff.id),
+      },
+      invalidateUrls: [`announcements`],
+    })
+
+    console.log(res)
   }
 
   return (
