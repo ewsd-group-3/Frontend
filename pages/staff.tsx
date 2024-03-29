@@ -228,7 +228,7 @@ const Staff = () => {
                 const res = await mutateAsync({
                   url: `staffs`,
                   method: 'POST',
-                  payload: { email: values.email, name: values.name, departmentId: values.department, role: 'STAFF' },
+                  payload: { email: values.email, name: values.name, departmentId: values.department, role: values.role },
                   invalidateUrls: [`staffs`],
                 })
 
