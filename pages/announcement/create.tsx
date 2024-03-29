@@ -22,7 +22,7 @@ export default function AccouncementCreate() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log({ subject, type, selectedStaff, content })
+    // console.log({ subject, type, selectedStaff, content })
   }
 
   return (
