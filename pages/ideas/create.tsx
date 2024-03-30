@@ -9,7 +9,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import RichTextEditor from '@/components/ui/rich-text-editor'
 import { Switch, SwitchField } from '@/components/ui/switch'
 import { useFetchListing } from '@/hooks/useFetchListing'
-import { useMutate } from '@/hooks/useQuery'
+import { useFetch, useMutate } from '@/hooks/useQuery'
 import { OurFileRouter } from '@/server/uploadthing'
 import { CategoryRes } from '@/types/api'
 import { generateReactHelpers } from '@uploadthing/react'
@@ -76,7 +76,7 @@ const IdeaCreate = () => {
     }
   }
 
-  const { data } = useFetchListing<CategoryRes>('categories?limit=1000')
+  const { data } = useFetch<CategoryRes, true>('categories?limit=1000')
 
   const categoryData = data?.data.categories ?? []
 

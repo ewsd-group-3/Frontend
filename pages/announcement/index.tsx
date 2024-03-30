@@ -36,7 +36,7 @@ const accouncementColumns: ColumnDef<Partial<Announcement>>[] = [
     header: 'Content',
     cell: ({ row }) => (
       <div onClick={() => handlePopup(row.original.content)} className='cursor-pointer'>
-        {row.original.content?.length ?? 0 > 70 ? row.original.content?.slice(0, 70) + ' ...' : row.original.content}
+        {row.original.content!.length > 70 ? row.original.content?.slice(0, 70) + ' ...' : row.original.content}
       </div>
     ),
   },
@@ -45,7 +45,7 @@ const accouncementColumns: ColumnDef<Partial<Announcement>>[] = [
 const handlePopup = (content?: string) => {
   showDialog({
     title: 'Announcement Content',
-    children: <div className='mt-4'>{content}</div>,
+    children: <div className='mt-4 max-h-[60vh] overflow-y-auto'>{content}</div>,
     cancel: true,
     submit: false,
   })
