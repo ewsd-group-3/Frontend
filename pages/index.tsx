@@ -4,6 +4,7 @@ import Post from '@/components/ui/post'
 import { useFetchListing } from '@/hooks/useFetchListing'
 import { IdeaRes } from '@/types/api'
 import { useRouter } from 'next/router'
+import DataPagination from '@/components/Pagination/data-pagination'
 
 export default function Home() {
   const router = useRouter()
@@ -59,9 +60,16 @@ export default function Home() {
                   likeCount={likeCount}
                   dislikeCount={dislikeCount}
                   createDate={idea.createdAt}
+                  isAnonymous={idea.isAnonymous}
                 />
               )
             })}
+          </div>
+        )}
+
+        {data && (
+          <div className='mt-3'>
+            <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
           </div>
         )}
       </div>

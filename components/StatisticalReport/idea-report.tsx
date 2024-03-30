@@ -148,7 +148,7 @@ export default function IdeaReport() {
                       }}
                     />
                   </div>
-                  <h3>Percentage of Ideas</h3>
+                  <h3 className='w-full'>Percentage of Ideas</h3>
                   <div className='flex flex-wrap gap-4 items-center'>
                     {data.departmentPercentage.map(department => (
                       <ChartPercentageCard
@@ -160,7 +160,7 @@ export default function IdeaReport() {
                     ))}
                   </div>
 
-                  <h3>Percentage of Contributors</h3>
+                  <h3 className='w-full mt-2'>Percentage of Contributors</h3>
                   <div className='flex flex-wrap gap-4 items-center'>
                     {data.contributorPercentage.map(contributor => (
                       <ChartPercentageCard
