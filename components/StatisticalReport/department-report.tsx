@@ -37,7 +37,7 @@ export default function DepartmentReport() {
 
   return (
     <>
-      <form className='mb-4 flex items-center gap-4' onSubmit={handleSearch}>
+      <form className='mb-4 flex flex-wrap items-center gap-4' onSubmit={handleSearch}>
         <Select onValueChange={id => setSemesterId(id)}>
           <SelectTrigger className='w-[320px]'>
             <SelectValue placeholder='Semester' />

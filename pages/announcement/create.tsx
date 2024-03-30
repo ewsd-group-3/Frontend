@@ -10,6 +10,8 @@ import { useFetchListing } from '@/hooks/useFetchListing'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useMutate } from '@/hooks/useQuery'
+import { Badge } from '@/components/ui/badge'
+import { useRouter } from 'next/navigation'
 
 const Seperator = () => <div className='h-[1px] bg-black my-4 opacity-50'></div>
 
@@ -20,12 +22,14 @@ export default function AccouncementCreate() {
   const { data: staffs } = useFetchListing<StaffRes>('staffs', 1000)
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const { mutateAsync } = useMutate()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log({ subject, type, selectedStaff, content })
-
+    console.log('payload:', { subject, type, selectedStaff, content })
+    setIsLoading(true)
     const res = await mutateAsync({
       url: `announcements/`,
       method: 'POST',
@@ -38,8 +42,12 @@ export default function AccouncementCreate() {
       },
       invalidateUrls: [`announcements`],
     })
-
-    console.log(res)
+    setIsLoading(false)
+    if (res.statusCode > 200 && res.statusCode < 300) {
+      router.push('/announcement')
+    } else {
+      console.log(res)
+    }
   }
 
   return (
@@ -61,7 +69,7 @@ export default function AccouncementCreate() {
                 All staff from {auth?.staff.departmentId} department
               </Label>
             </div>
-            <div className='flex items-center space-x-2'>
+            <div className='flex items-center space-x-2 mt-2'>
               <RadioGroupItem value='SPECIFIC' id='SPECIFIC' />
               <Label className='cursor-pointer' htmlFor='SPECIFIC'>
                 Specific staff from {auth?.staff.departmentId} department
@@ -71,9 +79,17 @@ export default function AccouncementCreate() {
 
           {type === 'SPECIFIC' && (
             <div className='mt-4'>
+              <h6 className='text-sm font-semibold mb-1'>Staff names</h6>
+              {selectedStaff.length > 0 && (
+                <div className='text-sm text-gray-500 my-4 flex gap-2 items-center flex-wrap'>
+                  {selectedStaff.map(staff => (
+                    <Badge key={staff.id}>{staff.name}</Badge>
+                  ))}
+                </div>
+              )}
               <Listbox value={selectedStaff} onChange={setselectedStaff} multiple>
-                <Listbox.Button className='flex justify-between items-center gap-4 cursor-pointer relative w-fit rounded-lg bg-white py-2 px-3 text-left shadow-md focus:outline-none focus-visible:ring-offset-2 sm:text-sm'>
-                  {selectedStaff.length === 0 ? 'Select staff' : selectedStaff.map(staff => staff.name).join(', ')}
+                <Listbox.Button className='flex justify-between items-center gap-4 cursor-pointer relative min-w-[200px] w-fit rounded-lg bg-transparent border border-primary py-2 px-3 text-left focus:outline-none focus-visible:ring-offset-2 sm:text-sm hover:bg-primary hover:text-white transition-all'>
+                  Select staff
                   <span>
                     <ChevronsUpDown size={16} />
                   </span>
@@ -113,7 +129,10 @@ export default function AccouncementCreate() {
           required
         ></textarea>
 
-        <Button className='mt-4 flex ms-auto' disabled={content === '' || subject === '' || (type === 'SPECIFIC' && selectedStaff.length === 0)}>
+        <Button
+          className='mt-4 flex ms-auto'
+          disabled={isLoading || content === '' || subject === '' || (type === 'SPECIFIC' && selectedStaff.length === 0)}
+        >
           Send Email
         </Button>
       </div>

@@ -36,13 +36,10 @@ const Post = ({
         onClick={() => {
           router.push(`/ideas/${id}`)
         }}
-        className='w-full mt-2 text-black rounded-lg flex flex-col gap-3 p-4 hover:bg-lightgray'
+        className='w-full my-4 text-black rounded-lg flex flex-col gap-3 p-4 hover:bg-lightgray bg-lightgray/30 shadow cursor-pointer transition-all'
       >
         <div className='flex justify-between'>
           <div className='flex gap-2 items-center text-sm'>
-            <AvatarIcon name={authorName} size='sm' />
-            <span>Posted by {authorName} </span>
-
             <AvatarIcon name={isAnonymous ? 'Anonymous' : authorName} size='sm' />
             <span>Posted by {isAnonymous ? 'Anonymous' : authorName} </span>
             <div className='w-1 h-1 bg-black rounded-full' />

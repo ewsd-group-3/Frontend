@@ -2,14 +2,14 @@ import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
 import FullPageLoader from '@/components/shared/full-page-loader'
 import Post from '@/components/ui/post'
 import { useFetchListing } from '@/hooks/useFetchListing'
-import { useFetch } from '@/hooks/useQuery'
 import { IdeaRes } from '@/types/api'
 import { useRouter } from 'next/router'
+import DataPagination from '@/components/Pagination/data-pagination'
 
 export default function Home() {
   const router = useRouter()
 
-  const { data, isLoading } = useFetchListing<IdeaRes>('ideas', 1000)
+  const { data, isLoading } = useFetchListing<IdeaRes>('ideas')
 
   const ideas = data?.data?.ideas ?? []
 
@@ -60,6 +60,12 @@ export default function Home() {
                 />
               )
             })}
+          </div>
+        )}
+
+        {data && (
+          <div className='mt-3'>
+            <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
           </div>
         )}
       </div>
