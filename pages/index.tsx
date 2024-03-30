@@ -13,6 +13,7 @@ export default function Home() {
     sortBy: 'createdAt',
     sortType: 'desc',
     page: '1',
+    limit: 5,
   })
 
   const ideas = data?.data?.ideas ?? []
