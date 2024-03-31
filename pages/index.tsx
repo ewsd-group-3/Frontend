@@ -9,7 +9,12 @@ import DataPagination from '@/components/Pagination/data-pagination'
 export default function Home() {
   const router = useRouter()
 
-  const { data, isLoading } = useFetchListing<IdeaRes>('ideas')
+  const { data, isLoading } = useFetchListing<IdeaRes>('/ideas', {
+    sortBy: 'createdAt',
+    sortType: 'desc',
+    page: '1',
+    limit: 5,
+  })
 
   const ideas = data?.data?.ideas ?? []
 
@@ -69,8 +74,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      {/* <div className='basis-1/3 h-10'></div> */}
     </main>
   )
 }
