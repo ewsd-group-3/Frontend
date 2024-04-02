@@ -70,7 +70,7 @@ export default function Home() {
 
         {data && (
           <div className='mt-3'>
-            <DataPagination currentPage={data?.data.page} totalPage={data?.data.totalPages} />
+            <DataPagination currentPage={data?.data?.page} totalPage={data?.data?.totalPages} />
           </div>
         )}
       </div>

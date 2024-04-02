@@ -50,6 +50,7 @@ export function DataTable<TData, TValue>({ columns, data, isLoading, onClickRow,
                   data-state={row.getIsSelected() && 'selected'}
                   // @ts-ignore
                   onClick={() => !!onClickRow && onClickRow(row.original?.id)}
+                  className={!!onClickRow ? 'cursor-pointer' : ''}
                 >
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>

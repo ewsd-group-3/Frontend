@@ -113,7 +113,7 @@ export type AcademicYearT = {
   endDate: string
   createdAt: string
   updatedAt: string
-  semesters: { id: number; name: string; startDate: string }[]
+  semesters: { id: number; name: string; startDate: string; status: 'Ongoing' | 'Upcoming' | 'Done' }[]
 }
 
 export type AcademicYearRes = ListingRes & {

@@ -13,6 +13,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { colorGenerator } from '@/utils/color-generator'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { SEMESTER_FILTER } from '@/constants/semester-filter'
 
 ChartJS.register()
 
@@ -39,11 +40,13 @@ export default function IdeaReport() {
           </SelectTrigger>
           <SelectContent>
             {academicYears?.data.academicInfos.map(academicYear =>
-              academicYear.semesters.map(semester => (
-                <SelectItem key={semester.id} value={semester.id.toString()}>
-                  {academicYear.name} [{semester.name}]
-                </SelectItem>
-              )),
+              academicYear.semesters
+                .filter(semester => semester.status === SEMESTER_FILTER)
+                .map(semester => (
+                  <SelectItem key={semester.id} value={semester.id.toString()}>
+                    {academicYear.name} [{semester.name}]
+                  </SelectItem>
+                )),
             )}
           </SelectContent>
         </Select>

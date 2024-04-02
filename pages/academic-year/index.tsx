@@ -2,14 +2,11 @@ import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
 import { useFetchListing } from '@/hooks/useFetchListing'
-import { useFetch, useMutate } from '@/hooks/useQuery'
 import { formateDate, getAcademicYearStatus } from '@/lib/date'
-import { dialogState } from '@/states/dialog'
 import { AcademicYearRes, AcademicYearT } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'next/router'
 import React from 'react'
-import { useSetRecoilState } from 'recoil'
 
 export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
   {
@@ -44,8 +41,6 @@ export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
 
 const AcademicYear = () => {
   const router = useRouter()
-  const { mutateAsync } = useMutate()
-  const setDialog = useSetRecoilState(dialogState)
   const { data, isLoading } = useFetchListing<AcademicYearRes>('academicInfos')
 
   const academicYears = data?.data?.academicInfos ?? []
