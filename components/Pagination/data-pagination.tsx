@@ -33,7 +33,7 @@ export default function DataPagination({ currentPage, totalPage }: DataPaginatio
         </PaginationItem>
         {Array.from({ length: totalPage }, (_, i) => (
           <PaginationItem className='cursor-pointer' key={i}>
-            <PaginationLink isActive={currentPage === i + 1} onClick={() => handleNavigate(i + 1)}>
+            <PaginationLink className='bg-transparent' isActive={currentPage === i + 1} onClick={() => handleNavigate(i + 1)}>
               {i + 1}
             </PaginationLink>
           </PaginationItem>
