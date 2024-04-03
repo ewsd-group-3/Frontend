@@ -1,4 +1,5 @@
 import { AllowedRole } from '@/constants/links'
+import { Department } from './api'
 
 type Staff = {
   id: number
@@ -10,6 +11,7 @@ type Staff = {
   lastLoginDate: string
   createdAt: string
   updatedAt: string
+  department: Department
 }
 
 type Tokens = {

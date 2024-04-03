@@ -81,6 +81,7 @@ export type Audience = {
   id: number
   status: string
   staffId: number
+  staff: Staff
   departmentId: number
   announcementId: number
   createdAt: string
@@ -91,6 +92,20 @@ export type AnnouncementRes = ListingRes & {
   announcements: Announcement[]
 }
 
+type AnnouncementCreateBase = {
+  announcerId: number
+  subject: string
+  content: string
+  type: 'ALL' | 'SPECIFIC'
+}
+
+interface SpecificAnnouncement extends AnnouncementCreateBase {
+  type: 'SPECIFIC'
+  staffIds: number[] // Mandatory if type === SPECIFIC
+}
+
+export type AnnouncementCreate = AnnouncementCreateBase | SpecificAnnouncement
+
 export type AcademicYearT = {
   id: string
   name: string
@@ -98,7 +113,7 @@ export type AcademicYearT = {
   endDate: string
   createdAt: string
   updatedAt: string
-  semesters: { id: number; name: string; startDate: string }[]
+  semesters: { id: number; name: string; startDate: string; status: 'Ongoing' | 'Upcoming' | 'Done' }[]
 }
 
 export type AcademicYearRes = ListingRes & {

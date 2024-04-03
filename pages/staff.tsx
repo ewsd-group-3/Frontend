@@ -172,7 +172,7 @@ const formSchema = z.object({
 })
 
 const Staff = () => {
-  const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
+  const { data: departments } = useFetch<DepartmentRes, true>(`departments?limit=1000`)
   const router = useRouter()
   const { data, isLoading } = useFetchListing<StaffRes>('staffs')
   const staffs = data?.data?.staffs ?? []
@@ -228,7 +228,7 @@ const Staff = () => {
                 const res = await mutateAsync({
                   url: `staffs`,
                   method: 'POST',
-                  payload: { email: values.email, name: values.name, departmentId: values.department, role: 'STAFF' },
+                  payload: { email: values.email, name: values.name, departmentId: values.department, role: values.role },
                   invalidateUrls: [`staffs`],
                 })
 

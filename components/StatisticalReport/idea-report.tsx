@@ -12,6 +12,7 @@ import { Chart as ChartJS } from 'chart.js/auto'
 import { Lightbulb, MessageSquare, MessageSquareOff, ThumbsDown, ThumbsUp, Users } from 'lucide-react'
 import { useState } from 'react'
 import { Bar } from 'react-chartjs-2'
+import { SEMESTER_FILTER } from '@/constants/semester-filter'
 
 ChartJS.register()
 
@@ -39,11 +40,13 @@ export default function IdeaReport() {
           </SelectTrigger>
           <SelectContent>
             {academicYears?.data.academicInfos.map(academicYear =>
-              academicYear.semesters.map(semester => (
-                <SelectItem key={semester.id} value={semester.id.toString()}>
-                  {academicYear.name} [{semester.name}]
-                </SelectItem>
-              )),
+              academicYear.semesters
+                .filter(semester => semester.status === SEMESTER_FILTER)
+                .map(semester => (
+                  <SelectItem key={semester.id} value={semester.id.toString()}>
+                    {academicYear.name} [{semester.name}]
+                  </SelectItem>
+                )),
             )}
           </SelectContent>
         </Select>
@@ -148,7 +151,7 @@ export default function IdeaReport() {
                       }}
                     />
                   </div>
-                  <h3>Percentage of Ideas</h3>
+                  <h3 className='w-full'>Percentage of Ideas</h3>
                   <div className='flex flex-wrap gap-4 items-center'>
                     {data.departmentPercentage.map(department => (
                       <ChartPercentageCard
@@ -160,7 +163,7 @@ export default function IdeaReport() {
                     ))}
                   </div>
 
-                  <h3>Percentage of Contributors</h3>
+                  <h3 className='w-full mt-2'>Percentage of Contributors</h3>
                   <div className='flex flex-wrap gap-4 items-center'>
                     {data.contributorPercentage.map(contributor => (
                       <ChartPercentageCard

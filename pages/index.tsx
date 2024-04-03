@@ -2,14 +2,19 @@ import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
 import FullPageLoader from '@/components/shared/full-page-loader'
 import Post from '@/components/ui/post'
 import { useFetchListing } from '@/hooks/useFetchListing'
-import { useFetch } from '@/hooks/useQuery'
 import { IdeaRes } from '@/types/api'
 import { useRouter } from 'next/router'
+import DataPagination from '@/components/Pagination/data-pagination'
 
 export default function Home() {
   const router = useRouter()
 
-  const { data, isLoading } = useFetchListing<IdeaRes>('/ideas?limit=100')
+  const { data, isLoading } = useFetchListing<IdeaRes>('/ideas', {
+    sortBy: 'createdAt',
+    sortType: 'desc',
+    page: '1',
+    limit: 5,
+  })
 
   const ideas = data?.data?.ideas ?? []
 
@@ -56,14 +61,19 @@ export default function Home() {
                   likeCount={likeCount}
                   dislikeCount={dislikeCount}
                   createDate={idea.createdAt}
+                  isAnonymous={idea.isAnonymous}
                 />
               )
             })}
           </div>
         )}
-      </div>
 
-      {/* <div className='basis-1/3 h-10'></div> */}
+        {data && (
+          <div className='mt-3'>
+            <DataPagination currentPage={data?.data?.page} totalPage={data?.data?.totalPages} />
+          </div>
+        )}
+      </div>
     </main>
   )
 }
