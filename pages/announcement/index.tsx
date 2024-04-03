@@ -65,8 +65,8 @@ export default function AccouncementPage() {
       </div>
       <div className='mt-3'>
         <DataTable
-          currentPage={data?.data.page}
-          totalPage={data?.data.totalPages}
+          currentPage={data?.data?.page}
+          totalPage={data?.data?.totalPages}
           columns={accouncementColumns}
           data={accouncements}
           isLoading={isLoading}

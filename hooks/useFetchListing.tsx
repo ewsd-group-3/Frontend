@@ -18,7 +18,7 @@ export function useFetchListing<TData>(
 
   const apiUrl = `${url}${url.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortType=${sortType}&page=${page}&limit=${limit}`
 
-  const { data, isLoading, refetch } = useFetch<TData, true>(
+  const { data, isLoading, refetch, error } = useFetch<TData, true>(
     apiUrl,
     {
       key: [url, { sortBy, sortType, page }] as any,
@@ -27,5 +27,10 @@ export function useFetchListing<TData>(
       keepPreviousData: true,
     },
   )
-  return { data, isLoading, refetch }
+
+  if (error?.message === 'unauthorized') {
+    throw new Error('unauthorized')
+  }
+
+  return { data, isLoading, refetch, error }
 }

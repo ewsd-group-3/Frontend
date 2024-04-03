@@ -1,18 +1,17 @@
 import CardsContainer from '@/components/StatisticalReport/cards-container'
-import StatisticalCard from '@/components/StatisticalReport/statistical-card'
-import { Lightbulb, MessageSquare, MessageSquareOff, ThumbsDown, ThumbsUp, Users } from 'lucide-react'
-import { Chart as ChartJS } from 'chart.js/auto'
-import { Bar } from 'react-chartjs-2'
 import ChartContainer from '@/components/StatisticalReport/chart-container'
 import ChartPercentageCard from '@/components/StatisticalReport/chart-percentage-card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useFetch } from '@/hooks/useQuery'
-import { AcademicYearRes, IdeaReportRes } from '@/types/api'
+import StatisticalCard from '@/components/StatisticalReport/statistical-card'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
-import axios from 'axios'
-import { colorGenerator } from '@/utils/color-generator'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useClient, useFetch } from '@/hooks/useQuery'
+import { AcademicYearRes, IdeaReportRes } from '@/types/api'
+import { colorGenerator } from '@/utils/color-generator'
+import { Chart as ChartJS } from 'chart.js/auto'
+import { Lightbulb, MessageSquare, MessageSquareOff, ThumbsDown, ThumbsUp, Users } from 'lucide-react'
+import { useState } from 'react'
+import { Bar } from 'react-chartjs-2'
 import { SEMESTER_FILTER } from '@/constants/semester-filter'
 
 ChartJS.register()
@@ -22,12 +21,13 @@ export default function IdeaReport() {
   const [semesterId, setSemesterId] = useState<string | null>(null)
   const [data, setData] = useState<IdeaReportRes | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const client = useClient()
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    const { data } = await axios.get(process.env.NEXT_PUBLIC_API_ENDPOINT + `/statistical-reports/ideas?semesterId=${semesterId}`)
-    setData(data.data)
+    const { data } = await client(`/statistical-reports/ideas?semesterId=${semesterId}`)
+    setData(data)
     setIsLoading(false)
   }
 

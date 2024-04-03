@@ -9,7 +9,7 @@ type MutateOptions<TData> = UseMutationOptions<Response<TData>, ResponseError, R
   invalidateUrls?: string[] | string[][]
 }
 
-function useClient() {
+export function useClient() {
   const [token, setToken] = useRecoilState(authState)
 
   // token.tokens.access
@@ -19,6 +19,9 @@ function useClient() {
         .then(res => res.data)
         .catch(err => {
           if (err?.response?.status === 401) setToken(undefined)
+
+          if (err?.response?.status === 403) throw new Error('unauthorized')
+
           return err
         })
     },

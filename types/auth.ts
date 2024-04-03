@@ -1,10 +1,11 @@
+import { AllowedRole } from '@/constants/links'
 import { Department } from './api'
 
 type Staff = {
   id: number
   email: string
   name: string
-  role: string
+  role: AllowedRole
   isActive: boolean
   departmentId: number
   lastLoginDate: string

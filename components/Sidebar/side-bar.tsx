@@ -74,18 +74,21 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
               </h1>
             </div>
             <ul className='pt-6'>
-              {MenuLinks.map(Menu => (
-                <MenuLink
-                  icon={{
-                    src: Menu.src,
-                  }}
-                  path={Menu.path}
-                  title={Menu.title}
-                  gap={Menu.gap}
-                  key={Menu.path}
-                  pathName={pathName}
-                />
-              ))}
+              {MenuLinks.map(Menu => {
+                if (Menu.allowedRoles.includes(auth?.staff.role ?? 'STAFF'))
+                  return (
+                    <MenuLink
+                      icon={{
+                        src: Menu.src,
+                      }}
+                      path={Menu.path}
+                      title={Menu.title}
+                      gap={Menu.gap}
+                      key={Menu.path}
+                      pathName={pathName}
+                    />
+                  )
+              })}
             </ul>
           </div>
 
