@@ -8,7 +8,7 @@ export function useFetchListing<TData>(url: string) {
   const page = (router.query.page ?? '1') as string
 
   const apiUrl = `${url}${url.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortType=${sortType}&page=${page}`
-  const { data, isLoading, refetch } = useFetch<TData, true>(
+  const { data, isLoading, refetch, error } = useFetch<TData, true>(
     apiUrl,
     {
       key: [url, { sortBy, sortType, page }] as any,
@@ -17,5 +17,10 @@ export function useFetchListing<TData>(url: string) {
       keepPreviousData: true,
     },
   )
-  return { data, isLoading, refetch }
+
+  if (error?.message === 'unauthorized') {
+    throw new Error('unauthorized')
+  }
+
+  return { data, isLoading, refetch, error }
 }

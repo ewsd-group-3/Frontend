@@ -73,7 +73,10 @@ const Post = ({
           </div>
         </div>
         <h4 className='font-bold text-lg'>{title}</h4>
-        <div>{ReactHtmlParser(description)}</div>
+        <div>
+          {ReactHtmlParser(description.substring(0, 300))}{' '}
+          {description.length > 300 && <small className='text-sm font-bold text-gray-500'>... See more</small>}
+        </div>
         <div className='flex text-sm gap-2'>
           <p>{likeCount} likes</p>
           <Divider intent={'vertical'} className='h-5' />

@@ -6,7 +6,7 @@ import { Bar } from 'react-chartjs-2'
 import ChartContainer from '@/components/StatisticalReport/chart-container'
 import ChartPercentageCard from '@/components/StatisticalReport/chart-percentage-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useFetch } from '@/hooks/useQuery'
+import { useClient, useFetch } from '@/hooks/useQuery'
 import { AcademicYearRes, DepartmentReportRes, DepartmentRes } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -23,15 +23,14 @@ export default function DepartmentReport() {
   const [departmentId, setDepartmentId] = useState<string | null>(null)
   const [data, setData] = useState<DepartmentReportRes | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const client = useClient()
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    const { data } = await axios.get(
-      process.env.NEXT_PUBLIC_API_ENDPOINT + `/statistical-reports/departments?departmentId=${departmentId}&semesterId=${semesterId}`,
-    )
-    console.log(data.data)
-    setData(data.data)
+    const { data } = await client(`/statistical-reports/departments?departmentId=${departmentId}&semesterId=${semesterId}`)
+
+    setData(data)
     setIsLoading(false)
   }
 
