@@ -97,6 +97,10 @@ export const departmentColumns: ColumnDef<Partial<Department>>[] = [
     header: () => FilterHeader({ title: 'name' }),
   },
   {
+    accessorKey: '_count.staffs',
+    header: 'Staff Count',
+  },
+  {
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => <Actions row={row} />,

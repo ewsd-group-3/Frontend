@@ -6,7 +6,7 @@ import { useFetch, useMutate } from '@/hooks/useQuery'
 import { formateDate } from '@/lib/date'
 import { authState } from '@/states/auth'
 import { AcademicYearDetail } from '@/types/api'
-import axios from 'axios'
+import FileSaver from 'file-saver'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useRecoilState } from 'recoil'
@@ -21,10 +21,14 @@ const AcademicYearDetail = () => {
   if (isLoading || !academicYearData) return <LoadingSpinner />
 
   const handleDownloadData = async () => {
-    await mutateAsync({
+    const res = await mutateAsync({
       url: `academicInfos/download/${router.query.id}`,
-      method: 'POST',
+      responseType: 'arraybuffer',
     })
+
+    // @ts-ignore
+    const blob = new Blob([res], { type: 'application/zip' })
+    FileSaver.saveAs(blob, `${academicYearData?.name} Year Ideas.zip`)
   }
 
   return (
