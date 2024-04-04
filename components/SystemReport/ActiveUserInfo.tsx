@@ -14,7 +14,7 @@ export default function ActiveUserInfo({ name, comment, idea, view, vote }: Acti
   return (
     <div className='grid grid-cols-2'>
       <div className='flex items-center'>
-        <AvatarIcon name='John Doe' />
+        <AvatarIcon name={name} />
         <div className='ml-2'>
           <div className='font-medium'>{name}</div>
         </div>
