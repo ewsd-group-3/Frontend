@@ -67,6 +67,7 @@ const Login = () => {
   }
 
   useEffect(() => {
+    console.log(data, isSuccess)
     if (isSuccess) {
       setAuth({
         staff: data.data.staff,
@@ -112,7 +113,7 @@ const Login = () => {
                   <Button type='submit' className='mt-1' disabled={isLoading}>
                     Login
                   </Button>
-                  {isError && <p className='text-red-500'>{error?.message}</p>}
+                  {isError && <p className='text-red-500 text-sm'>{error?.message}</p>}
                 </div>
               )}
             </Form>

@@ -81,13 +81,14 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
           }
         })
         .catch(error => {
-          console.log(error)
           if (error?.response?.data?.message) {
-            return toast.error(error.response.data.message)
+            toast.error(error.response.data.message)
           }
 
           if (error.response) {
             return Promise.reject(error.response.data)
+          } else {
+            return Promise.reject(error)
           }
         })
     },

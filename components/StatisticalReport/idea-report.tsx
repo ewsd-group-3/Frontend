@@ -26,7 +26,8 @@ export default function IdeaReport() {
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    const { data } = await client(`/statistical-reports/ideas?semesterId=${semesterId}`)
+    const { data } = await client<IdeaReportRes>(`/statistical-reports/ideas?semesterId=${semesterId}`)
+    console.log(data)
     setData(data)
     setIsLoading(false)
   }

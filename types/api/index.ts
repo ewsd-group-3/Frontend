@@ -323,3 +323,46 @@ export type IdeaReportRes = StatisticalReport & {
 export type DepartmentReportRes = StatisticalReport & {
   categoryPercentage: CategoryPercentage[]
 }
+
+export type SystemReportRes = {
+  topActiveUsers: TopActiveUser[]
+  mostUsedBrowsers: MostUsedBrowser[]
+  mostViewedIdeas: MostViewedIdea[]
+}
+
+interface TopActiveUser {
+  staff: Staff
+  ideasCount: number
+  commentsCount: number
+  votesCount: number
+  viewsCount: number
+  total: number
+}
+
+interface MostUsedBrowser {
+  browserName: string
+  totalLogins: number
+}
+
+interface MostViewedIdea {
+  id: number
+  title: string
+  description: string
+  isAnonymous: boolean
+  isHidden: boolean
+  authorId: number
+  semesterId: number
+  createdAt: string
+  updatedAt: string
+  views: View[]
+  author: Author
+  viewsCount: number
+}
+
+interface View {
+  id: number
+  staffId: number
+  ideaId: number
+  createdAt: string
+  updatedAt: string
+}
