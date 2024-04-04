@@ -2,7 +2,7 @@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import React, { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { detect } from 'detect-browser'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
@@ -16,6 +16,7 @@ import { LoggedInData } from '@/types/auth'
 const formSchema = z.object({
   email: z.string().min(1, { message: 'Please fill in email address.' }).email({ message: 'Invalid email address.' }),
   password: z.string().min(1, { message: 'Please fill in password.' }),
+  browserName: z.string().optional(),
 })
 
 const images = [
@@ -33,6 +34,8 @@ const images = [
     'https://images.unsplash.com/photo-1555116505-38ab61800975?q=80&w=2835&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   ],
 ]
+
+const browser = detect()
 
 const ImageContainer = () => {
   return (
@@ -54,7 +57,9 @@ const Login = () => {
   const router = useRouter()
   const [auth, setAuth] = useRecoilState(authState)
   const { mutateAsync, isLoading, isSuccess, data, isError, error } = useMutate<LoggedInData>()
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    values.browserName = browser?.name || 'unknown'
     await mutateAsync({
       url: `auth/login`,
       payload: values,
