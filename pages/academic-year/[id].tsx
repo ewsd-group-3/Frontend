@@ -2,18 +2,30 @@ import { CustomBreadcrumb } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
 import Divider from '@/components/ui/divider'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import { useFetch } from '@/hooks/useQuery'
+import { useFetch, useMutate } from '@/hooks/useQuery'
 import { formateDate } from '@/lib/date'
+import { authState } from '@/states/auth'
 import { AcademicYearDetail } from '@/types/api'
+import axios from 'axios'
 import { useRouter } from 'next/router'
 import React from 'react'
+import { useRecoilState } from 'recoil'
 
 const AcademicYearDetail = () => {
+  const { mutateAsync } = useMutate()
   const router = useRouter()
+  const [auth] = useRecoilState(authState)
   const { data, isLoading } = useFetch<AcademicYearDetail, true>(`academicInfos/${router.query.id}`, {}, { enabled: !!router.query.id })
 
   const academicYearData = data?.data
   if (isLoading || !academicYearData) return <LoadingSpinner />
+
+  const handleDownloadData = async () => {
+    await mutateAsync({
+      url: `academicInfos/download/${router.query.id}`,
+      method: 'POST',
+    })
+  }
 
   return (
     <div className='p-5'>
@@ -30,7 +42,7 @@ const AcademicYearDetail = () => {
       />
       <div className='flex justify-between mt-5'>
         <h2 className='font-bold text-3xl mb-10'>{academicYearData.name}</h2>
-        <Button onClick={() => alert('download data')}>Download Data</Button>
+        {auth?.staff.role === 'QA_MANAGER' && <Button onClick={handleDownloadData}>Download Data</Button>}
       </div>
 
       <div>

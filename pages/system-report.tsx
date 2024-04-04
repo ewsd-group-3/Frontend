@@ -8,12 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SEMESTER_FILTER } from '@/constants/semester-filter'
 import { useFetchListing } from '@/hooks/useFetchListing'
 import { useFetch } from '@/hooks/useQuery'
-import { AcademicYearRes, Idea, IdeaRes } from '@/types/api'
+import { AcademicYearRes, Idea, IdeaRes, SystemReportRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
-import axios from 'axios'
-import { ArrowUpDown, Eye, Globe, Lightbulb, MessageSquare, ScanEye, Users2 } from 'lucide-react'
+import { useClient } from '@/hooks/useQuery'
+import { Globe, ScanEye, Users2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const ideaColumns: ColumnDef<Partial<Idea>>[] = [
   {
@@ -55,23 +55,18 @@ const ideaColumns: ColumnDef<Partial<Idea>>[] = [
 ]
 
 export default function SystemReport() {
+  const client = useClient()
   const { data: academicYears } = useFetch<AcademicYearRes, true>(`academicInfos`)
   const [semesterId, setSemesterId] = useState<string | null>(null)
-  const [data, setData] = useState<null>(null)
+  const [data, setData] = useState<SystemReportRes | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const { data: ideas } = useFetchListing<IdeaRes>('/ideas', {
-    sortBy: 'createdAt',
-    sortType: 'desc',
-    page: '1',
-    limit: 5,
-  })
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    const { data } = await axios.get(process.env.NEXT_PUBLIC_API_ENDPOINT + `/statistical-reports/ideas?semesterId=${semesterId}`)
-
-    setData(data.data)
+    const { data } = await client<SystemReportRes>(`system-reports?semesterId=${semesterId}&page=1&limit=3`)
+    console.log(data)
+    setData(data)
     setIsLoading(false)
   }
 
@@ -88,7 +83,7 @@ export default function SystemReport() {
               academicYear.semesters
                 .filter(semester => semester.status === SEMESTER_FILTER)
                 .map(semester => (
-                  <SelectItem key={semester.id} value={semester.id.toString()}>
+                  <SelectItem key={academicYear.id + '_' + semester.id} value={semester.id.toString()}>
                     {academicYear.name} [{semester.name}]
                   </SelectItem>
                 )),
@@ -100,29 +95,41 @@ export default function SystemReport() {
           Search
         </Button>
       </form>
-      <div className='grid grid-cols-2 gap-4'>
-        <MostUsedContainer icon={{ src: Users2 }} title='Top 3 Active Users' includeIcons>
-          <ActiveUserInfo name='John Doe' view={20} comment={20} idea={20} vote={20} />
-          <ActiveUserInfo name='John Doe' view={20} comment={20} idea={2} vote={20} />
-          <ActiveUserInfo name='John Doe' view={20} comment={20} idea={20} vote={20} />
-        </MostUsedContainer>
-        <MostUsedContainer icon={{ src: Globe }} title='Top 3 Most used Browsers'>
-          <BrowserInfo name='Chrome' count={20} />
-          <BrowserInfo name='Chrome' count={20} />
-          <BrowserInfo name='Chrome' count={20} />
-        </MostUsedContainer>
-      </div>
-      <div className='mt-4'>
-        <MostUsedContainer icon={{ src: ScanEye }} title='Most viewed pages (ideas)'>
-          <DataTable
-            currentPage={ideas?.data.page}
-            totalPage={ideas?.data.totalPages}
-            columns={ideaColumns}
-            data={ideas?.data.ideas ?? []}
-            isLoading={isLoading}
-          />
-        </MostUsedContainer>
-      </div>
+
+      {data && (
+        <>
+          <div className='grid grid-cols-2 gap-4'>
+            <MostUsedContainer icon={{ src: Users2 }} title='Top 3 Active Users' includeIcons>
+              {data.topActiveUsers.map((user, index) => (
+                <ActiveUserInfo
+                  key={index}
+                  name={user.staff.name}
+                  view={user.viewsCount}
+                  comment={user.commentsCount}
+                  idea={user.ideasCount}
+                  vote={user.votesCount}
+                />
+              ))}
+            </MostUsedContainer>
+            <MostUsedContainer icon={{ src: Globe }} title='Top 3 Most used Browsers'>
+              {data.mostUsedBrowsers.map((browser, index) => (
+                <BrowserInfo name={browser.browserName} key={index} count={browser.totalLogins} />
+              ))}
+            </MostUsedContainer>
+          </div>
+          {/* <div className='mt-4'>
+            <MostUsedContainer icon={{ src: ScanEye }} title='Most viewed pages (ideas)'>
+              <DataTable
+                currentPage={ideas?.data.page}
+                totalPage={ideas?.data.totalPages}
+                columns={ideaColumns}
+                data={ideas?.data.ideas ?? []}
+                isLoading={isLoading}
+              />
+            </MostUsedContainer>
+          </div> */}
+        </>
+      )}
     </div>
   )
 }

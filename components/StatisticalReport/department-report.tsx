@@ -10,26 +10,28 @@ import { useClient, useFetch } from '@/hooks/useQuery'
 import { AcademicYearRes, DepartmentReportRes, DepartmentRes } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
-import axios from 'axios'
 import { colorGenerator } from '@/utils/color-generator'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { SEMESTER_FILTER } from '@/constants/semester-filter'
+import { authState } from '@/states/auth'
+import { useRecoilState } from 'recoil'
 
 ChartJS.register()
 
 export default function DepartmentReport() {
   const { data: academicYears } = useFetch<AcademicYearRes, true>(`academicInfos`)
-  const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
+  const { data: departments } = useFetch<DepartmentRes, true>(`all-departments`)
   const [semesterId, setSemesterId] = useState<string | null>(null)
   const [departmentId, setDepartmentId] = useState<string | null>(null)
   const [data, setData] = useState<DepartmentReportRes | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [auth] = useRecoilState(authState)
   const client = useClient()
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    const { data } = await client(`/statistical-reports/departments?departmentId=${departmentId}&semesterId=${semesterId}`)
+    const { data } = await client<DepartmentReportRes>(`/statistical-reports/departments?departmentId=${departmentId}&semesterId=${semesterId}`)
 
     setData(data)
     setIsLoading(false)
@@ -55,16 +57,23 @@ export default function DepartmentReport() {
           </SelectContent>
         </Select>
 
-        <Select onValueChange={id => setDepartmentId(id)}>
+        <Select
+          onValueChange={id => setDepartmentId(id)}
+          defaultValue={auth?.staff.role === 'QA_COORDINATOR' ? auth.staff.departmentId.toString() : undefined}
+        >
           <SelectTrigger className='w-[320px]'>
             <SelectValue placeholder='Department' />
           </SelectTrigger>
           <SelectContent>
-            {departments?.data.departments.map(department => (
-              <SelectItem key={department.id} value={department.id.toString()}>
-                {department.name}
-              </SelectItem>
-            ))}
+            {departments
+              ? departments.data.departments.map(department => (
+                  <SelectItem key={department.id} value={department.id.toString()}>
+                    {department.name}
+                  </SelectItem>
+                ))
+              : auth?.staff.role === 'QA_COORDINATOR' && (
+                  <SelectItem value={auth.staff.departmentId.toString()}>{auth?.staff.department.name}</SelectItem>
+                )}
           </SelectContent>
         </Select>
 
