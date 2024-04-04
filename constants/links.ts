@@ -19,7 +19,7 @@ export const MenuLinks: MenuLink[] = [
   { title: 'Ideas', path: '/', src: Newspaper, allowedRoles: ['ADMIN', 'QA_MANAGER', 'QA_COORDINATOR', 'STAFF'] },
   { title: 'Staff', path: '/staff', src: UsersRound, gap: true, allowedRoles: ['ADMIN'] },
   { title: 'Department', path: '/department', src: Building2, allowedRoles: ['ADMIN'] },
-  { title: 'Academic year', path: '/academic-year', src: CalendarRange, allowedRoles: ['ADMIN'] },
+  { title: 'Academic year', path: '/academic-year', src: CalendarRange, allowedRoles: ['ADMIN', 'QA_MANAGER'] },
   { title: 'Category', path: '/category', src: Blocks, gap: true, allowedRoles: ['ADMIN', 'QA_MANAGER'] }, // Double confirm if ADMIN is allowed for category
   { title: 'Announcement', path: '/announcement', src: AudioLines, allowedRoles: ['QA_COORDINATOR'] },
   { title: 'Statistical Report', path: '/statistical-report', src: BarChartBig, allowedRoles: ['QA_MANAGER', 'QA_COORDINATOR'] }, // QA_COOR is only for their department

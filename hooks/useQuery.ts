@@ -69,6 +69,9 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
             }
             return res
           } else {
+            if (!res.response?.status) {
+              return res
+            }
             if (res.response.status < 200 || res.response.status >= 300) {
               if (res?.response?.message) {
                 toast.error(res.response.message)
