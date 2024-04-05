@@ -25,7 +25,11 @@ const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, 
 )
 Switch.displayName = SwitchPrimitives.Root.displayName
 
-const SwitchField = ({ name, label }: Partial<React.ElementRef<typeof SwitchPrimitives.Root>> & { name: string; label: string }) => {
+const SwitchField = ({
+  name,
+  label,
+  disabled = false,
+}: Partial<React.ElementRef<typeof SwitchPrimitives.Root>> & { name: string; label: string; disabled?: boolean }) => {
   const { control } = useFormContext()
   return (
     <FormField
@@ -35,7 +39,7 @@ const SwitchField = ({ name, label }: Partial<React.ElementRef<typeof SwitchPrim
         <FormItem className='flex items-center space-x-2 text-sm'>
           <FormLabel className='text-sm'>{label}</FormLabel>
           <FormControl>
-            <Switch checked={field.value} onCheckedChange={field.onChange} aria-readonly className='!my-0' />
+            <Switch disabled={disabled} checked={field.value} onCheckedChange={field.onChange} aria-readonly className='!my-0' />
           </FormControl>
         </FormItem>
       )}

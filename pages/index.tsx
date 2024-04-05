@@ -5,6 +5,11 @@ import { useFetchListing } from '@/hooks/useFetchListing'
 import { IdeaRes } from '@/types/api'
 import { useRouter } from 'next/router'
 import DataPagination from '@/components/Pagination/data-pagination'
+import { useRecoilValue } from 'recoil'
+import { currentSemesterState } from '@/states'
+import { formateDate } from '@/lib/date'
+import useSemester from '@/hooks/useSemester'
+import { cn } from '@/lib/utils'
 
 export default function Home() {
   const router = useRouter()
@@ -16,21 +21,36 @@ export default function Home() {
     limit: 5,
   })
 
+  const { isBeforeClosureDate } = useSemester()
+  const currentSemester = useRecoilValue(currentSemesterState)
+
   const ideas = data?.data?.ideas ?? []
+  const isIdeaClosed = !isBeforeClosureDate()
 
   return (
     <main className='flex'>
       <div className='w-full'>
-        <div className='p-4 flex rounded-lg shadow-lg gap-3 items-center mb-10'>
-          <AvatarIcon name='Admin' size='base' />
-          <button
-            onClick={() => {
-              router.push('/ideas/create')
-            }}
-            className='w-full p-3 bg-[#EEEEEE] text-left text-sm rounded-md text-gray-500'
-          >
-            Create Idea
-          </button>
+        <div className='bg-blue-700 text-white w-full py-2 text-center text-sm rounded-md'>
+          {isIdeaClosed
+            ? `The idea posting for ${currentSemester?.name} is closed`
+            : `Idea posting for ${currentSemester?.name} will be closed on ${formateDate(currentSemester?.closureDate)}`}
+        </div>
+        <div className='p-4 rounded-lg shadow-lg mb-10'>
+          <div className='flex items-center gap-3 '>
+            <AvatarIcon name='Admin' size='base' />
+            <button
+              disabled={isIdeaClosed}
+              onClick={() => {
+                if (isIdeaClosed) {
+                  return
+                }
+                router.push('/ideas/create')
+              }}
+              className={cn('w-full p-3 bg-[#EEEEEE] text-left text-sm rounded-md text-gray-500 disabled:bg-gray-300 disabled:cursor-not-allowed')}
+            >
+              Create Idea
+            </button>
+          </div>
         </div>
 
         {isLoading || !ideas ? (

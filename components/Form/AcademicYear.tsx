@@ -61,13 +61,13 @@ const AcademicYearForm = ({
               <div>
                 <h5 className='font-bold mb-2 text-lg'>First Semester</h5>
                 <div className='flex space-x-10'>
-                  <DatePicker name='firstSemStartDate' label='Start date' minDate={startDate} maxDate={endDate} disabled={isEdit || !endDate} />
+                  <DatePicker name='firstSemStartDate' label='Start date' minDate={startDate} maxDate={endDate} disabled={!endDate} />
                   <DatePicker
                     name='firstSemEndDate'
                     label='Closure date / Semester end date'
                     minDate={addDays(firstSemStartDate, 1)}
                     maxDate={endDate}
-                    disabled={isEdit || !firstSemStartDate}
+                    disabled={!firstSemStartDate}
                   />
                   <DatePicker
                     name='firstSemFinalClosureDate'
