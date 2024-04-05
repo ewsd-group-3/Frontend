@@ -6,16 +6,16 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SEMESTER_FILTER } from '@/constants/semester-filter'
-import { useFetchListing } from '@/hooks/useFetchListing'
 import { useFetch } from '@/hooks/useQuery'
-import { AcademicYearRes, Idea, IdeaRes, SystemReportRes } from '@/types/api'
+import { AcademicYearRes, Idea, IdeaRes, MostViewedIdea, SystemReportRes } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { useClient } from '@/hooks/useQuery'
 import { Globe, ScanEye, Users2 } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
-const ideaColumns: ColumnDef<Partial<Idea>>[] = [
+const ideaColumns: ColumnDef<Partial<MostViewedIdea>>[] = [
   {
     accessorKey: 'id',
     header: 'Id',
@@ -24,17 +24,17 @@ const ideaColumns: ColumnDef<Partial<Idea>>[] = [
     accessorKey: 'title',
     header: 'Title',
   },
-  {
-    accessorKey: 'ideaCategories',
-    header: 'Category',
-    cell: ({ row }) => {
-      return (
-        <div className='flex items-center gap-3'>
-          {row.original.ideaCategories?.map(category => <Badge key={category.category.id}>{category.category.name}</Badge>) ?? ''}
-        </div>
-      )
-    },
-  },
+  // {
+  //   accessorKey: 'ideaCategories',
+  //   header: 'Category',
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className='flex items-center gap-3'>
+  //         {row.original.ideaCategories?.map(category => <Badge key={category.category.id}>{category.category.name}</Badge>) ?? ''}
+  //       </div>
+  //     )
+  //   },
+  // },
   {
     accessorKey: 'author.name',
     header: 'Author',
@@ -53,6 +53,10 @@ const ideaColumns: ColumnDef<Partial<Idea>>[] = [
     },
   },
 ]
+
+function NoResults() {
+  return <div className='p-4 text-sm text-center rounded border-2 border-primary hover:bg-primary/5 transition'>No results.</div>
+}
 
 export default function SystemReport() {
   const client = useClient()
@@ -95,40 +99,54 @@ export default function SystemReport() {
           Search
         </Button>
       </form>
-
-      {data && (
-        <>
-          <div className='grid grid-cols-2 gap-4'>
-            <MostUsedContainer icon={{ src: Users2 }} title='Top 3 Active Users' includeIcons>
-              {data.topActiveUsers.map((user, index) => (
-                <ActiveUserInfo
-                  key={index}
-                  name={user.staff.name}
-                  view={user.viewsCount}
-                  comment={user.commentsCount}
-                  idea={user.ideasCount}
-                  vote={user.votesCount}
+      {isLoading ? (
+        <div className='grid place-content-center h-[50vh]'>
+          <LoadingSpinner />
+        </div>
+      ) : (
+        data &&
+        !isLoading && (
+          <>
+            <div className='grid grid-cols-2 gap-4'>
+              <MostUsedContainer icon={{ src: Users2 }} title='Top 3 Active Users' includeIcons>
+                {data.topActiveUsers.length > 0 ? (
+                  data.topActiveUsers.map((user, index) => (
+                    <ActiveUserInfo
+                      key={user.staff.id + index}
+                      name={user.staff.name}
+                      view={user.viewsCount}
+                      comment={user.commentsCount}
+                      idea={user.ideasCount}
+                      vote={user.votesCount}
+                    />
+                  ))
+                ) : (
+                  <NoResults />
+                )}
+              </MostUsedContainer>
+              <MostUsedContainer icon={{ src: Globe }} title='Top 3 Most used Browsers'>
+                {data.mostUsedBrowsers.length > 0 ? (
+                  data.mostUsedBrowsers.map((browser, index) => (
+                    <BrowserInfo name={browser.browserName} key={browser.browserName + index} count={browser.totalLogins} />
+                  ))
+                ) : (
+                  <NoResults />
+                )}
+              </MostUsedContainer>
+            </div>
+            <div className='mt-4'>
+              <MostUsedContainer icon={{ src: ScanEye }} title='Most viewed pages (ideas)'>
+                <DataTable
+                  currentPage={data.page}
+                  totalPage={data.totalPages}
+                  columns={ideaColumns}
+                  data={data.mostViewedIdeas}
+                  isLoading={isLoading}
                 />
-              ))}
-            </MostUsedContainer>
-            <MostUsedContainer icon={{ src: Globe }} title='Top 3 Most used Browsers'>
-              {data.mostUsedBrowsers.map((browser, index) => (
-                <BrowserInfo name={browser.browserName} key={index} count={browser.totalLogins} />
-              ))}
-            </MostUsedContainer>
-          </div>
-          {/* <div className='mt-4'>
-            <MostUsedContainer icon={{ src: ScanEye }} title='Most viewed pages (ideas)'>
-              <DataTable
-                currentPage={ideas?.data.page}
-                totalPage={ideas?.data.totalPages}
-                columns={ideaColumns}
-                data={ideas?.data.ideas ?? []}
-                isLoading={isLoading}
-              />
-            </MostUsedContainer>
-          </div> */}
-        </>
+              </MostUsedContainer>
+            </div>
+          </>
+        )
       )}
     </div>
   )

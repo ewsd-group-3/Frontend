@@ -328,6 +328,10 @@ export type SystemReportRes = {
   topActiveUsers: TopActiveUser[]
   mostUsedBrowsers: MostUsedBrowser[]
   mostViewedIdeas: MostViewedIdea[]
+  count: number
+  limit: number
+  page: number
+  totalPages: number
 }
 
 interface TopActiveUser {
@@ -344,7 +348,7 @@ interface MostUsedBrowser {
   totalLogins: number
 }
 
-interface MostViewedIdea {
+export interface MostViewedIdea {
   id: number
   title: string
   description: string

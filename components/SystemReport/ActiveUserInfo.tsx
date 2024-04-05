@@ -20,10 +20,10 @@ export default function ActiveUserInfo({ name, comment, idea, view, vote }: Acti
         </div>
       </div>
       <div className='flex items-center gap-5 justify-end'>
-        <span className='size-6 text-right font-medium'>{view}</span>
-        <span className='size-6 text-right font-medium'>{vote}</span>
-        <span className='size-6 text-right font-medium'>{comment}</span>
-        <span className='size-6 text-right font-medium'>{idea}</span>
+        <span className='size-6 text-right font-medium pr-1'>{view}</span>
+        <span className='size-6 text-right font-medium pr-1'>{vote}</span>
+        <span className='size-6 text-right font-medium pr-1'>{comment}</span>
+        <span className='size-6 text-right font-medium pr-1'>{idea}</span>
       </div>
     </div>
   )
