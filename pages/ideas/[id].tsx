@@ -15,7 +15,7 @@ import { SwitchField } from '@/components/ui/switch'
 import TextArea from '@/components/ui/textarea'
 import { useFetch, useMutate } from '@/hooks/useQuery'
 import { getIdeaCount } from '@/lib/ideas'
-import { getDateDistance, isImage } from '@/lib/utils'
+import { cn, getDateDistance, isImage } from '@/lib/utils'
 import { authState } from '@/states/auth'
 import { CommentI, IdeaDetail } from '@/types/api'
 import Image from 'next/image'
@@ -23,6 +23,7 @@ import { useRouter } from 'next/router'
 import { useRecoilState } from 'recoil'
 import { Pagination } from 'swiper/modules'
 import { z } from 'zod'
+import useSemester from '@/hooks/useSemester'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
@@ -196,6 +197,8 @@ const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; st
   const router = useRouter()
   const ideaId = router.query?.id
   const { mutateAsync } = useMutate()
+  const { isBeforeClosureDate } = useSemester()
+  const isCommentClosed = true || !isBeforeClosureDate()
 
   const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
     const res = await mutateAsync({
@@ -228,14 +231,20 @@ const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; st
             onSubmit={handleSubmit}
           >
             <div className='relative w-full mb-3'>
-              <TextArea className='w-full bg-lightgray border rounded-2xl p-3' rows={7} placeholder='What do you think?' name='comment' />
+              <TextArea
+                disabled={isCommentClosed}
+                className={cn('w-full bg-lightgray border rounded-2xl p-3', { 'cursor-not-allowed bg-gray-300': isCommentClosed })}
+                rows={7}
+                placeholder='What do you think?'
+                name='comment'
+              />
 
-              <button type='submit' className='top-5 absolute right-5'>
+              <button disabled={isCommentClosed} type='submit' className='top-5 absolute right-5'>
                 <Send />
               </button>
             </div>
 
-            <SwitchField name='isAnonymous' label='Comment as anonymous' />
+            <SwitchField disabled={isCommentClosed} name='isAnonymous' label='Comment as anonymous' />
           </Form>
 
           <div className='flex flex-col gap-3 mt-5'>

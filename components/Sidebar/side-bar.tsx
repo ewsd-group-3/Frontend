@@ -75,7 +75,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             </div>
             <ul className='pt-6'>
               {MenuLinks.map(Menu => {
-                if (Menu.allowedRoles.includes(auth?.staff.role ?? 'STAFF'))
+                if (Menu.allowedRoles.includes(auth?.staff?.role ?? 'STAFF'))
                   return (
                     <MenuLink
                       icon={{
@@ -97,11 +97,11 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             <MenuLink
               icon={{
                 src: User,
-                img: auth?.staff.name,
+                img: auth?.staff?.name,
               }}
               path={'/profile'}
               pathName={pathName}
-              title={auth?.staff.name || 'User Name'}
+              title={auth?.staff?.name || 'User Name'}
             />
             <div
               onClick={() =>

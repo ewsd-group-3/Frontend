@@ -20,6 +20,7 @@ import DataPagination from '@/components/Pagination/data-pagination'
 import { useState } from 'react'
 import { useFetchListing } from '@/hooks/useFetchListing'
 import { roleStringConvertor } from '@/utils/role-convertor'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -34,7 +35,7 @@ const StaffAction = ({ row }: any) => {
   const { mutateAsync } = useMutate()
 
   const [enabled, setEnabled] = useState(false)
-  const { data: departments } = useFetch<DepartmentRes, true>(`departments`, {}, { enabled })
+  const { data: departments, isLoading } = useFetch<DepartmentRes, true>(`all-departments`, {}, { enabled })
   const { data } = useFetch<StaffDetail, true>(`staffs/${row.original.id}`, {}, { enabled })
   const staffDetail = data?.data?.staff
 
@@ -172,7 +173,7 @@ const formSchema = z.object({
 })
 
 const Staff = () => {
-  const { data: departments } = useFetch<DepartmentRes, true>(`departments?limit=1000`)
+  const { data: departments } = useFetch<DepartmentRes, true>(`all-departments`)
   const router = useRouter()
   const { data, isLoading } = useFetchListing<StaffRes>('staffs')
   const staffs = data?.data?.staffs ?? []
