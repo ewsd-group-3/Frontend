@@ -67,11 +67,11 @@ export function DataTable<TData, TValue>({ columns, data, isLoading, onClickRow,
           </TableBody>
         </Table>
       </div>
-      {currentPage && totalPage && totalPage > 0 && (
+      {currentPage && totalPage ? (
         <div className='mt-3'>
           <DataPagination currentPage={currentPage} totalPage={totalPage} />
         </div>
-      )}
+      ) : null}
     </>
   )
 }
