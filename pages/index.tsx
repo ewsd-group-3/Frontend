@@ -5,10 +5,12 @@ import { useFetchListing } from '@/hooks/useFetchListing'
 import { IdeaRes } from '@/types/api'
 import { useRouter } from 'next/router'
 import DataPagination from '@/components/Pagination/data-pagination'
+import { useRecoilState } from 'recoil'
+import { authState } from '@/states/auth'
 
 export default function Home() {
   const router = useRouter()
-
+  const [auth] = useRecoilState(authState)
   const { data, isLoading } = useFetchListing<IdeaRes>('/ideas', {
     sortBy: 'createdAt',
     sortType: 'desc',
@@ -21,8 +23,12 @@ export default function Home() {
   return (
     <main className='flex'>
       <div className='w-full'>
+        <div>
+          Current Semester: <span className='font-bold'>{data?.data.}</span>
+        </div>
+
         <div className='p-4 flex rounded-lg shadow-lg gap-3 items-center mb-10'>
-          <AvatarIcon name='Admin' size='base' />
+          <AvatarIcon name={auth?.staff.name || 'Admin'} size='base' />
           <button
             onClick={() => {
               router.push('/ideas/create')
@@ -54,6 +60,7 @@ export default function Home() {
                 <Post
                   key={idea.id}
                   id={idea.id}
+                  authorId={idea.authorId}
                   authorName={idea.author.name}
                   commentCount={idea.comments.length}
                   description={idea.description}
@@ -62,6 +69,7 @@ export default function Home() {
                   dislikeCount={dislikeCount}
                   createDate={idea.createdAt}
                   isAnonymous={idea.isAnonymous}
+                  categoryIds={idea.ideaCategories.map(category => category.categoryId)}
                 />
               )
             })}

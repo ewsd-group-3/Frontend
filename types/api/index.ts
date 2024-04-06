@@ -205,6 +205,17 @@ export type Idea = {
     updatedAt: string
   }[]
   views: []
+  currentSemester: {
+    name: string
+    id: string
+    startDate: string
+    closureDate: string
+    finalClosureDate: string
+    academicInfo: {
+      name: string
+      id: string
+    }
+  }
 }
 
 export type IdeaRes = ListingRes & {
@@ -369,4 +380,48 @@ interface View {
   ideaId: number
   createdAt: string
   updatedAt: string
+}
+
+export type Report = {
+  id: number
+  reason: string
+  isApproved: boolean
+  approvedAt: string | null
+  ideaId: number
+  reportById: number
+  approvedById: number | null
+  createdAt: string
+  updatedAt: string
+  idea: {
+    id: number
+    title: string
+    description: string
+    isAnonymous: boolean
+    isHidden: boolean
+    authorId: number
+    semesterId: number
+    createdAt: string
+    updatedAt: string
+  }
+  reportBy: {
+    id: number
+    email: string
+    name: string
+    password: string
+    role: string
+    isActive: boolean
+    departmentId: number
+    profile: any // Type this accordingly if profile has known structure
+    lastLoginDate: string
+    createdAt: string
+    updatedAt: string
+  }
+}
+
+export type ReportRes = {
+  page: number
+  limit: number
+  count: number
+  totalPages: number
+  reports: Report[]
 }
