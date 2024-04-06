@@ -32,12 +32,14 @@ export default function Home() {
   return (
     <main className='flex'>
       <div className='w-full'>
-        <div className='bg-primary text-white w-full p-3 mb-3 text-center text-sm rounded-md'>
-          {isIdeaClosed
-            ? `The idea posting for ${currentSemester?.name} is closed`
-            : `Idea posting for ${currentSemester?.name} will be closed on ${formateDate(currentSemester?.closureDate)}`}
-        </div>
-        <div className='p-4 rounded-lg shadow-lg mb-6 bg-lightgray/20'>
+        {currentSemester?.name && (
+          <div className='bg-primary text-white w-full p-3 mb-3 text-center text-sm rounded-md sticky top-0 left-0 z-30'>
+            {isIdeaClosed
+              ? `The idea posting for ${currentSemester?.name} is closed`
+              : `Idea posting for ${currentSemester?.name} will be closed on ${formateDate(currentSemester?.closureDate)}`}
+          </div>
+        )}
+        <div className='p-4 rounded-lg shadow-lg mb-10'>
           <div className='flex items-center gap-3 '>
             <AvatarIcon name={auth?.staff.name || ''} size='base' />
             <button

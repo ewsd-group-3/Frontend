@@ -24,6 +24,7 @@ import { useRecoilState } from 'recoil'
 import { Pagination } from 'swiper/modules'
 import { z } from 'zod'
 import useSemester from '@/hooks/useSemester'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
@@ -35,7 +36,7 @@ type Reacted = {
   type: 'like' | 'dislike' | 'none'
 }
 
-const IdeaDetail = () => {
+const IdeaDetailC = () => {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
   const ideaId = router.query?.id
@@ -186,7 +187,7 @@ const IdeaDetail = () => {
   )
 }
 
-export default IdeaDetail
+export default IdeaDetailC
 
 const commentFormSchema = z.object({
   comment: z.string(),
@@ -196,11 +197,13 @@ const commentFormSchema = z.object({
 const Comment = ({ comments, staffName }: { comments: IdeaDetailI['comments']; staffName?: string }) => {
   const router = useRouter()
   const ideaId = router.query?.id
-  const { mutateAsync } = useMutate()
+  const { mutateAsync, isLoading } = useMutate()
   const { isBeforeClosureDate } = useSemester()
   const isCommentClosed = !isBeforeClosureDate()
 
   const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
+    if (isLoading) return
+
     const res = await mutateAsync({
       url: 'comments',
       data: {
@@ -240,7 +243,7 @@ const Comment = ({ comments, staffName }: { comments: IdeaDetailI['comments']; s
               />
 
               <button disabled={isCommentClosed} type='submit' className='top-5 absolute right-5'>
-                <Send />
+                {isLoading ? <LoadingSpinner /> : <Send />}
               </button>
             </div>
 
