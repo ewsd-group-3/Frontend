@@ -198,7 +198,7 @@ const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; st
   const ideaId = router.query?.id
   const { mutateAsync } = useMutate()
   const { isBeforeClosureDate } = useSemester()
-  const isCommentClosed = true || !isBeforeClosureDate()
+  const isCommentClosed = !isBeforeClosureDate()
 
   const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
     const res = await mutateAsync({
