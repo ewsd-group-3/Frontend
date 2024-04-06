@@ -31,7 +31,7 @@ export default function Home() {
     <main className='flex'>
       <div className='w-full'>
         {currentSemester?.name && (
-          <div className='bg-primary sticky top-0 left-0 z-50 text-white w-full py-3 text-center text-sm rounded-md'>
+          <div className='bg-primary sticky top-0 left-0 z-30 px-2 text-white w-full py-3 text-center text-sm rounded-md'>
             {isIdeaClosed
               ? `The idea posting for ${currentSemester?.name} is closed`
               : `Idea posting for ${currentSemester?.name} will be closed on ${formateDate(currentSemester?.closureDate)}`}
