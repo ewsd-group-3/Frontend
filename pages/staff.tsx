@@ -81,7 +81,7 @@ const StaffAction = ({ row }: { row: Row<Partial<Staff>> }) => {
           <MoreVertical className='h-4 w-4' onClick={() => setEnabled(true)} />
         </Button>
       </DropdownMenuTrigger>
-      {enabled && (
+      {enabled && staffDetail && (
         <DropdownMenuContent align='end' className={poppins.className}>
           <DropdownMenuItem
             onClick={() => {
@@ -136,7 +136,7 @@ const StaffAction = ({ row }: { row: Row<Partial<Staff>> }) => {
                       departmentId: +values.department,
                       role: values.role,
                     },
-                    invalidateUrls: ['staffs'],
+                    invalidateUrls: ['staffs', `staffs/${row.original.id}`],
                   })
 
                   if (res.statusCode === 200) {
