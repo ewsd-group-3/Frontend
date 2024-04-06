@@ -41,6 +41,19 @@ const StaffAction = ({ row }: { row: Row<Partial<Staff>> }) => {
   const sortType = (router.query.sortType ?? 'asc') as string
   const page = (router.query.page ?? '1') as string
 
+  const handleResetPassword = async (id?: number) => {
+    try {
+      await mutateAsync({
+        url: `staffs/reset-password/${id}`,
+        method: 'PATCH',
+        invalidateUrls: [`staffs`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
+
   const ToggleStaffStatus = async (id?: number) => {
     try {
       await mutateAsync({
@@ -135,7 +148,7 @@ const StaffAction = ({ row }: { row: Row<Partial<Staff>> }) => {
           >
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem>Reset Password</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleResetPassword(row.original.id)}>Reset Password</DropdownMenuItem>
           <DropdownMenuItem onClick={() => ToggleStaffStatus(row.original.id)}>
             {row.original.isActive ? 'Deactivate' : 'Activate'} User
           </DropdownMenuItem>
