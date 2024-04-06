@@ -12,20 +12,7 @@ import { toast } from 'sonner'
 const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
   const { mutateAsync } = useMutate()
 
-  const handleDeactivateUser = async (authorId?: number) => {
-    try {
-      await mutateAsync({
-        url: `staffs/toggle-active/${authorId}`,
-        method: 'PATCH',
-        invalidateUrls: [`reports`],
-      })
-    } catch (error: any) {
-      console.error(error)
-      toast.error(error.message)
-    }
-  }
-
-  const handlActivateUser = async (authorId?: number) => {
+  const handleToggleUser = async (authorId?: number) => {
     try {
       await mutateAsync({
         url: `staffs/toggle-active/${authorId}`,
@@ -86,12 +73,8 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem
-          onClick={() =>
-            row.original.isStaffActive ? handleDeactivateUser(row.original.idea?.authorId) : handlActivateUser(row.original.idea?.authorId)
-          }
-        >
-          {row.original.isStaffActive ? 'Deactivate' : 'Activate'} user
+        <DropdownMenuItem onClick={() => handleToggleUser(row.original.idea?.authorId)}>
+          {row.original.isStaffActive ? 'Deactivate' : 'Activate'} User
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => (row.original.isIdeaHidden ? handleUnhidePost(row.original.ideaId) : handleHidePost(row.original.ideaId))}>
           {row.original.isIdeaHidden ? 'UnHide' : 'Hide'} post
