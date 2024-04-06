@@ -1,7 +1,5 @@
-import FilterHeader from '@/components/DataTable/filter-header'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useMutate } from '@/hooks/useQuery'
-import { showDialog, hideDialog } from '@/lib/utils'
 import { ReportRes, Report } from '@/types/api'
 import { ColumnDef, Row } from '@tanstack/react-table'
 import { MoreVertical } from 'lucide-react'
@@ -14,22 +12,69 @@ import { toast } from 'sonner'
 const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
   const { mutateAsync } = useMutate()
 
-  const handleDeactivateUser = async (authorId?: number) => {}
+  const handleDeactivateUser = async (authorId?: number) => {
+    try {
+      await mutateAsync({
+        url: `staffs/toggle-active/${authorId}`,
+        method: 'PATCH',
+        invalidateUrls: [`reports`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
 
-  const handleHidePost = async (ideaId?: number) => {}
+  const handlActivateUser = async (authorId?: number) => {
+    try {
+      await mutateAsync({
+        url: `staffs/toggle-active/${authorId}`,
+        method: 'PATCH',
+        invalidateUrls: [`reports`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
+
+  const handleHidePost = async (ideaId?: number) => {
+    try {
+      await mutateAsync({
+        url: `ideas/${ideaId}/hide`,
+        method: 'PATCH',
+        invalidateUrls: [`reports`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
+
+  const handleUnhidePost = async (ideaId?: number) => {
+    try {
+      await mutateAsync({
+        url: `ideas/${ideaId}/unhide`,
+        method: 'PATCH',
+        invalidateUrls: [`reports`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
 
   const handleRejectPost = async (reportId?: number) => {
-    alert(reportId)
-    // try {
-    //   await mutateAsync({
-    //     url: `reports/${reportId}/reject`,
-    //     method: 'PATCH',
-    //     invalidateUrls: [`reports`],
-    //   })
-    // } catch (error: any) {
-    //   console.error(error)
-    //   toast.error(error.message)
-    // }
+    try {
+      await mutateAsync({
+        url: `reports/${reportId}/reject`,
+        method: 'PATCH',
+        invalidateUrls: [`reports`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
   }
 
   return (
@@ -41,9 +86,19 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={() => handleDeactivateUser(row.original.idea?.authorId)}>Deactivate user</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleHidePost(row.original.ideaId)}>Hide post</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleRejectPost(row.original.id)}>Reject</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() =>
+            row.original.isStaffActive ? handleDeactivateUser(row.original.idea?.authorId) : handlActivateUser(row.original.idea?.authorId)
+          }
+        >
+          {row.original.isStaffActive ? 'Deactivate' : 'Activate'} user
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => (row.original.isIdeaHidden ? handleUnhidePost(row.original.ideaId) : handleHidePost(row.original.ideaId))}>
+          {row.original.isIdeaHidden ? 'UnHide' : 'Hide'} post
+        </DropdownMenuItem>
+        <DropdownMenuItem disabled={row.original.isRejected} onClick={() => handleRejectPost(row.original.id)}>
+          Reject
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -52,12 +107,12 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
 const reportedListColumns: ColumnDef<Partial<Report>>[] = [
   {
     accessorKey: 'createdAt',
-    header: 'Date',
+    header: 'Reported Date',
     cell: ({ row }) => formateDate(row.original.createdAt, 'd MMM y, hh:mm:ss a'),
   },
   {
     accessorKey: 'idea.author.name',
-    header: () => FilterHeader({ title: 'name' }),
+    header: 'Reported Name',
   },
   {
     accessorKey: 'idea.title',
@@ -66,12 +121,15 @@ const reportedListColumns: ColumnDef<Partial<Report>>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: ({ row }) => <Actions row={row} />,
+    cell: ({ row }) => {
+      return row.original.isRejected ? 'Rejected' : <Actions row={row} />
+    },
   },
 ]
 
 export default function ReportedListPage() {
   const { data, isLoading } = useFetchListing<ReportRes>('reports')
+  console.log(data)
 
   return (
     <section className='p-5'>

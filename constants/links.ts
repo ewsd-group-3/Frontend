@@ -23,6 +23,6 @@ export const MenuLinks: MenuLink[] = [
   { title: 'Category', path: '/category', src: Blocks, gap: true, allowedRoles: ['ADMIN', 'QA_MANAGER'] }, // Double confirm if ADMIN is allowed for category
   { title: 'Announcement', path: '/announcement', src: AudioLines, allowedRoles: ['QA_COORDINATOR'] },
   { title: 'Statistical Report', path: '/statistical-report', src: BarChartBig, allowedRoles: ['QA_MANAGER', 'QA_COORDINATOR'] }, // QA_COOR is only for their department
-  { title: 'Reported List', path: '/reported-list', src: Ban, gap: true, allowedRoles: ['ADMIN', 'QA_MANAGER'] },
+  { title: 'Reported List', path: '/reported-list', src: Ban, gap: true, allowedRoles: ['QA_MANAGER'] },
   { title: 'System Report', path: '/system-report', src: PieChart, allowedRoles: ['ADMIN'] },
 ]

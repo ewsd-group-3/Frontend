@@ -274,7 +274,7 @@ interface IdeaDocument {
   updatedAt: string
 }
 
-export interface IdeaDetail {
+export interface IdeaDetailI {
   id: number
   title: string
   description: string
@@ -437,6 +437,9 @@ export type Report = {
     createdAt: string
     updatedAt: string
   }
+  isIdeaHidden: false
+  isRejected: true
+  isStaffActive: true
 }
 
 export type ReportRes = {

@@ -24,7 +24,6 @@ const Post = ({
   commentCount,
   createDate,
   isAnonymous,
-  categoryIds,
 }: {
   id: number
   authorId: number
@@ -36,7 +35,6 @@ const Post = ({
   commentCount: number
   createDate: string
   isAnonymous: boolean
-  categoryIds: number[]
 }) => {
   const [auth] = useRecoilState(authState)
   const router = useRouter()
@@ -76,9 +74,8 @@ const Post = ({
             title: values.title,
             description: values.description,
             isAnonymous,
-            categoryIds,
           },
-          invalidateUrls: [`ideas`],
+          invalidateUrls: [`/ideas`],
         })
 
         if (res.statusCode === 200) {
@@ -94,10 +91,10 @@ const Post = ({
       url: `reports`,
       payload: {
         ideaId: id,
-        reason: '',
+        reason: 'Inappropriate content',
       },
       method: 'POST',
-      invalidateUrls: [`ideas`],
+      invalidateUrls: [`/ideas`],
     })
   }
 

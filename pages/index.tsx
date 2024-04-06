@@ -32,18 +32,14 @@ export default function Home() {
   return (
     <main className='flex'>
       <div className='w-full'>
-        <div>
-          Current Semester: <span className='font-bold'>{data?.data.}</span>
-        </div>
-
-        <div className='bg-blue-700 text-white w-full py-2 text-center text-sm rounded-md'>
+        <div className='bg-primary text-white w-full p-3 mb-3 text-center text-sm rounded-md'>
           {isIdeaClosed
             ? `The idea posting for ${currentSemester?.name} is closed`
             : `Idea posting for ${currentSemester?.name} will be closed on ${formateDate(currentSemester?.closureDate)}`}
         </div>
-        <div className='p-4 rounded-lg shadow-lg mb-10'>
+        <div className='p-4 rounded-lg shadow-lg mb-6 bg-lightgray/20'>
           <div className='flex items-center gap-3 '>
-            <AvatarIcon name={auth?.staff.name || 'Admin'} size='base' />
+            <AvatarIcon name={auth?.staff.name || ''} size='base' />
             <button
               disabled={isIdeaClosed}
               onClick={() => {
@@ -89,7 +85,6 @@ export default function Home() {
                   dislikeCount={dislikeCount}
                   createDate={idea.createdAt}
                   isAnonymous={idea.isAnonymous}
-                  categoryIds={idea.ideaCategories.map(category => category.categoryId)}
                 />
               )
             })}
