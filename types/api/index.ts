@@ -382,6 +382,27 @@ interface View {
   updatedAt: string
 }
 
+export interface CurrentSemeter {
+  semester: {
+    id: number
+    name: string
+    startDate: string
+    closureDate: string
+    finalClosureDate: string
+    academicInfoId: number
+    createdAt: string
+    updatedAt: string
+    academicInfo: {
+      id: number
+      name: string
+      startDate: string
+      endDate: string
+      createdAt: string
+      updatedAt: string
+    }
+  }
+}
+
 export type Report = {
   id: number
   reason: string

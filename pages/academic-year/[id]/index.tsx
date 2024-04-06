@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import React from 'react'
 import { useRecoilState } from 'recoil'
 
-const AcademicYearDetail = () => {
+const AcademicYearDetailC = () => {
   const { mutateAsync } = useMutate()
   const router = useRouter()
   const [auth] = useRecoilState(authState)
@@ -74,7 +74,7 @@ const AcademicYearDetail = () => {
   )
 }
 
-export default AcademicYearDetail
+export default AcademicYearDetailC
 
 const DateItem = ({ title, date }: { title: string; date: string }) => {
   return (
