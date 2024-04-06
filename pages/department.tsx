@@ -87,7 +87,7 @@ const Actions = ({ row }: any) => {
   )
 }
 
-export const departmentColumns: ColumnDef<Partial<Department>>[] = [
+const departmentColumns: ColumnDef<Partial<Department>>[] = [
   {
     accessorKey: 'id',
     header: 'Id',

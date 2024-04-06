@@ -1,14 +1,21 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { getDateDistance } from '@/lib/utils'
+import { getDateDistance, hideDialog, showDialog } from '@/lib/utils'
 import { MoreVertical } from 'lucide-react'
 import { useRouter } from 'next/router'
 import ReactHtmlParser from 'react-html-parser'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
 import { Button } from './button'
 import Divider from './divider'
+import { useMutate } from '@/hooks/useQuery'
+import { Input } from './input'
+import { z } from 'zod'
+import RichTextEditor from './rich-text-editor'
+import { useRecoilState } from 'recoil'
+import { authState } from '@/states/auth'
 
 const Post = ({
   id,
+  authorId,
   authorName,
   title,
   description,
@@ -19,6 +26,7 @@ const Post = ({
   isAnonymous,
 }: {
   id: number
+  authorId: number
   authorName: string
   title: string
   description: string
@@ -28,7 +36,67 @@ const Post = ({
   createDate: string
   isAnonymous: boolean
 }) => {
+  const [auth] = useRecoilState(authState)
   const router = useRouter()
+  const { mutateAsync } = useMutate()
+
+  const handleEditIdea = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation()
+    const value = {
+      title,
+      description,
+    }
+
+    showDialog({
+      title: 'Update Idea',
+      defaultValues: value,
+      formSchema: z.object({
+        title: z.string().min(1, { message: 'Title is required.' }),
+        description: z.string().min(1, { message: 'Content is required.' }),
+      }),
+      children: (
+        <div className='mt-5'>
+          <Input.Field name='title' label='Idea title' className='mb-3' />
+          <RichTextEditor name='description' label='Idea content' />
+        </div>
+      ),
+      cancel: {
+        label: 'Cancel',
+      },
+      action: {
+        label: 'Submit',
+      },
+      onSubmit: async values => {
+        const res = await mutateAsync({
+          url: `ideas/${id}`,
+          method: 'PATCH',
+          payload: {
+            title: values.title,
+            description: values.description,
+            isAnonymous,
+          },
+          invalidateUrls: [`/ideas`],
+        })
+
+        if (res.statusCode === 200) {
+          hideDialog()
+        }
+      },
+    })
+  }
+
+  const handleReportIdea = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation()
+    await mutateAsync({
+      url: `reports`,
+      payload: {
+        ideaId: id,
+        reason: 'Inappropriate content',
+      },
+      method: 'POST',
+      invalidateUrls: [`/ideas`],
+    })
+  }
 
   return (
     <div>
@@ -54,22 +122,8 @@ const Post = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end'>
-                <DropdownMenuItem
-                  onClick={e => {
-                    e.stopPropagation()
-                    alert('edit')
-                  }}
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={e => {
-                    e.stopPropagation()
-                    alert('Report')
-                  }}
-                >
-                  Report
-                </DropdownMenuItem>
+                {authorId === auth?.staff.id && <DropdownMenuItem onClick={e => handleEditIdea(e)}>Edit</DropdownMenuItem>}
+                <DropdownMenuItem onClick={e => handleReportIdea(e)}>Report</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

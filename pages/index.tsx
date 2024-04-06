@@ -10,10 +10,12 @@ import { currentSemesterState } from '@/states'
 import { formateDate } from '@/lib/date'
 import useSemester from '@/hooks/useSemester'
 import { cn } from '@/lib/utils'
+import { useRecoilState } from 'recoil'
+import { authState } from '@/states/auth'
 
 export default function Home() {
   const router = useRouter()
-
+  const [auth] = useRecoilState(authState)
   const { data, isLoading } = useFetchListing<IdeaRes>('/ideas', {
     sortBy: 'createdAt',
     sortType: 'desc',
@@ -31,7 +33,7 @@ export default function Home() {
     <main className='flex'>
       <div className='w-full'>
         {currentSemester?.name && (
-          <div className='bg-primary sticky top-0 left-0 z-30 px-2 text-white w-full py-3 text-center text-sm rounded-md'>
+          <div className='bg-primary text-white w-full p-3 mb-3 text-center text-sm rounded-md sticky top-0 left-0 z-30'>
             {isIdeaClosed
               ? `The idea posting for ${currentSemester?.name} is closed`
               : `Idea posting for ${currentSemester?.name} will be closed on ${formateDate(currentSemester?.closureDate)}`}
@@ -39,7 +41,7 @@ export default function Home() {
         )}
         <div className='p-4 rounded-lg shadow-lg mb-10'>
           <div className='flex items-center gap-3 '>
-            <AvatarIcon name='Admin' size='base' />
+            <AvatarIcon name={auth?.staff.name || ''} size='base' />
             <button
               disabled={isIdeaClosed}
               onClick={() => {
@@ -76,6 +78,7 @@ export default function Home() {
                 <Post
                   key={idea.id}
                   id={idea.id}
+                  authorId={idea.authorId}
                   authorName={idea.author.name}
                   commentCount={idea.comments.length}
                   description={idea.description}

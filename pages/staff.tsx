@@ -10,17 +10,15 @@ import { hideDialog, showDialog } from '@/lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { DepartmentRes, Staff, StaffDetail, StaffRes } from '@/types/api'
-import { ColumnDef } from '@tanstack/react-table'
+import { ColumnDef, Row } from '@tanstack/react-table'
 import { MoreVertical } from 'lucide-react'
 import { Poppins } from 'next/font/google'
-import { toast } from 'sonner'
 import { roles } from '@/constants/staffs'
 import { useRouter } from 'next/router'
-import DataPagination from '@/components/Pagination/data-pagination'
 import { useState } from 'react'
 import { useFetchListing } from '@/hooks/useFetchListing'
 import { roleStringConvertor } from '@/utils/role-convertor'
-import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { toast } from 'sonner'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -30,7 +28,7 @@ export const poppins = Poppins({
   preload: true,
 })
 
-const StaffAction = ({ row }: any) => {
+const StaffAction = ({ row }: { row: Row<Partial<Staff>> }) => {
   const router = useRouter()
   const { mutateAsync } = useMutate()
 
@@ -42,6 +40,32 @@ const StaffAction = ({ row }: any) => {
   const sortBy = (router.query.sortBy || 'id') as string
   const sortType = (router.query.sortType ?? 'asc') as string
   const page = (router.query.page ?? '1') as string
+
+  const handleResetPassword = async (id?: number) => {
+    try {
+      await mutateAsync({
+        url: `staffs/reset-password/${id}`,
+        method: 'PATCH',
+        invalidateUrls: [`staffs`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
+
+  const ToggleStaffStatus = async (id?: number) => {
+    try {
+      await mutateAsync({
+        url: `staffs/toggle-active/${id}`,
+        method: 'PATCH',
+        invalidateUrls: [`staffs`],
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
 
   return (
     <DropdownMenu
@@ -124,8 +148,10 @@ const StaffAction = ({ row }: any) => {
           >
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem>Reset Password</DropdownMenuItem>
-          <DropdownMenuItem>Disable User</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleResetPassword(row.original.id)}>Reset Password</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => ToggleStaffStatus(row.original.id)}>
+            {row.original.isActive ? 'Deactivate' : 'Activate'} User
+          </DropdownMenuItem>
         </DropdownMenuContent>
       )}
     </DropdownMenu>
@@ -172,13 +198,13 @@ const formSchema = z.object({
   role: z.enum(roles),
 })
 
-const Staff = () => {
+const StaffListPage = () => {
   const { data: departments } = useFetch<DepartmentRes, true>(`all-departments`)
   const router = useRouter()
   const { data, isLoading } = useFetchListing<StaffRes>('staffs')
   const staffs = data?.data?.staffs ?? []
   const { mutateAsync } = useMutate()
-
+  console.log(staffs)
   return (
     <section className='p-5'>
       <div className='flex justify-between'>
@@ -251,4 +277,4 @@ const Staff = () => {
   )
 }
 
-export default Staff
+export default StaffListPage
