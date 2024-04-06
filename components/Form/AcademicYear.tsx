@@ -4,7 +4,7 @@ import { Form } from '../ui/form'
 import DatePicker from '../ui/date-picker'
 import Divider from '../ui/divider'
 import { Button } from '../ui/button'
-import { addDays } from 'date-fns'
+import { addDays, subDays } from 'date-fns'
 
 export const academicYearFormSchema = z.object({
   startDate: z.date(),
@@ -29,18 +29,25 @@ const AcademicYearForm = ({
   return (
     <Form defaultValues={defaultValues} formSchema={academicYearFormSchema} onSubmit={onSubmit}>
       {values => {
-        const [startDate, endDate, firstSemStartDate, firstSemEndDate, firstSemFinalClosureDate, secondSemStartDate, secondSemEndDate] = values.watch(
-          [
-            'startDate',
-            'endDate',
-            'firstSemStartDate',
-            'firstSemEndDate',
-            'firstSemFinalClosureDate',
-            'secondSemStartDate',
-            'secondSemEndDate',
-            'secondSemFinalClosureDate',
-          ],
-        )
+        const [
+          startDate,
+          endDate,
+          firstSemStartDate,
+          firstSemEndDate,
+          firstSemFinalClosureDate,
+          secondSemStartDate,
+          secondSemEndDate,
+          secondSemFinalClosureDate,
+        ] = values.watch([
+          'startDate',
+          'endDate',
+          'firstSemStartDate',
+          'firstSemEndDate',
+          'firstSemFinalClosureDate',
+          'secondSemStartDate',
+          'secondSemEndDate',
+          'secondSemFinalClosureDate',
+        ])
         return (
           <>
             <div>
@@ -52,7 +59,7 @@ const AcademicYearForm = ({
               </div>
               <div className='flex space-x-10'>
                 <DatePicker name='startDate' label='Start date' disabled={isEdit} />
-                <DatePicker name='endDate' label='End date' minDate={startDate} disabled={!startDate} />
+                <DatePicker name='endDate' label='End date' minDate={isEdit ? secondSemFinalClosureDate : startDate} disabled={!startDate} />
               </div>
             </div>
             <Divider />
@@ -61,19 +68,19 @@ const AcademicYearForm = ({
               <div>
                 <h5 className='font-bold mb-2 text-lg'>First Semester</h5>
                 <div className='flex space-x-10'>
-                  <DatePicker name='firstSemStartDate' label='Start date' minDate={startDate} maxDate={endDate} disabled={!endDate} />
+                  <DatePicker name='firstSemStartDate' label='Start date' minDate={startDate} maxDate={endDate} disabled={isEdit || !endDate} />
                   <DatePicker
                     name='firstSemEndDate'
                     label='Closure date / Semester end date'
                     minDate={addDays(firstSemStartDate, 1)}
-                    maxDate={endDate}
+                    maxDate={isEdit ? subDays(firstSemFinalClosureDate, 1) : endDate}
                     disabled={!firstSemStartDate}
                   />
                   <DatePicker
                     name='firstSemFinalClosureDate'
                     label='Final closure date'
                     minDate={addDays(firstSemEndDate, 1)}
-                    maxDate={endDate}
+                    maxDate={isEdit ? subDays(secondSemStartDate, 1) : endDate}
                     disabled={!firstSemEndDate}
                   />
                 </div>
@@ -93,8 +100,8 @@ const AcademicYearForm = ({
                     name='secondSemEndDate'
                     label='Closure date / Semester end date'
                     minDate={addDays(secondSemStartDate, 1)}
-                    maxDate={endDate}
-                    disabled={isEdit || !secondSemStartDate}
+                    maxDate={isEdit ? subDays(secondSemFinalClosureDate, 1) : endDate}
+                    disabled={!secondSemStartDate}
                   />
                   <DatePicker
                     name='secondSemFinalClosureDate'

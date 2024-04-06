@@ -12,11 +12,12 @@ import useSemester from '@/hooks/useSemester'
 import { cn } from '@/lib/utils'
 import { useRecoilState } from 'recoil'
 import { authState } from '@/states/auth'
+import { Button } from '@/components/ui/button'
 
 export default function Home() {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
-  const { data, isLoading } = useFetchListing<IdeaRes>('/ideas', {
+  const { data, isLoading, error } = useFetchListing<IdeaRes>('/ideas', {
     sortBy: 'createdAt',
     sortType: 'desc',
     page: '1',
@@ -28,6 +29,16 @@ export default function Home() {
 
   const ideas = data?.data?.ideas ?? []
   const isIdeaClosed = !isBeforeClosureDate()
+
+  // @ts-ignore
+  if (data?.response?.data?.statusCode) {
+    return (
+      <div className='flex justify-center items-center h-screen flex-col gap-5'>
+        <h1 className='text-5xl'>No Ideas to show!</h1>
+        <p>Sorry, there is no active semester right now.</p>
+      </div>
+    )
+  }
 
   return (
     <main className='flex'>
