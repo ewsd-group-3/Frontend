@@ -1,10 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import React, { useEffect } from 'react'
 import { detect } from 'detect-browser'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { useMutate } from '@/hooks/useQuery'
 import Image from 'next/image'

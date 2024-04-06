@@ -17,7 +17,7 @@ import { useFetch, useMutate } from '@/hooks/useQuery'
 import { getIdeaCount } from '@/lib/ideas'
 import { cn, getDateDistance, isImage } from '@/lib/utils'
 import { authState } from '@/states/auth'
-import { CommentI, IdeaDetail } from '@/types/api'
+import { CommentI, IdeaDetailI } from '@/types/api'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useRecoilState } from 'recoil'
@@ -39,7 +39,7 @@ const IdeaDetail = () => {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
   const ideaId = router.query?.id
-  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${ideaId}`, {}, { enabled: !!ideaId })
+  const { data, isLoading } = useFetch<IdeaDetailI, true>(`ideas/${ideaId}`, {}, { enabled: !!ideaId })
 
   const [reacted, setReacted] = useState<Reacted>({
     like: 0,
@@ -193,12 +193,12 @@ const commentFormSchema = z.object({
   isAnonymous: z.boolean(),
 })
 
-const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; staffName?: string }) => {
+const Comment = ({ comments, staffName }: { comments: IdeaDetailI['comments']; staffName?: string }) => {
   const router = useRouter()
   const ideaId = router.query?.id
   const { mutateAsync } = useMutate()
   const { isBeforeClosureDate } = useSemester()
-  const isCommentClosed = true || !isBeforeClosureDate()
+  const isCommentClosed = !isBeforeClosureDate()
 
   const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
     const res = await mutateAsync({
