@@ -19,13 +19,13 @@ import { useRecoilState } from 'recoil'
 ChartJS.register()
 
 export default function DepartmentReport() {
+  const [auth] = useRecoilState(authState)
   const { data: academicYears } = useFetch<AcademicYearRes, true>(`academicInfos`)
   const { data: departments } = useFetch<DepartmentRes, true>(`all-departments`)
   const [semesterId, setSemesterId] = useState<string | null>(null)
-  const [departmentId, setDepartmentId] = useState<string | null>(null)
+  const [departmentId, setDepartmentId] = useState<string | null>(auth?.staff.role === 'QA_COORDINATOR' ? auth.staff.departmentId.toString() : null)
   const [data, setData] = useState<DepartmentReportRes | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [auth] = useRecoilState(authState)
   const client = useClient()
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
