@@ -17,24 +17,24 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 const ideaColumns: ColumnDef<Partial<MostViewedIdea>>[] = [
   {
-    accessorKey: 'id',
-    header: 'Id',
+    accessorKey: 'viewsCount',
+    header: 'Views Count',
   },
   {
     accessorKey: 'title',
     header: 'Title',
   },
-  // {
-  //   accessorKey: 'ideaCategories',
-  //   header: 'Category',
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className='flex items-center gap-3'>
-  //         {row.original.ideaCategories?.map(category => <Badge key={category.category.id}>{category.category.name}</Badge>) ?? ''}
-  //       </div>
-  //     )
-  //   },
-  // },
+  {
+    accessorKey: 'ideaCategories',
+    header: 'Category',
+    cell: ({ row }) => {
+      return (
+        <div className='flex items-center gap-3'>
+          {row.original.ideaCategories?.map(category => <Badge key={category.category.id}>{category.category.name}</Badge>) ?? ''}
+        </div>
+      )
+    },
+  },
   {
     accessorKey: 'author.name',
     header: 'Author',

@@ -65,15 +65,15 @@ export default function DepartmentReport() {
             <SelectValue placeholder='Department' />
           </SelectTrigger>
           <SelectContent>
-            {departments
-              ? departments.data.departments.map(department => (
-                  <SelectItem key={department.id} value={department.id.toString()}>
-                    {department.name}
-                  </SelectItem>
-                ))
-              : auth?.staff.role === 'QA_COORDINATOR' && (
-                  <SelectItem value={auth.staff.departmentId.toString()}>{auth?.staff.department.name}</SelectItem>
-                )}
+            {departments && auth?.staff.role === 'QA_COORDINATOR' ? (
+              <SelectItem value={auth.staff.departmentId.toString()}>{auth?.staff.department.name}</SelectItem>
+            ) : (
+              departments?.data.departments.map(department => (
+                <SelectItem key={department.id} value={department.id.toString()}>
+                  {department.name}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
 

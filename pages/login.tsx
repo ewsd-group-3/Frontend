@@ -71,6 +71,7 @@ const Login = () => {
       setAuth({
         staff: data.data.staff,
         tokens: data.data.tokens,
+        firstTimeLogin: data.data.firstTimeLogin,
       })
       router.push('/')
     }

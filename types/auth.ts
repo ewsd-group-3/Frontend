@@ -24,6 +24,7 @@ type Tokens = {
 export type LoggedInData = {
   staff: Staff
   tokens: Tokens
+  firstTimeLogin: boolean
 }
 
 type LoginResponse = {

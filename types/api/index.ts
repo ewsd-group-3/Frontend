@@ -372,6 +372,14 @@ export interface MostViewedIdea {
   views: View[]
   author: Author
   viewsCount: number
+  ideaCategories: {
+    category: Category
+    categoryId: number
+    createdAt: string
+    id: number
+    ideaId: number
+    updatedAt: string
+  }[]
 }
 
 interface View {

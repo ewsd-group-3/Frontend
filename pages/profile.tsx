@@ -70,7 +70,11 @@ export default function Profile() {
             <div className='flex flex-col gap-1'>
               <h1 className='text-2xl font-semibold'>{profile.name}</h1>
               <span className='capitalize font-medium'>Role: {roleStringConvertor(profile.role)}</span>
-              <span>Last active: {formateDate(profile.lastLoginDate, 'd MMM y, hh:mm:ss a')}</span>
+              {auth?.firstTimeLogin ? (
+                <span className='font-semibold'>Welcome to Wayne School Portal!</span>
+              ) : (
+                <span>Last active: {formateDate(profile.lastLoginDate, 'd MMM y, hh:mm:ss a')}</span>
+              )}
             </div>
           </div>
           <div className='mt-12 grid grid-cols-1 md:grid-cols-2 gap-5'>
