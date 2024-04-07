@@ -111,7 +111,12 @@ const reportedListColumns: ColumnDef<Partial<Report>>[] = [
 ]
 
 export default function ReportedListPage() {
-  const { data, isLoading } = useFetchListing<ReportRes>('reports')
+  const { data, isLoading } = useFetchListing<ReportRes>('reports', {
+    sortBy: 'createdAt',
+    sortType: 'desc',
+    page: '1',
+    limit: 5,
+  })
   console.log(data)
 
   return (

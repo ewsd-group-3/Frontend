@@ -19,7 +19,12 @@ export default function AccouncementCreate() {
   const [auth] = useRecoilState(authState)
   const [type, setType] = useState<'ALL' | 'SPECIFIC'>('ALL')
   const [selectedStaff, setselectedStaff] = useState<Staff[]>([])
-  const { data: staffs } = useFetchListing<StaffRes>('staffs', { sortBy: 'id', sortType: 'asc', page: '1', limit: 1000 })
+  const { data: staffs } = useFetchListing<StaffRes>(`staffs?departmentId=${auth?.staff.departmentId}`, {
+    sortBy: 'id',
+    sortType: 'asc',
+    page: '1',
+    limit: 1000,
+  })
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
