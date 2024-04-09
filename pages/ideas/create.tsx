@@ -172,7 +172,7 @@ const IdeaCreate = () => {
               </div>
 
               <div className='flex gap-5 mt-10'>
-                <Button type='button' variant={'outline'} className='ml-auto'>
+                <Button type='button' variant={'outline'} className='ml-auto' disabled={loading} onClick={() => router.push('/')}>
                   Cancel
                 </Button>
                 <Button type='submit' variant={'default'} disabled={!props.formState.isValid || loading || !isCheckboxChecked}>
