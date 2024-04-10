@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { getDateDistance, hideDialog, showDialog } from '@/lib/utils'
-import { MoreVertical } from 'lucide-react'
+import { ArrowBigDown, ArrowBigUp, ArrowDown, MessageSquare, MoreVertical } from 'lucide-react'
 import { useRouter } from 'next/router'
 import ReactHtmlParser from 'react-html-parser'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
@@ -109,7 +109,9 @@ const Post = ({
         <div className='flex justify-between'>
           <div className='flex gap-2 items-center text-sm'>
             <AvatarIcon name={isAnonymous ? 'Anonymous' : authorName} size='sm' />
-            <span>Posted by {isAnonymous ? 'Anonymous' : authorName} </span>
+            <span>
+              Posted by <span className='font-medium'>{isAnonymous ? 'Anonymous' : authorName}</span>
+            </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(createDate)}</time>
           </div>
@@ -134,11 +136,17 @@ const Post = ({
           {description.length > 300 && <small className='text-sm font-bold text-gray-500'>... See more</small>}
         </div>
         <div className='flex text-sm gap-2'>
-          <p>{likeCount} likes</p>
+          <p className='flex items-center gap-1 font-medium'>
+            {likeCount} <ArrowBigUp size={20} color='grey' />
+          </p>
           <Divider intent={'vertical'} className='h-5' />
-          <p>{dislikeCount} dislikes</p>
+          <p className='flex items-center gap-1 font-medium'>
+            {dislikeCount} <ArrowBigDown size={20} color='grey' />
+          </p>
           <Divider intent={'vertical'} className='h-5' />
-          <p>{commentCount} comments</p>
+          <p className='flex items-center gap-1 font-medium'>
+            {commentCount} <MessageSquare size={20} color='grey' />
+          </p>
         </div>
       </div>
     </div>
