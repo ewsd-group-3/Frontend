@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang='en'>
       <Head>
         <link rel='icon' href='/wayne-school-favicon.svg' />
-        <title>Wayne School Portal</title>
+        <title>Wayne University Internal Feedback System</title>
       </Head>
       <body>
         <Main />

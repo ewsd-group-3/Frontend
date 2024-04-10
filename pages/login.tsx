@@ -85,7 +85,7 @@ const Login = () => {
 
       <div className='h-full w-full grid place-items-center order-1 md:order-2 max-sm:-mt-20'>
         <div className='md:w-9/12 max-w-md mx-auto'>
-          <h2 className='font-bold text-2xl mb-2'>Login to Wayne School Portal</h2>
+          <h2 className='font-bold text-2xl mb-2 text-balance'>Login to Wayne University Internal Feedback System</h2>
           <small className='text-sm mb-5 block'>Share ideas, find helpful information, announcements, and collaborate with colleagues.</small>
           <div>
             <Form defaultValues={{ email: '', password: '' }} formSchema={formSchema} onSubmit={onSubmit}>

@@ -285,7 +285,9 @@ export interface IdeaDetailI {
   createdAt: string
   updatedAt: string
   ideaCategories: IdeaCategory[]
-  author: Author
+  author: Author & {
+    department: Department
+  }
   semester: {
     id: number
     name: string
