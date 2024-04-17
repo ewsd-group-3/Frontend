@@ -68,7 +68,7 @@ export default function SystemReport() {
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    const { data } = await client<SystemReportRes>(`system-reports?semesterId=${semesterId}&page=1&limit=3`)
+    const { data } = await client<SystemReportRes>(`system-reports?semesterId=${semesterId}`)
     console.log(data)
     setData(data)
     setIsLoading(false)
@@ -107,7 +107,7 @@ export default function SystemReport() {
         data &&
         !isLoading && (
           <>
-            <div className='grid grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
               <MostUsedContainer icon={{ src: Users2 }} title='Top 3 Active Users' includeIcons>
                 {data.topActiveUsers.length > 0 ? (
                   data.topActiveUsers.map((user, index) => (
@@ -142,6 +142,7 @@ export default function SystemReport() {
                   columns={ideaColumns}
                   data={data.mostViewedIdeas}
                   isLoading={isLoading}
+                  hidePagination
                 />
               </MostUsedContainer>
             </div>
