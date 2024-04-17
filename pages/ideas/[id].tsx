@@ -115,17 +115,19 @@ const IdeaDetailC = () => {
   return (
     <div className='max-w-3xl p-4'>
       <div className='flex justify-between'>
-        <div className='flex gap-2'>
-          <button onClick={() => router.push('/')} className='w-10 h-10 bg-primary/10 grid place-items-center rounded-full'>
+        <div className='flex flex-wrap gap-2'>
+          <button onClick={() => router.push('/')} className='w-10 h-10 bg-primary/10 grid place-items-center rounded-full mr-4'>
             <ArrowLeft />
           </button>
           <div className='flex gap-2 items-center text-sm'>
             <AvatarIcon name={ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} size='sm' />
-            <span>Posted by {ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} </span>
+            <span>
+              Posted by <span className='font-medium'>{ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name}</span>
+            </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(ideaData.createdAt)}</time>
             <div className='w-1 h-1 bg-black rounded-full' />
-            <span>Department Name</span>
+            <span className='capitalize font-semibold'>{ideaData.author.department.name}</span>
           </div>
         </div>
 
@@ -267,7 +269,9 @@ const CommentItem = (props: CommentI) => {
     <div className='w-full bg-lightgray  text-black rounded-lg flex flex-col gap-3 p-4'>
       <div className='flex gap-2 items-center text-sm'>
         <AvatarIcon name={props.isAnonymous ? 'Anonymous' : props.staff.name} size='sm' />
-        <span>Posted by {props.isAnonymous ? 'Anonymous' : props.staff.name} </span>
+        <span>
+          Posted by <span className='font-medium'>{props.isAnonymous ? 'Anonymous' : props.staff.name}</span>
+        </span>
 
         <div className='w-1 h-1 bg-black rounded-full' />
         <time>{getDateDistance(props.createdAt)}</time>

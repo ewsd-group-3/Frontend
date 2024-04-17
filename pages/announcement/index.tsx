@@ -45,7 +45,7 @@ const accouncementColumns: ColumnDef<Partial<Announcement>>[] = [
 const handlePopup = (content?: string) => {
   showDialog({
     title: 'Announcement Content',
-    children: <div className='mt-4 max-h-[60vh] overflow-y-auto'>{content}</div>,
+    children: <div className='mt-5 max-h-[60vh] overflow-y-auto'>{content}</div>,
     cancel: true,
     submit: false,
   })
