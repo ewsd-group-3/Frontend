@@ -105,10 +105,6 @@ const StaffAction = ({ row }: { row: Row<Partial<Staff>> }) => {
                     </div>
 
                     <div className='mt-5'>
-                      <SelectField items={roles.map(role => ({ label: role, value: role }))} name='role' label='Role' placeholder='Select a role' />
-                    </div>
-
-                    <div className='mt-5'>
                       <SelectField
                         items={
                           departments
@@ -122,6 +118,10 @@ const StaffAction = ({ row }: { row: Row<Partial<Staff>> }) => {
                         label='Department'
                         placeholder='Select a department'
                       />
+                    </div>
+
+                    <div className='mt-5'>
+                      <SelectField items={roles.map(role => ({ label: role, value: role }))} name='role' label='Role' placeholder='Select a role' />
                     </div>
                   </div>
                 ),
