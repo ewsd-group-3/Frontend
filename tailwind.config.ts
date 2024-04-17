@@ -15,6 +15,7 @@ const config = withUt({
       },
     },
     extend: {
+      gridTemplateColumns: { academicForm: 'repeat(auto-fit, minmax(250px, 1fr))' },
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
       },

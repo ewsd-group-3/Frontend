@@ -28,7 +28,7 @@ export function useFetchListing<TData>(
     },
   )
 
-  if (error?.message === 'unauthorized') {
+  if (error?.statusCode === 403) {
     throw new Error('unauthorized')
   }
 

@@ -139,6 +139,7 @@ export type AcademicYearDetail = {
   createdAt: string
   updatedAt: string
   semesters: Semester[]
+  status: 'Done' | 'Ongoing' | 'Upcoming'
 }
 
 export type ProfileRes = {

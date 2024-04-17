@@ -49,6 +49,7 @@ const IdeaDetailC = () => {
   })
   const ideaData = data?.data
 
+  console.log(ideaData, 'omgs')
   const { mutateAsync } = useMutate()
 
   const { likeCount, dislikeCount } = getIdeaCount(ideaData?.votes ?? [])
@@ -198,8 +199,8 @@ const Comment = ({ comments, staffName }: { comments: IdeaDetailI['comments']; s
   const router = useRouter()
   const ideaId = router.query?.id
   const { mutateAsync, isLoading } = useMutate()
-  const { isBeforeClosureDate } = useSemester()
-  const isCommentClosed = !isBeforeClosureDate()
+  const { isBeforeFinalClosureDate } = useSemester()
+  const isCommentClosed = !isBeforeFinalClosureDate()
 
   const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
     if (isLoading) return
