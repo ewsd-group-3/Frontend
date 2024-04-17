@@ -127,7 +127,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-        <main className={`max-w-[1440px] mx-auto mt-16 flex-1 p-5 pt-3 duration-300 md:mt-0`}>
+        <main className={`md:max-w-[1440px] max-w-full mx-auto mt-16 flex-1 p-3 md:p-5 pt-3 duration-300 md:mt-0`}>
           <div className={`${auth ? (open ? `md:ml-72` : `md:ml-20`) : 'ml-0'} transition-all`}>{children}</div>
         </main>
       </div>

@@ -204,9 +204,9 @@ const StaffListPage = () => {
   const { data, isLoading } = useFetchListing<StaffRes>('staffs')
   const staffs = data?.data?.staffs ?? []
   const { mutateAsync } = useMutate()
-  console.log(staffs)
+
   return (
-    <section className='p-5'>
+    <section className='p-2 md:p-5'>
       <div className='flex justify-between'>
         <h2 className='text-xl font-bold'>Staff</h2>
         <Button

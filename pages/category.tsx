@@ -110,7 +110,7 @@ const CategoryC = () => {
   const setDialog = useSetRecoilState(dialogState)
 
   return (
-    <section className='p-5'>
+    <section className='md:px-5 py-5'>
       <div className='flex justify-between'>
         <h2 className='text-xl font-bold'>Category</h2>
         <Button

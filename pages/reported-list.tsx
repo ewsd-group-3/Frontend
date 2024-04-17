@@ -120,7 +120,7 @@ export default function ReportedListPage() {
   console.log(data)
 
   return (
-    <section className='p-5'>
+    <section className='p-2 md:p-5'>
       <h2 className='text-xl font-bold'>Reported List</h2>
       <div className='mt-6'>
         <DataTable
