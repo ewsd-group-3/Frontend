@@ -19,7 +19,7 @@ export type Response<T = any> = {
 }
 
 export type ResponseError = {
-  code: number
+  statusCode: number
   data?: any
   message: string
 }

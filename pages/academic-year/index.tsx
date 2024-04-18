@@ -77,7 +77,7 @@ const AcademicYear = () => {
   const academicYears = data?.data?.academicInfos ?? []
 
   return (
-    <section className='p-5'>
+    <section className='p-2 md:p-5'>
       <div className='flex justify-between'>
         <h2 className='font-bold text-xl'>Academic Year</h2>
         {auth?.staff.role === 'ADMIN' && <Button onClick={() => router.push('/academic-year/create')}>Create</Button>}

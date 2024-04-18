@@ -91,6 +91,7 @@ const departmentColumns: ColumnDef<Partial<Department>>[] = [
   {
     accessorKey: 'id',
     header: 'Id',
+    cell: ({ row }) => <p>DEP-{row.original.id?.toString().padStart(5, '30000')}</p>,
   },
   {
     accessorKey: 'name',
@@ -116,7 +117,7 @@ const DepartmentC = () => {
   const setDialog = useSetRecoilState(dialogState)
 
   return (
-    <section className='p-5'>
+    <section className='p-2 md:p-5'>
       <div className='flex justify-between'>
         <h2 className='text-xl font-bold'>Department</h2>
         <Button

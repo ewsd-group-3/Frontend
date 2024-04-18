@@ -20,12 +20,13 @@ import { z } from 'zod'
 export const ideaFormSchema = z.object({
   title: z.string().min(1, { message: 'Please fill title of the post' }),
   content: z.string(),
-  category: z.array(
-    z.object({
+  category: z
+    .object({
       label: z.string(),
       value: z.string().or(z.number()),
-    }),
-  ),
+    })
+    .array()
+    .nonempty(),
   documents: z.array(
     z.object({
       name: z.string(),

@@ -85,6 +85,8 @@ export default function Home() {
                 }
               })
 
+              const firstImage = idea.ideaDocuments.find(doc => doc.documenttype.includes('image'))?.documentDownloadUrl
+
               return (
                 <Post
                   key={idea.id}
@@ -98,6 +100,7 @@ export default function Home() {
                   dislikeCount={dislikeCount}
                   createDate={idea.createdAt}
                   isAnonymous={idea.isAnonymous}
+                  imageUrl={firstImage}
                 />
               )
             })}

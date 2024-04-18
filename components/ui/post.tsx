@@ -12,6 +12,7 @@ import { z } from 'zod'
 import RichTextEditor from './rich-text-editor'
 import { useRecoilState } from 'recoil'
 import { authState } from '@/states/auth'
+import Image from 'next/image'
 
 const Post = ({
   id,
@@ -24,6 +25,7 @@ const Post = ({
   commentCount,
   createDate,
   isAnonymous,
+  imageUrl,
 }: {
   id: number
   authorId: number
@@ -35,6 +37,7 @@ const Post = ({
   commentCount: number
   createDate: string
   isAnonymous: boolean
+  imageUrl?: string
 }) => {
   const [auth] = useRecoilState(authState)
   const router = useRouter()
@@ -135,6 +138,11 @@ const Post = ({
           {ReactHtmlParser(description.substring(0, 300))}{' '}
           {description.length > 300 && <small className='text-sm font-bold text-gray-500'>... See more</small>}
         </div>
+        {imageUrl && (
+          <div className='w-64 rounded-lg overflow-hidden'>
+            <Image width={256} height={200} src={imageUrl} alt={title} className='w-full h-full' />
+          </div>
+        )}
         <div className='flex text-sm gap-2'>
           <p className='flex items-center gap-1 font-medium'>
             {likeCount} <ArrowBigUp size={20} color='grey' />

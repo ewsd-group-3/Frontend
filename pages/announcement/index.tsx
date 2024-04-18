@@ -56,7 +56,7 @@ export default function AccouncementPage() {
   const accouncements = data?.data?.announcements ?? []
 
   return (
-    <section className='p-5'>
+    <section className='p-2 md:p-5'>
       <div className='flex justify-between'>
         <h2 className='text-xl font-bold'>Accouncements</h2>
         <Link href='/announcement/create'>

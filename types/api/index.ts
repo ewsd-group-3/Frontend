@@ -139,6 +139,7 @@ export type AcademicYearDetail = {
   createdAt: string
   updatedAt: string
   semesters: Semester[]
+  status: 'Done' | 'Ongoing' | 'Upcoming'
 }
 
 export type ProfileRes = {
@@ -168,6 +169,15 @@ export type Idea = {
       createdAt: string
       updatedAt: string
     }
+  }[]
+  ideaDocuments: {
+    id: number
+    name: string
+    documenttype: string
+    documentDownloadUrl: string
+    documentDeleteUrl: string
+    createdAt: string
+    updatedAt: string
   }[]
   author: {
     id: number
