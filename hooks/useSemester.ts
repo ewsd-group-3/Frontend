@@ -12,6 +12,7 @@ const useSemester = () => {
 
   if (currentSemData && currentSemData?.semester?.academicInfoId !== currentSemester?.academicInfo.id) {
     setCurrentSemester({
+      id: currentSemData.semester.id,
       academicInfo: {
         id: currentSemData?.semester?.academicInfoId,
         name: currentSemData?.semester?.academicInfo?.name,

@@ -20,11 +20,12 @@ import { authState } from '@/states/auth'
 import { CommentI, IdeaDetailI } from '@/types/api'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { Pagination } from 'swiper/modules'
 import { z } from 'zod'
 import useSemester from '@/hooks/useSemester'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { currentSemesterState } from '@/states'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
@@ -41,6 +42,7 @@ const IdeaDetailC = () => {
   const [auth] = useRecoilState(authState)
   const ideaId = router.query?.id
   const { data, isLoading } = useFetch<IdeaDetailI, true>(`ideas/${ideaId}`, {}, { enabled: !!ideaId })
+  const { isBeforeFinalClosureDate } = useSemester()
 
   const [reacted, setReacted] = useState<Reacted>({
     like: 0,
@@ -48,8 +50,9 @@ const IdeaDetailC = () => {
     type: 'none',
   })
   const ideaData = data?.data
+  const currentSem = useRecoilValue(currentSemesterState)
+  const isReactionClosed = currentSem?.id !== ideaData?.semesterId || !isBeforeFinalClosureDate()
 
-  console.log(ideaData, 'omgs')
   const { mutateAsync } = useMutate()
 
   const { likeCount, dislikeCount } = getIdeaCount(ideaData?.votes ?? [])
@@ -175,17 +178,25 @@ const IdeaDetailC = () => {
       </section>
 
       <div className='rounded-full flex border-black border-2 border-solid w-max mt-5 px-2'>
-        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('like')}>
+        <button
+          disabled={isReactionClosed}
+          className={cn('p-2 flex items-center gap-1 text-sm', { 'cursor-not-allowed': isReactionClosed })}
+          onClick={() => handleReactPost('like')}
+        >
           <ArrowBigUp fill={reacted.type === 'like' ? '' : 'transparent'} /> {reacted.like} likes
         </button>
         <Divider intent={'vertical'} className='bg-black mx-2' />
-        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('dislike')}>
+        <button
+          disabled={isReactionClosed}
+          className={cn('p-2 flex items-center gap-1 text-sm', { 'cursor-not-allowed': isReactionClosed })}
+          onClick={() => handleReactPost('dislike')}
+        >
           <ArrowBigDown fill={reacted.type === 'dislike' ? '' : 'transparent'} />
           {reacted.dislike} dislikes
         </button>
       </div>
 
-      <Comment comments={ideaData.comments} staffName={auth?.staff?.name} />
+      <Comment postId={ideaData.semesterId} comments={ideaData.comments} staffName={auth?.staff?.name} />
     </div>
   )
 }
@@ -197,12 +208,13 @@ const commentFormSchema = z.object({
   isAnonymous: z.boolean(),
 })
 
-const Comment = ({ comments, staffName }: { comments: IdeaDetailI['comments']; staffName?: string }) => {
+const Comment = ({ postId, comments, staffName }: { postId: number; comments: IdeaDetailI['comments']; staffName?: string }) => {
   const router = useRouter()
   const ideaId = router.query?.id
+  const currentSem = useRecoilValue(currentSemesterState)
   const { mutateAsync, isLoading } = useMutate()
   const { isBeforeFinalClosureDate } = useSemester()
-  const isCommentClosed = !isBeforeFinalClosureDate()
+  const isCommentClosed = currentSem?.id !== postId || !isBeforeFinalClosureDate()
 
   const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
     if (isLoading) return

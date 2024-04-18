@@ -8,8 +8,10 @@ import { useFetchListing } from '@/hooks/useFetchListing'
 import { DataTable } from '@/components/DataTable/data-table'
 import { formateDate } from '@/lib/date'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
 const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
+  const isActionTaken = !row.original.isStaffActive || row.original.isIdeaHidden
   const { mutateAsync } = useMutate()
 
   const handleToggleUser = async (authorId?: number) => {
@@ -76,15 +78,23 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
         <DropdownMenuItem onClick={() => handleToggleUser(row.original.idea?.authorId)}>
           {row.original.isStaffActive ? 'Deactivate' : 'Activate'} User
         </DropdownMenuItem>
+
         <DropdownMenuItem onClick={() => (row.original.isIdeaHidden ? handleUnhidePost(row.original.ideaId) : handleHidePost(row.original.ideaId))}>
           {row.original.isIdeaHidden ? 'UnHide' : 'Hide'} post
         </DropdownMenuItem>
-        <DropdownMenuItem disabled={row.original.isRejected} onClick={() => handleRejectPost(row.original.id)}>
-          Reject
-        </DropdownMenuItem>
+
+        {!isActionTaken && !row.original.isRejected && <DropdownMenuItem onClick={() => handleRejectPost(row.original.id)}>Reject</DropdownMenuItem>}
       </DropdownMenuContent>
     </DropdownMenu>
   )
+}
+
+const getReportStatus = ({ isRejected, isIdeaHidden, isStaffActive }: { isRejected?: boolean; isIdeaHidden?: boolean; isStaffActive?: boolean }) => {
+  const status = []
+  if (!isRejected) return 'Rejected'
+  if (!!isIdeaHidden) status.push('Hide post')
+  if (!isStaffActive) status.push('Deactivated user')
+  return status.length === 0 ? '--' : status.join(', ')
 }
 
 const reportedListColumns: ColumnDef<Partial<Report>>[] = [
@@ -95,17 +105,28 @@ const reportedListColumns: ColumnDef<Partial<Report>>[] = [
   },
   {
     accessorKey: 'idea.author.name',
-    header: 'Reported Name',
+    header: 'Reported To',
   },
   {
     accessorKey: 'idea.title',
-    header: 'Post',
+    header: 'Post title',
+    cell: ({ row }) => <Link href={`/ideas/${row.original?.ideaId}`}>{row.original?.idea?.title}</Link>,
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      return getReportStatus({
+        isIdeaHidden: row.original.isIdeaHidden,
+        isStaffActive: row.original.isStaffActive,
+      })
+    },
   },
   {
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      return row.original.isRejected ? 'Rejected' : <Actions row={row} />
+      return row.original.isRejected ? '' : <Actions row={row} />
     },
   },
 ]
@@ -117,7 +138,6 @@ export default function ReportedListPage() {
     page: '1',
     limit: 5,
   })
-  console.log(data)
 
   return (
     <section className='p-2 md:p-5'>

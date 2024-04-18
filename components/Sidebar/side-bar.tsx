@@ -8,10 +8,13 @@ import MenuLink from './menu-link'
 import MobileMenu from './mobile-menu'
 import { useRecoilState } from 'recoil'
 import { authState } from '@/states/auth'
-import { showDialog } from '@/lib/utils'
+import { cn, showDialog } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { dialogState } from '@/states/dialog'
 import { LoadingSpinner } from '../ui/loading-spinner'
+import { formateDate } from '@/lib/date'
+import { useFetch } from '@/hooks/useQuery'
+import { ProfileRes } from '@/types/api'
 
 function getLocalIsSidebarOpen() {
   return localStorage.getItem('isSidebarOpen') === 'true' ? true : false
@@ -24,6 +27,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [dialog, setDialog] = useRecoilState(dialogState)
   const pathName = usePathname()
   const [open, setOpen] = useState(typeof window !== 'undefined' ? getLocalIsSidebarOpen : null)
+  const { data, isLoading } = useFetch<ProfileRes, true>(`staffs/${auth?.staff.id}`)
+  const profile = data?.data?.staff
 
   useEffect(() => {
     if (auth === undefined) {
@@ -93,6 +98,18 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className='overflow-hidden'>
+            <p
+              className={cn('text-sm text-gray-300 mb-2 opacity-0 delay-300', {
+                'opacity-100': open,
+                'transition-none': !open,
+                'transition-all': open,
+              })}
+            >
+              {auth?.firstTimeLogin
+                ? 'Welcome to Wayne School Portal!'
+                : `Last active: ${formateDate(profile?.lastLoginDate, 'd MMM y, hh:mm:ss a')}`}
+            </p>
+
             <hr />
             <MenuLink
               icon={{
