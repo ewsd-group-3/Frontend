@@ -9,8 +9,9 @@ import { DataTable } from '@/components/DataTable/data-table'
 import { formateDate } from '@/lib/date'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { hideDialog, showDialog } from '@/lib/utils'
 
-const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
+const Actions = ({ row }: { row: Row<Report> }) => {
   const isActionTaken = !row.original.isStaffActive || row.original.isIdeaHidden
   const { mutateAsync } = useMutate()
 
@@ -27,23 +28,10 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
     }
   }
 
-  const handleHidePost = async (ideaId?: number) => {
+  const handleHidePost = async (ideaId: number, isIdeaHidden: boolean) => {
     try {
       await mutateAsync({
-        url: `ideas/${ideaId}/hide`,
-        method: 'PATCH',
-        invalidateUrls: [`reports`],
-      })
-    } catch (error: any) {
-      console.error(error)
-      toast.error(error.message)
-    }
-  }
-
-  const handleUnhidePost = async (ideaId?: number) => {
-    try {
-      await mutateAsync({
-        url: `ideas/${ideaId}/unhide`,
+        url: isIdeaHidden ? `ideas/${ideaId}/unhide` : `ideas/${ideaId}/hide`,
         method: 'PATCH',
         invalidateUrls: [`reports`],
       })
@@ -66,6 +54,27 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
     }
   }
 
+  const onClickHidePost = async (ideaId: number, isIdeaHidden: boolean) => {
+    showDialog({
+      title: 'Are you sure to continue?',
+      children: (
+        <div className='mt-5'>
+          <p>This will hide all posts and comments from this user. Please click Yes to confirm.</p>
+        </div>
+      ),
+      cancel: {
+        label: 'Cancel',
+      },
+      action: {
+        label: 'Yes',
+        onClick: async () => {
+          await handleHidePost(ideaId, isIdeaHidden)
+          hideDialog()
+        },
+      },
+    })
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -79,8 +88,8 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
           {row.original.isStaffActive ? 'Deactivate' : 'Activate'} User
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => (row.original.isIdeaHidden ? handleUnhidePost(row.original.ideaId) : handleHidePost(row.original.ideaId))}>
-          {row.original.isIdeaHidden ? 'UnHide' : 'Hide'} post
+        <DropdownMenuItem onClick={() => onClickHidePost(row.original.ideaId, row.original.isIdeaHidden)}>
+          {row.original.isIdeaHidden ? 'Unhide' : 'Hide'} post
         </DropdownMenuItem>
 
         {!isActionTaken && !row.original.isRejected && <DropdownMenuItem onClick={() => handleRejectPost(row.original.id)}>Reject</DropdownMenuItem>}
@@ -91,13 +100,13 @@ const Actions = ({ row }: { row: Row<Partial<Report>> }) => {
 
 const getReportStatus = ({ isRejected, isIdeaHidden, isStaffActive }: { isRejected?: boolean; isIdeaHidden?: boolean; isStaffActive?: boolean }) => {
   const status = []
-  if (!isRejected) return 'Rejected'
+  if (isRejected) return 'Rejected'
   if (!!isIdeaHidden) status.push('Hide post')
   if (!isStaffActive) status.push('Deactivated user')
   return status.length === 0 ? '--' : status.join(', ')
 }
 
-const reportedListColumns: ColumnDef<Partial<Report>>[] = [
+const reportedListColumns: ColumnDef<Report>[] = [
   {
     accessorKey: 'createdAt',
     header: 'Reported Date',
@@ -117,6 +126,7 @@ const reportedListColumns: ColumnDef<Partial<Report>>[] = [
     header: 'Status',
     cell: ({ row }) => {
       return getReportStatus({
+        isRejected: row.original.isRejected,
         isIdeaHidden: row.original.isIdeaHidden,
         isStaffActive: row.original.isStaffActive,
       })

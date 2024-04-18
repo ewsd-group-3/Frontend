@@ -1,34 +1,60 @@
 import AvatarIcon from '@/components/AvatarIcon/avatar-icon'
+import DataPagination from '@/components/Pagination/data-pagination'
 import FullPageLoader from '@/components/shared/full-page-loader'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import Post from '@/components/ui/post'
 import { useFetchListing } from '@/hooks/useFetchListing'
-import { IdeaRes } from '@/types/api'
-import { useRouter } from 'next/router'
-import DataPagination from '@/components/Pagination/data-pagination'
-import { useRecoilValue } from 'recoil'
-import { currentSemesterState } from '@/states'
-import { formateDate } from '@/lib/date'
 import useSemester from '@/hooks/useSemester'
+import { formateDate } from '@/lib/date'
 import { cn } from '@/lib/utils'
-import { useRecoilState } from 'recoil'
+import { currentSemesterState } from '@/states'
 import { authState } from '@/states/auth'
-import { Button } from '@/components/ui/button'
+import { CategoryRes, IdeaRes } from '@/types/api'
+import { ChevronDown } from 'lucide-react'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { useRecoilState, useRecoilValue } from 'recoil'
+
+const sortByIdea = [
+  {
+    label: 'Most recent post',
+    value: 'createdAt',
+  },
+  {
+    label: 'Most view',
+    value: 'totalViewCount',
+  },
+  {
+    label: 'Most voted',
+    value: 'voteResult',
+  },
+]
 
 export default function Home() {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
-  const { data, isLoading, error } = useFetchListing<IdeaRes>('/ideas', {
-    sortBy: 'createdAt',
-    sortType: 'desc',
-    page: '1',
-    limit: 5,
-  })
 
   const { isBeforeClosureDate } = useSemester()
+  const isIdeaClosed = !isBeforeClosureDate()
+
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [categoryId, setCategoryId] = useState<number>(0)
   const currentSemester = useRecoilValue(currentSemesterState)
 
+  const { data, isLoading, error } = useFetchListing<IdeaRes>(
+    `/ideas?category=${categoryId}`,
+    {
+      sortBy: sortBy,
+      sortType: 'desc',
+      page: '1',
+      limit: 5,
+    },
+    false,
+  )
+
+  const { data: categoryData } = useFetchListing<CategoryRes>('categories')
   const ideas = data?.data?.ideas ?? []
-  const isIdeaClosed = !isBeforeClosureDate()
+  const categories = categoryData?.data?.categories
 
   // @ts-ignore
   if (data?.response?.data?.statusCode) {
@@ -73,43 +99,92 @@ export default function Home() {
             <FullPageLoader />
           </div>
         ) : (
-          <div className='divide-y space-y-2 divide-gray-400'>
-            {ideas.map(idea => {
-              let likeCount = 0
-              let dislikeCount = 0
-              idea.votes.forEach(vote => {
-                if (vote.isThumbUp) {
-                  likeCount++
-                } else {
-                  dislikeCount++
-                }
-              })
+          <div>
+            <div className='flex flex-col sm:flex-row'>
+              <DropdownMenu>
+                <DropdownMenuTrigger className='outline-none'>
+                  <div className='flex gap-3  px-5 py-2 rounded-full text-sm items-center hover:backdrop-brightness-95 outline-none'>
+                    {sortByIdea.find(idea => idea.value === sortBy)?.label} <ChevronDown />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {sortByIdea.map(item => (
+                    <DropdownMenuItem
+                      key={item.value}
+                      className={cn({ 'bg-primary text-primary-foreground': sortBy === item.value })}
+                      onSelect={() => setSortBy(item.value)}
+                    >
+                      {item.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-              const firstImage = idea.ideaDocuments.find(doc => doc.documenttype.includes('image'))?.documentDownloadUrl
+              <DropdownMenu>
+                <DropdownMenuTrigger className='outline-none'>
+                  <div className='flex gap-3  px-5 py-2 rounded-full text-sm items-center hover:backdrop-brightness-95 outline-none'>
+                    {categories?.find(category => category?.id === categoryId)?.name ?? 'All categories'} <ChevronDown />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    key={'all'}
+                    className={cn({ 'bg-primary text-primary-foreground': categoryId === 0 })}
+                    onSelect={() => setCategoryId(0)}
+                  >
+                    All categories
+                  </DropdownMenuItem>
+                  {categories?.map(category => (
+                    <DropdownMenuItem
+                      key={category.id}
+                      className={cn({ 'bg-primary text-primary-foreground': categoryId === category.id })}
+                      onSelect={() => setCategoryId(category.id)}
+                    >
+                      {category.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className='divide-y space-y-2 divide-gray-400'>
+              {ideas.map(idea => {
+                let likeCount = 0
+                let dislikeCount = 0
+                idea.votes.forEach(vote => {
+                  if (vote.isThumbUp) {
+                    likeCount++
+                  } else {
+                    dislikeCount++
+                  }
+                })
 
-              return (
-                <Post
-                  key={idea.id}
-                  id={idea.id}
-                  authorId={idea.authorId}
-                  authorName={idea.author.name}
-                  commentCount={idea.comments.length}
-                  description={idea.description}
-                  title={idea.title}
-                  likeCount={likeCount}
-                  dislikeCount={dislikeCount}
-                  createDate={idea.createdAt}
-                  isAnonymous={idea.isAnonymous}
-                  imageUrl={firstImage}
-                />
-              )
-            })}
-          </div>
-        )}
+                const firstImage = idea.ideaDocuments.find(doc => doc.documenttype.includes('image'))?.documentDownloadUrl
 
-        {data && (
-          <div className='mt-3'>
-            <DataPagination currentPage={data?.data?.page} totalPage={data?.data?.totalPages} />
+                return (
+                  <Post
+                    key={idea.id}
+                    id={idea.id}
+                    authorId={idea.authorId}
+                    authorName={idea.author.name}
+                    commentCount={idea.comments.length}
+                    description={idea.description}
+                    title={idea.title}
+                    likeCount={likeCount}
+                    dislikeCount={dislikeCount}
+                    createDate={idea.createdAt}
+                    isAnonymous={idea.isAnonymous}
+                    viewCount={idea?.views?.length ?? 0}
+                    imageUrl={firstImage}
+                    ideaCategories={idea?.ideaCategories}
+                  />
+                )
+              })}
+            </div>
+            {data && (
+              <div className='mt-3'>
+                <DataPagination currentPage={data?.data?.page} totalPage={data?.data?.totalPages} />
+              </div>
+            )}
           </div>
         )}
       </div>
