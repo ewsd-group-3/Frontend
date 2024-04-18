@@ -170,6 +170,15 @@ export type Idea = {
       updatedAt: string
     }
   }[]
+  ideaDocuments: {
+    id: number
+    name: string
+    documenttype: string
+    documentDownloadUrl: string
+    documentDeleteUrl: string
+    createdAt: string
+    updatedAt: string
+  }[]
   author: {
     id: number
     email: string

@@ -91,6 +91,7 @@ const departmentColumns: ColumnDef<Partial<Department>>[] = [
   {
     accessorKey: 'id',
     header: 'Id',
+    cell: ({ row }) => <p>DEP-{row.original.id?.toString().padStart(5, '30000')}</p>,
   },
   {
     accessorKey: 'name',

@@ -162,6 +162,9 @@ export const staffColumns: ColumnDef<Partial<Staff>>[] = [
   {
     accessorKey: 'id',
     header: 'Id',
+    cell: ({ row }) => {
+      return <p>ST-{row.original.id?.toString().padStart(5, '70000')}</p>
+    },
   },
   {
     accessorKey: 'name',
