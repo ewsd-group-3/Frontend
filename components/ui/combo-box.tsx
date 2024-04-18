@@ -34,7 +34,7 @@ export function ComboBox({
   placeholder?: string
   listItems: Item[]
 }) {
-  const { control, setValue } = useFormContext()
+  const { control, setValue, trigger } = useFormContext()
 
   return (
     <FormField
@@ -81,6 +81,7 @@ export function ComboBox({
                         } else {
                           setValue(name, [...field.value, item])
                         }
+                        trigger(name)
                       }}
                     >
                       <Check
