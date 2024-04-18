@@ -3,12 +3,13 @@ import { useFetch } from './useQuery'
 
 export function useFetchListing<TData>(
   url: string,
-  defaultKeys: { sortBy?: string; sortType?: string; page?: string; limit?: number } = {
+  defaultKeys: { sortBy?: string; sortType?: string; page?: string; limit?: number; filter?: string } = {
     sortBy: 'id',
     sortType: 'asc',
     page: '1',
     limit: 5,
   },
+  keepPreviousData: boolean = true,
 ) {
   const router = useRouter()
   const sortBy = (router.query.sortBy ?? defaultKeys.sortBy) as string
@@ -24,7 +25,7 @@ export function useFetchListing<TData>(
       key: [url, { sortBy, sortType, page }] as any,
     },
     {
-      keepPreviousData: true,
+      keepPreviousData,
     },
   )
 

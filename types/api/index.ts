@@ -232,7 +232,7 @@ export type IdeaRes = ListingRes & {
   ideas: Idea[]
 }
 
-interface IdeaCategory {
+export interface IdeaCategory {
   id: number
   ideaId: number
   categoryId: number

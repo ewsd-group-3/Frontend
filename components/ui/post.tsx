@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { getDateDistance, hideDialog, showDialog } from '@/lib/utils'
-import { ArrowBigDown, ArrowBigUp, ArrowDown, MessageSquare, MoreVertical } from 'lucide-react'
+import { ArrowBigDown, ArrowBigUp, ArrowDown, EyeIcon, MessageSquare, MoreVertical } from 'lucide-react'
 import { useRouter } from 'next/router'
 import ReactHtmlParser from 'react-html-parser'
 import AvatarIcon from '../AvatarIcon/avatar-icon'
@@ -13,6 +13,7 @@ import RichTextEditor from './rich-text-editor'
 import { useRecoilState } from 'recoil'
 import { authState } from '@/states/auth'
 import Image from 'next/image'
+import { IdeaCategory } from '@/types/api'
 
 const Post = ({
   id,
@@ -20,24 +21,28 @@ const Post = ({
   authorName,
   title,
   description,
+  viewCount,
   likeCount,
   dislikeCount,
   commentCount,
   createDate,
   isAnonymous,
   imageUrl,
+  ideaCategories,
 }: {
   id: number
   authorId: number
   authorName: string
   title: string
   description: string
+  viewCount: number
   likeCount: number
   dislikeCount: number
   commentCount: number
   createDate: string
   isAnonymous: boolean
   imageUrl?: string
+  ideaCategories: IdeaCategory[]
 }) => {
   const [auth] = useRecoilState(authState)
   const router = useRouter()
@@ -109,14 +114,19 @@ const Post = ({
         }}
         className='w-full my-4 text-black rounded-lg flex flex-col gap-3 p-4 hover:bg-lightgray bg-lightgray/30 shadow cursor-pointer transition-all'
       >
-        <div className='flex justify-between'>
+        <div className='flex justify-between items-center'>
           <div className='flex gap-2 items-center text-sm'>
             <AvatarIcon name={isAnonymous ? 'Anonymous' : authorName} size='sm' />
             <span>
-              Posted by <span className='font-medium'>{isAnonymous ? 'Anonymous' : authorName}</span>
+              <span className='hidden sm:inline'>Posted by</span> <span className='font-medium'>{isAnonymous ? 'Anonymous' : authorName}</span>
             </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(createDate)}</time>
+            <div className='w-1 h-1 bg-black rounded-full' />
+            <div className='flex gap-1 text-sm items-center'>
+              <EyeIcon className='w-4' />
+              {viewCount}
+            </div>
           </div>
           <div>
             <DropdownMenu>
@@ -133,10 +143,17 @@ const Post = ({
             </DropdownMenu>
           </div>
         </div>
+        <div className='flex gap-2'>
+          {ideaCategories.map(category => (
+            <div key={category.id} className='px-2 py-1 text-xs rounded-full bg-foreground text-primary-foreground'>
+              {category.category.name}
+            </div>
+          ))}
+        </div>
         <h4 className='font-bold text-lg'>{title}</h4>
         <div>
-          {ReactHtmlParser(description.substring(0, 300))}{' '}
-          {description.length > 300 && <small className='text-sm font-bold text-gray-500'>... See more</small>}
+          {ReactHtmlParser(description.substring(0, 150))}{' '}
+          {description.length > 150 && <small className='text-sm font-bold text-gray-500'>... See more</small>}
         </div>
         {imageUrl && (
           <div className='w-64 rounded-lg overflow-hidden'>
