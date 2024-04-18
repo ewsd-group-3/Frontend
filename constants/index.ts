@@ -1,4 +1,5 @@
 export const imageExtensions = [
+  'avif',
   'ase',
   'art',
   'bmp',
