@@ -42,7 +42,7 @@ export default function Home() {
   const currentSemester = useRecoilValue(currentSemesterState)
 
   const { data, isLoading, error } = useFetchListing<IdeaRes>(
-    `/ideas?category=${categoryId}`,
+    `/ideas?categoryId=${categoryId}`,
     {
       sortBy: sortBy,
       sortType: 'desc',
