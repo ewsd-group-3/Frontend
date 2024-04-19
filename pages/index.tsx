@@ -4,6 +4,7 @@ import FullPageLoader from '@/components/shared/full-page-loader'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import Post from '@/components/ui/post'
 import { useFetchListing } from '@/hooks/useFetchListing'
+import { useFetch } from '@/hooks/useQuery'
 import useSemester from '@/hooks/useSemester'
 import { formateDate } from '@/lib/date'
 import { cn } from '@/lib/utils'
@@ -52,12 +53,7 @@ export default function Home() {
     false,
   )
 
-  const { data: categoryData } = useFetchListing<CategoryRes>('categories', {
-    sortBy: 'id',
-    sortType: 'asc',
-    page: '1',
-    limit: 100,
-  })
+  const { data: categoryData } = useFetch<CategoryRes, true>('categories?limit=100')
   const ideas = data?.data?.ideas ?? []
   const categories = categoryData?.data?.categories
 
