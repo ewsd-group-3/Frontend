@@ -52,7 +52,12 @@ export default function Home() {
     false,
   )
 
-  const { data: categoryData } = useFetchListing<CategoryRes>('categories')
+  const { data: categoryData } = useFetchListing<CategoryRes>('categories', {
+    sortBy: 'id',
+    sortType: 'asc',
+    page: '1',
+    limit: 100,
+  })
   const ideas = data?.data?.ideas ?? []
   const categories = categoryData?.data?.categories
 
