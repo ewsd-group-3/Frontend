@@ -55,24 +55,28 @@ const Actions = ({ row }: { row: Row<Report> }) => {
   }
 
   const onClickHidePost = async (ideaId: number, isIdeaHidden: boolean) => {
-    showDialog({
-      title: 'Are you sure to continue?',
-      children: (
-        <div className='mt-5'>
-          <p>This will hide all posts and comments from this user. Please click Yes to confirm.</p>
-        </div>
-      ),
-      cancel: {
-        label: 'Cancel',
-      },
-      action: {
-        label: 'Yes',
-        onClick: async () => {
-          await handleHidePost(ideaId, isIdeaHidden)
-          hideDialog()
+    if (isIdeaHidden) {
+      await handleHidePost(ideaId, isIdeaHidden)
+    } else {
+      showDialog({
+        title: 'Are you sure to continue?',
+        children: (
+          <div className='mt-5'>
+            <p>This will hide all posts and comments from this user. Please click Yes to confirm.</p>
+          </div>
+        ),
+        cancel: {
+          label: 'Cancel',
         },
-      },
-    })
+        action: {
+          label: 'Yes',
+          onClick: async () => {
+            await handleHidePost(ideaId, isIdeaHidden)
+            hideDialog()
+          },
+        },
+      })
+    }
   }
 
   return (
