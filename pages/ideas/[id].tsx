@@ -15,14 +15,17 @@ import { SwitchField } from '@/components/ui/switch'
 import TextArea from '@/components/ui/textarea'
 import { useFetch, useMutate } from '@/hooks/useQuery'
 import { getIdeaCount } from '@/lib/ideas'
-import { getDateDistance, isImage } from '@/lib/utils'
+import { cn, getDateDistance, isImage } from '@/lib/utils'
 import { authState } from '@/states/auth'
-import { CommentI, IdeaDetail } from '@/types/api'
+import { CommentI, IdeaDetailI } from '@/types/api'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { Pagination } from 'swiper/modules'
 import { z } from 'zod'
+import useSemester from '@/hooks/useSemester'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { currentSemesterState } from '@/states'
 
 const CategoryChip = ({ name }: { name: string }) => {
   return <div className='px-3 py-1 text-sm rounded-full bg-foreground text-primary-foreground'>{name}</div>
@@ -34,11 +37,12 @@ type Reacted = {
   type: 'like' | 'dislike' | 'none'
 }
 
-const IdeaDetail = () => {
+const IdeaDetailC = () => {
   const router = useRouter()
   const [auth] = useRecoilState(authState)
   const ideaId = router.query?.id
-  const { data, isLoading } = useFetch<IdeaDetail, true>(`ideas/${ideaId}`, {}, { enabled: !!ideaId })
+  const { data, isLoading } = useFetch<IdeaDetailI, true>(`ideas/${ideaId}`, {}, { enabled: !!ideaId })
+  const { isBeforeFinalClosureDate } = useSemester()
 
   const [reacted, setReacted] = useState<Reacted>({
     like: 0,
@@ -46,6 +50,8 @@ const IdeaDetail = () => {
     type: 'none',
   })
   const ideaData = data?.data
+  const currentSem = useRecoilValue(currentSemesterState)
+  const isReactionClosed = currentSem?.id !== ideaData?.semesterId || !isBeforeFinalClosureDate()
 
   const { mutateAsync } = useMutate()
 
@@ -112,17 +118,19 @@ const IdeaDetail = () => {
   return (
     <div className='max-w-3xl p-4'>
       <div className='flex justify-between'>
-        <div className='flex gap-2'>
-          <button onClick={() => router.push('/')} className='w-10 h-10 bg-primary/10 grid place-items-center rounded-full'>
+        <div className='flex flex-wrap gap-2'>
+          <button onClick={() => router.push('/')} className='w-10 h-10 bg-primary/10 grid place-items-center rounded-full mr-4'>
             <ArrowLeft />
           </button>
           <div className='flex gap-2 items-center text-sm'>
             <AvatarIcon name={ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} size='sm' />
-            <span>Posted by {ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name} </span>
+            <span>
+              Posted by <span className='font-medium'>{ideaData.isAnonymous ? 'Anonymous' : ideaData.author.name}</span>
+            </span>
             <div className='w-1 h-1 bg-black rounded-full' />
             <time>{getDateDistance(ideaData.createdAt)}</time>
             <div className='w-1 h-1 bg-black rounded-full' />
-            <span>Department Name</span>
+            <span className='capitalize font-semibold'>{ideaData.author.department.name}</span>
           </div>
         </div>
 
@@ -170,34 +178,47 @@ const IdeaDetail = () => {
       </section>
 
       <div className='rounded-full flex border-black border-2 border-solid w-max mt-5 px-2'>
-        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('like')}>
+        <button
+          disabled={isReactionClosed}
+          className={cn('p-2 flex items-center gap-1 text-sm', { 'cursor-not-allowed': isReactionClosed })}
+          onClick={() => handleReactPost('like')}
+        >
           <ArrowBigUp fill={reacted.type === 'like' ? '' : 'transparent'} /> {reacted.like} likes
         </button>
         <Divider intent={'vertical'} className='bg-black mx-2' />
-        <button className='p-2 flex items-center gap-1 text-sm' onClick={() => handleReactPost('dislike')}>
+        <button
+          disabled={isReactionClosed}
+          className={cn('p-2 flex items-center gap-1 text-sm', { 'cursor-not-allowed': isReactionClosed })}
+          onClick={() => handleReactPost('dislike')}
+        >
           <ArrowBigDown fill={reacted.type === 'dislike' ? '' : 'transparent'} />
           {reacted.dislike} dislikes
         </button>
       </div>
 
-      <Comment comments={ideaData.comments} staffName={auth?.staff?.name} />
+      <Comment postId={ideaData.semesterId} comments={ideaData.comments} staffName={auth?.staff?.name} />
     </div>
   )
 }
 
-export default IdeaDetail
+export default IdeaDetailC
 
 const commentFormSchema = z.object({
   comment: z.string(),
   isAnonymous: z.boolean(),
 })
 
-const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; staffName?: string }) => {
+const Comment = ({ postId, comments, staffName }: { postId: number; comments: IdeaDetailI['comments']; staffName?: string }) => {
   const router = useRouter()
   const ideaId = router.query?.id
-  const { mutateAsync } = useMutate()
+  const currentSem = useRecoilValue(currentSemesterState)
+  const { mutateAsync, isLoading } = useMutate()
+  const { isBeforeFinalClosureDate } = useSemester()
+  const isCommentClosed = currentSem?.id !== postId || !isBeforeFinalClosureDate()
 
   const handleSubmit = async (values: z.infer<typeof commentFormSchema>, reset: (() => void) | undefined) => {
+    if (isLoading) return
+
     const res = await mutateAsync({
       url: 'comments',
       data: {
@@ -228,14 +249,20 @@ const Comment = ({ comments, staffName }: { comments: IdeaDetail['comments']; st
             onSubmit={handleSubmit}
           >
             <div className='relative w-full mb-3'>
-              <TextArea className='w-full bg-lightgray border rounded-2xl p-3' rows={7} placeholder='What do you think?' name='comment' />
+              <TextArea
+                disabled={isCommentClosed}
+                className={cn('w-full bg-lightgray border rounded-2xl p-3', { 'cursor-not-allowed bg-gray-300': isCommentClosed })}
+                rows={7}
+                placeholder='What do you think?'
+                name='comment'
+              />
 
-              <button type='submit' className='top-5 absolute right-5'>
-                <Send />
+              <button disabled={isCommentClosed} type='submit' className='top-5 absolute right-5'>
+                {isLoading ? <LoadingSpinner /> : <Send />}
               </button>
             </div>
 
-            <SwitchField name='isAnonymous' label='Comment as anonymous' />
+            <SwitchField disabled={isCommentClosed} name='isAnonymous' label='Comment as anonymous' />
           </Form>
 
           <div className='flex flex-col gap-3 mt-5'>
@@ -254,7 +281,9 @@ const CommentItem = (props: CommentI) => {
     <div className='w-full bg-lightgray  text-black rounded-lg flex flex-col gap-3 p-4'>
       <div className='flex gap-2 items-center text-sm'>
         <AvatarIcon name={props.isAnonymous ? 'Anonymous' : props.staff.name} size='sm' />
-        <span>Posted by {props.isAnonymous ? 'Anonymous' : props.staff.name} </span>
+        <span>
+          Posted by <span className='font-medium'>{props.isAnonymous ? 'Anonymous' : props.staff.name}</span>
+        </span>
 
         <div className='w-1 h-1 bg-black rounded-full' />
         <time>{getDateDistance(props.createdAt)}</time>

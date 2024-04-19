@@ -6,32 +6,34 @@ import { Bar } from 'react-chartjs-2'
 import ChartContainer from '@/components/StatisticalReport/chart-container'
 import ChartPercentageCard from '@/components/StatisticalReport/chart-percentage-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useFetch } from '@/hooks/useQuery'
+import { useClient, useFetch } from '@/hooks/useQuery'
 import { AcademicYearRes, DepartmentReportRes, DepartmentRes } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
-import axios from 'axios'
 import { colorGenerator } from '@/utils/color-generator'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { SEMESTER_FILTER } from '@/constants/semester-filter'
+import { authState } from '@/states/auth'
+import { useRecoilState } from 'recoil'
 
 ChartJS.register()
 
 export default function DepartmentReport() {
+  const [auth] = useRecoilState(authState)
   const { data: academicYears } = useFetch<AcademicYearRes, true>(`academicInfos`)
-  const { data: departments } = useFetch<DepartmentRes, true>(`departments`)
+  const { data: departments } = useFetch<DepartmentRes, true>(`all-departments`)
   const [semesterId, setSemesterId] = useState<string | null>(null)
-  const [departmentId, setDepartmentId] = useState<string | null>(null)
+  const [departmentId, setDepartmentId] = useState<string | null>(auth?.staff.role === 'QA_COORDINATOR' ? auth.staff.departmentId.toString() : null)
   const [data, setData] = useState<DepartmentReportRes | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const client = useClient()
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    const { data } = await axios.get(
-      process.env.NEXT_PUBLIC_API_ENDPOINT + `/statistical-reports/departments?departmentId=${departmentId}&semesterId=${semesterId}`,
-    )
-    console.log(data.data)
-    setData(data.data)
+    const { data } = await client<DepartmentReportRes>(`/statistical-reports/departments?departmentId=${departmentId}&semesterId=${semesterId}`)
+
+    setData(data)
     setIsLoading(false)
   }
 
@@ -44,25 +46,34 @@ export default function DepartmentReport() {
           </SelectTrigger>
           <SelectContent>
             {academicYears?.data.academicInfos.map(academicYear =>
-              academicYear.semesters.map(semester => (
-                <SelectItem key={semester.id} value={semester.id.toString()}>
-                  {academicYear.name} [{semester.name}]
-                </SelectItem>
-              )),
+              academicYear.semesters
+                .filter(semester => semester.status === SEMESTER_FILTER)
+                .map(semester => (
+                  <SelectItem key={semester.id} value={semester.id.toString()}>
+                    {academicYear.name} [{semester.name}]
+                  </SelectItem>
+                )),
             )}
           </SelectContent>
         </Select>
 
-        <Select onValueChange={id => setDepartmentId(id)}>
+        <Select
+          onValueChange={id => setDepartmentId(id)}
+          defaultValue={auth?.staff.role === 'QA_COORDINATOR' ? auth.staff.departmentId.toString() : undefined}
+        >
           <SelectTrigger className='w-[320px]'>
             <SelectValue placeholder='Department' />
           </SelectTrigger>
           <SelectContent>
-            {departments?.data.departments.map(department => (
-              <SelectItem key={department.id} value={department.id.toString()}>
-                {department.name}
-              </SelectItem>
-            ))}
+            {departments && auth?.staff.role === 'QA_COORDINATOR' ? (
+              <SelectItem value={auth.staff.departmentId.toString()}>{auth?.staff.department.name}</SelectItem>
+            ) : (
+              departments?.data.departments.map(department => (
+                <SelectItem key={department.id} value={department.id.toString()}>
+                  {department.name}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
 

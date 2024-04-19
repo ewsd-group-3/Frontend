@@ -24,7 +24,7 @@ const DialogCenter = () => {
             <Form defaultValues={dialog.defaultValues} formSchema={dialog.formSchema} onSubmit={dialog.onSubmit}>
               {values => (
                 <div>
-                  <h3 className='font-bold text-2xl'>{dialog.title}</h3>
+                  <h3 className='font-bold text-lg md:text-2xl'>{dialog.title}</h3>
                   {dialog.description && <p className='text-base mt-2'>{dialog.description}</p>}
                   {typeof dialog.children === 'function' ? dialog.children(values) : dialog.children}
 

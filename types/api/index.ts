@@ -113,7 +113,7 @@ export type AcademicYearT = {
   endDate: string
   createdAt: string
   updatedAt: string
-  semesters: { id: number; name: string; startDate: string }[]
+  semesters: { id: number; name: string; startDate: string; status: 'Ongoing' | 'Upcoming' | 'Done' }[]
 }
 
 export type AcademicYearRes = ListingRes & {
@@ -139,6 +139,7 @@ export type AcademicYearDetail = {
   createdAt: string
   updatedAt: string
   semesters: Semester[]
+  status: 'Done' | 'Ongoing' | 'Upcoming'
 }
 
 export type ProfileRes = {
@@ -168,6 +169,15 @@ export type Idea = {
       createdAt: string
       updatedAt: string
     }
+  }[]
+  ideaDocuments: {
+    id: number
+    name: string
+    documenttype: string
+    documentDownloadUrl: string
+    documentDeleteUrl: string
+    createdAt: string
+    updatedAt: string
   }[]
   author: {
     id: number
@@ -205,13 +215,24 @@ export type Idea = {
     updatedAt: string
   }[]
   views: []
+  currentSemester: {
+    name: string
+    id: string
+    startDate: string
+    closureDate: string
+    finalClosureDate: string
+    academicInfo: {
+      name: string
+      id: string
+    }
+  }
 }
 
 export type IdeaRes = ListingRes & {
   ideas: Idea[]
 }
 
-interface IdeaCategory {
+export interface IdeaCategory {
   id: number
   ideaId: number
   categoryId: number
@@ -263,7 +284,7 @@ interface IdeaDocument {
   updatedAt: string
 }
 
-export interface IdeaDetail {
+export interface IdeaDetailI {
   id: number
   title: string
   description: string
@@ -274,7 +295,9 @@ export interface IdeaDetail {
   createdAt: string
   updatedAt: string
   ideaCategories: IdeaCategory[]
-  author: Author
+  author: Author & {
+    department: Department
+  }
   semester: {
     id: number
     name: string
@@ -322,4 +345,127 @@ export type IdeaReportRes = StatisticalReport & {
 
 export type DepartmentReportRes = StatisticalReport & {
   categoryPercentage: CategoryPercentage[]
+}
+
+export type SystemReportRes = {
+  topActiveUsers: TopActiveUser[]
+  mostUsedBrowsers: MostUsedBrowser[]
+  mostViewedIdeas: MostViewedIdea[]
+  count: number
+  limit: number
+  page: number
+  totalPages: number
+}
+
+interface TopActiveUser {
+  staff: Staff
+  ideasCount: number
+  commentsCount: number
+  votesCount: number
+  viewsCount: number
+  total: number
+}
+
+interface MostUsedBrowser {
+  browserName: string
+  totalLogins: number
+}
+
+export interface MostViewedIdea {
+  id: number
+  title: string
+  description: string
+  isAnonymous: boolean
+  isHidden: boolean
+  authorId: number
+  semesterId: number
+  createdAt: string
+  updatedAt: string
+  views: View[]
+  author: Author
+  viewsCount: number
+  ideaCategories: {
+    category: Category
+    categoryId: number
+    createdAt: string
+    id: number
+    ideaId: number
+    updatedAt: string
+  }[]
+}
+
+interface View {
+  id: number
+  staffId: number
+  ideaId: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CurrentSemeter {
+  semester: {
+    id: number
+    name: string
+    startDate: string
+    closureDate: string
+    finalClosureDate: string
+    academicInfoId: number
+    createdAt: string
+    updatedAt: string
+    academicInfo: {
+      id: number
+      name: string
+      startDate: string
+      endDate: string
+      createdAt: string
+      updatedAt: string
+    }
+  }
+}
+
+export type Report = {
+  id: number
+  reason: string
+  isApproved: boolean
+  approvedAt: string | null
+  ideaId: number
+  reportById: number
+  approvedById: number | null
+  createdAt: string
+  updatedAt: string
+  idea: {
+    id: number
+    title: string
+    description: string
+    isAnonymous: boolean
+    isHidden: boolean
+    authorId: number
+    semesterId: number
+    createdAt: string
+    updatedAt: string
+  }
+  reportBy: {
+    id: number
+    email: string
+    name: string
+    password: string
+    role: string
+    isActive: boolean
+    departmentId: number
+    profile: any // Type this accordingly if profile has known structure
+    lastLoginDate: string
+    createdAt: string
+    updatedAt: string
+  }
+  isIdeaHidden: false
+  isRejected: true
+  isStaffActive: true
+}
+
+export type ReportRes = {
+  page: number
+  limit: number
+  count: number
+  totalPages: number
+  reports: Report[]
 }

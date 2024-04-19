@@ -9,7 +9,7 @@ type MutateOptions<TData> = UseMutationOptions<Response<TData>, ResponseError, R
   invalidateUrls?: string[] | string[][]
 }
 
-function useClient() {
+export function useClient() {
   const [token, setToken] = useRecoilState(authState)
 
   // token.tokens.access
@@ -19,6 +19,9 @@ function useClient() {
         .then(res => res.data)
         .catch(err => {
           if (err?.response?.status === 401) setToken(undefined)
+
+          if (err?.response?.status === 403) throw new Error('unauthorized')
+
           return err
         })
     },
@@ -66,6 +69,9 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
             }
             return res
           } else {
+            if (!res.response?.status) {
+              return res
+            }
             if (res.response.status < 200 || res.response.status >= 300) {
               if (res?.response?.message) {
                 toast.error(res.response.message)
@@ -78,13 +84,14 @@ export function useMutate<TData extends any>(options?: MutateOptions<TData>) {
           }
         })
         .catch(error => {
-          console.log(error)
           if (error?.response?.data?.message) {
-            return toast.error(error.response.data.message)
+            toast.error(error.response.data.message)
           }
 
           if (error.response) {
             return Promise.reject(error.response.data)
+          } else {
+            return Promise.reject(error)
           }
         })
     },

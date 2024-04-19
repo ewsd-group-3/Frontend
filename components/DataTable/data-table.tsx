@@ -10,9 +10,18 @@ interface DataTableProps<TData, TValue> {
   onClickRow?: (id: string) => void
   totalPage: number | undefined
   currentPage: number | undefined
+  hidePagination?: boolean
 }
 
-export function DataTable<TData, TValue>({ columns, data, isLoading, onClickRow, currentPage, totalPage }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  isLoading,
+  onClickRow,
+  currentPage,
+  totalPage,
+  hidePagination = false,
+}: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
@@ -50,6 +59,7 @@ export function DataTable<TData, TValue>({ columns, data, isLoading, onClickRow,
                   data-state={row.getIsSelected() && 'selected'}
                   // @ts-ignore
                   onClick={() => !!onClickRow && onClickRow(row.original?.id)}
+                  className={!!onClickRow ? 'cursor-pointer' : ''}
                 >
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
@@ -66,11 +76,11 @@ export function DataTable<TData, TValue>({ columns, data, isLoading, onClickRow,
           </TableBody>
         </Table>
       </div>
-      {currentPage && totalPage && (
+      {currentPage && totalPage && !hidePagination ? (
         <div className='mt-3'>
           <DataPagination currentPage={currentPage} totalPage={totalPage} />
         </div>
-      )}
+      ) : null}
     </>
   )
 }

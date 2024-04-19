@@ -1,10 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import React, { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { detect } from 'detect-browser'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { useMutate } from '@/hooks/useQuery'
 import Image from 'next/image'
@@ -16,6 +15,7 @@ import { LoggedInData } from '@/types/auth'
 const formSchema = z.object({
   email: z.string().min(1, { message: 'Please fill in email address.' }).email({ message: 'Invalid email address.' }),
   password: z.string().min(1, { message: 'Please fill in password.' }),
+  browserName: z.string().optional(),
 })
 
 const images = [
@@ -33,6 +33,8 @@ const images = [
     'https://images.unsplash.com/photo-1555116505-38ab61800975?q=80&w=2835&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   ],
 ]
+
+const browser = detect()
 
 const ImageContainer = () => {
   return (
@@ -54,7 +56,9 @@ const Login = () => {
   const router = useRouter()
   const [auth, setAuth] = useRecoilState(authState)
   const { mutateAsync, isLoading, isSuccess, data, isError, error } = useMutate<LoggedInData>()
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    values.browserName = browser?.name || 'unknown'
     await mutateAsync({
       url: `auth/login`,
       payload: values,
@@ -62,10 +66,12 @@ const Login = () => {
   }
 
   useEffect(() => {
+    console.log(data, isSuccess)
     if (isSuccess) {
       setAuth({
         staff: data.data.staff,
         tokens: data.data.tokens,
+        firstTimeLogin: data.data.firstTimeLogin,
       })
       router.push('/')
     }
@@ -79,7 +85,7 @@ const Login = () => {
 
       <div className='h-full w-full grid place-items-center order-1 md:order-2 max-sm:-mt-20'>
         <div className='md:w-9/12 max-w-md mx-auto'>
-          <h2 className='font-bold text-2xl mb-2'>Login to Wayne School Portal</h2>
+          <h2 className='font-bold text-2xl mb-2 text-balance'>Login to Wayne University Internal Feedback System</h2>
           <small className='text-sm mb-5 block'>Share ideas, find helpful information, announcements, and collaborate with colleagues.</small>
           <div>
             <Form defaultValues={{ email: '', password: '' }} formSchema={formSchema} onSubmit={onSubmit}>
@@ -107,7 +113,7 @@ const Login = () => {
                   <Button type='submit' className='mt-1' disabled={isLoading}>
                     Login
                   </Button>
-                  {isError && <p className='text-red-500'>{error?.message}</p>}
+                  {isError && <p className='text-red-500 text-sm'>{error?.message}</p>}
                 </div>
               )}
             </Form>

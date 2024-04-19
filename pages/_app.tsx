@@ -1,3 +1,4 @@
+import { ErrorBoundary } from 'react-error-boundary'
 import DialogCenter from '@/components/shared/DialogCenter'
 import RecoilStatePortal from '@/lib/RecoilStatePortal'
 import '@/styles/globals.css'
@@ -8,6 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Sidebar from '@/components/Sidebar/side-bar'
 import { Toaster } from '@/components/ui/sonner'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import CustomError from '@/components/layout/CustomError'
 
 export const poppins = Poppins({
   subsets: ['latin'],
@@ -28,18 +30,20 @@ const queryClient = new QueryClient({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        <main className={poppins.className}>
-          <Sidebar>
-            <GlobalComponent />
-            <Component {...pageProps} />
-          </Sidebar>
-        </main>
-        <Toaster />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </RecoilRoot>
+    <ErrorBoundary fallbackRender={CustomError}>
+      <RecoilRoot>
+        <QueryClientProvider client={queryClient}>
+          <main className={poppins.className}>
+            <Sidebar>
+              <GlobalComponent />
+              <Component {...pageProps} />
+            </Sidebar>
+          </main>
+          <Toaster />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </RecoilRoot>
+    </ErrorBoundary>
   )
 }
 

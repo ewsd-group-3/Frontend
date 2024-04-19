@@ -8,10 +8,13 @@ import MenuLink from './menu-link'
 import MobileMenu from './mobile-menu'
 import { useRecoilState } from 'recoil'
 import { authState } from '@/states/auth'
-import { showDialog } from '@/lib/utils'
+import { cn, showDialog } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { dialogState } from '@/states/dialog'
 import { LoadingSpinner } from '../ui/loading-spinner'
+import { formateDate } from '@/lib/date'
+import { useFetch } from '@/hooks/useQuery'
+import { ProfileRes } from '@/types/api'
 
 function getLocalIsSidebarOpen() {
   return localStorage.getItem('isSidebarOpen') === 'true' ? true : false
@@ -24,6 +27,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [dialog, setDialog] = useRecoilState(dialogState)
   const pathName = usePathname()
   const [open, setOpen] = useState(typeof window !== 'undefined' ? getLocalIsSidebarOpen : null)
+  const { data, isLoading } = useFetch<ProfileRes, true>(`staffs/${auth?.staff.id}`)
+  const profile = data?.data?.staff
 
   useEffect(() => {
     if (auth === undefined) {
@@ -74,31 +79,46 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
               </h1>
             </div>
             <ul className='pt-6'>
-              {MenuLinks.map(Menu => (
-                <MenuLink
-                  icon={{
-                    src: Menu.src,
-                  }}
-                  path={Menu.path}
-                  title={Menu.title}
-                  gap={Menu.gap}
-                  key={Menu.path}
-                  pathName={pathName}
-                />
-              ))}
+              {MenuLinks.map(Menu => {
+                if (Menu.allowedRoles.includes(auth?.staff?.role ?? 'STAFF'))
+                  return (
+                    <MenuLink
+                      icon={{
+                        src: Menu.src,
+                      }}
+                      path={Menu.path}
+                      title={Menu.title}
+                      gap={Menu.gap}
+                      key={Menu.path}
+                      pathName={pathName}
+                    />
+                  )
+              })}
             </ul>
           </div>
 
           <div className='overflow-hidden'>
+            <p
+              className={cn('text-sm text-gray-300 mb-2 opacity-0 delay-300', {
+                'opacity-100': open,
+                'transition-none': !open,
+                'transition-all': open,
+              })}
+            >
+              {auth?.firstTimeLogin
+                ? 'Welcome to Wayne School Portal!'
+                : `Last active: ${formateDate(profile?.lastLoginDate, 'd MMM y, hh:mm:ss a')}`}
+            </p>
+
             <hr />
             <MenuLink
               icon={{
                 src: User,
-                img: auth?.staff.name,
+                img: auth?.staff?.name,
               }}
               path={'/profile'}
               pathName={pathName}
-              title={auth?.staff.name || 'User Name'}
+              title={auth?.staff?.name || 'User Name'}
             />
             <div
               onClick={() =>
@@ -124,7 +144,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-        <main className={`max-w-[1440px] mx-auto mt-16 flex-1 p-5 pt-3 duration-300 md:mt-0`}>
+        <main className={`md:max-w-[1440px] max-w-full mx-auto mt-16 flex-1 p-3 md:p-5 pt-3 duration-300 md:mt-0`}>
           <div className={`${auth ? (open ? `md:ml-72` : `md:ml-20`) : 'ml-0'} transition-all`}>{children}</div>
         </main>
       </div>

@@ -45,7 +45,7 @@ const accouncementColumns: ColumnDef<Partial<Announcement>>[] = [
 const handlePopup = (content?: string) => {
   showDialog({
     title: 'Announcement Content',
-    children: <div className='mt-4 max-h-[60vh] overflow-y-auto'>{content}</div>,
+    children: <div className='mt-5 max-h-[60vh] overflow-y-auto'>{content}</div>,
     cancel: true,
     submit: false,
   })
@@ -56,7 +56,7 @@ export default function AccouncementPage() {
   const accouncements = data?.data?.announcements ?? []
 
   return (
-    <section className='p-5'>
+    <section className='p-2 md:p-5'>
       <div className='flex justify-between'>
         <h2 className='text-xl font-bold'>Accouncements</h2>
         <Link href='/announcement/create'>
@@ -65,8 +65,8 @@ export default function AccouncementPage() {
       </div>
       <div className='mt-3'>
         <DataTable
-          currentPage={data?.data.page}
-          totalPage={data?.data.totalPages}
+          currentPage={data?.data?.page}
+          totalPage={data?.data?.totalPages}
           columns={accouncementColumns}
           data={accouncements}
           isLoading={isLoading}

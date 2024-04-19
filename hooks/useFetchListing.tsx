@@ -3,12 +3,13 @@ import { useFetch } from './useQuery'
 
 export function useFetchListing<TData>(
   url: string,
-  defaultKeys: { sortBy?: string; sortType?: string; page?: string; limit?: number } = {
+  defaultKeys: { sortBy?: string; sortType?: string; page?: string; limit?: number; filter?: string } = {
     sortBy: 'id',
     sortType: 'asc',
     page: '1',
     limit: 5,
   },
+  keepPreviousData: boolean = true,
 ) {
   const router = useRouter()
   const sortBy = (router.query.sortBy ?? defaultKeys.sortBy) as string
@@ -18,14 +19,19 @@ export function useFetchListing<TData>(
 
   const apiUrl = `${url}${url.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortType=${sortType}&page=${page}&limit=${limit}`
 
-  const { data, isLoading, refetch } = useFetch<TData, true>(
+  const { data, isLoading, refetch, error } = useFetch<TData, true>(
     apiUrl,
     {
       key: [url, { sortBy, sortType, page }] as any,
     },
     {
-      keepPreviousData: true,
+      keepPreviousData,
     },
   )
-  return { data, isLoading, refetch }
+
+  if (error?.message === 'unauthorized') {
+    throw new Error('unauthorized')
+  }
+
+  return { data, isLoading, refetch, error }
 }

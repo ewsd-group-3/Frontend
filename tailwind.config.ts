@@ -15,6 +15,7 @@ const config = withUt({
       },
     },
     extend: {
+      gridTemplateColumns: { academicForm: 'repeat(auto-fit, minmax(250px, 1fr))' },
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
       },
@@ -75,7 +76,7 @@ const config = withUt({
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
 }) satisfies Config
 
 export default config

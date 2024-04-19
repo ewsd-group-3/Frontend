@@ -19,7 +19,12 @@ export default function AccouncementCreate() {
   const [auth] = useRecoilState(authState)
   const [type, setType] = useState<'ALL' | 'SPECIFIC'>('ALL')
   const [selectedStaff, setselectedStaff] = useState<Staff[]>([])
-  const { data: staffs } = useFetchListing<StaffRes>('staffs', { sortBy: 'id', sortType: 'asc', page: '1', limit: 1000 })
+  const { data: staffs } = useFetchListing<StaffRes>(`staffs?departmentId=${auth?.staff.departmentId}`, {
+    sortBy: 'id',
+    sortType: 'asc',
+    page: '1',
+    limit: 1000,
+  })
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -30,6 +35,12 @@ export default function AccouncementCreate() {
     e.preventDefault()
     console.log('payload:', { subject, type, selectedStaff, content })
     setIsLoading(true)
+    let staffIds = selectedStaff.map(staff => staff.id)
+
+    if (type === 'ALL' && staffs) {
+      staffIds = staffs.data.staffs.map(staff => staff.id)
+    }
+
     const res = await mutateAsync({
       url: `announcements/`,
       method: 'POST',
@@ -38,7 +49,7 @@ export default function AccouncementCreate() {
         subject,
         content,
         type,
-        staffIds: selectedStaff.map(staff => staff.id),
+        staffIds,
       },
       invalidateUrls: [`announcements`],
     })
@@ -66,13 +77,13 @@ export default function AccouncementCreate() {
             <div className='flex items-center space-x-2'>
               <RadioGroupItem value='ALL' id='ALL' />
               <Label className='cursor-pointer' htmlFor='ALL'>
-                All staff from {auth?.staff.departmentId} department
+                All staff from <b>{auth?.staff.department.name}</b> department
               </Label>
             </div>
             <div className='flex items-center space-x-2 mt-2'>
               <RadioGroupItem value='SPECIFIC' id='SPECIFIC' />
               <Label className='cursor-pointer' htmlFor='SPECIFIC'>
-                Specific staff from {auth?.staff.departmentId} department
+                Specific staff from <b>{auth?.staff.department.name}</b> department
               </Label>
             </div>
           </RadioGroup>

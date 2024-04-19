@@ -2,14 +2,16 @@ import { DataTable } from '@/components/DataTable/data-table'
 import FilterHeader from '@/components/DataTable/filter-header'
 import { Button } from '@/components/ui/button'
 import { useFetchListing } from '@/hooks/useFetchListing'
-import { useFetch, useMutate } from '@/hooks/useQuery'
+import { useMutate } from '@/hooks/useQuery'
 import { formateDate, getAcademicYearStatus } from '@/lib/date'
-import { dialogState } from '@/states/dialog'
+import { authState } from '@/states/auth'
 import { AcademicYearRes, AcademicYearT } from '@/types/api'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
+import { MoreVertical } from 'lucide-react'
 import { useRouter } from 'next/router'
 import React from 'react'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 
 export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
   {
@@ -35,26 +37,50 @@ export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
     header: () => FilterHeader({ title: 'status' }),
     cell: ({ row }) => <p>{getAcademicYearStatus(new Date(), row.original.startDate, row.original.endDate)}</p>,
   },
-  // {
-  //   id: 'actions',
-  //   enableHiding: false,
-  //   cell: ({ row }) => <Actions row={row} />,
-  // },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => <Actions row={row} />,
+  },
 ]
+
+const Actions = ({ row }: any) => {
+  const router = useRouter()
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' className='h-8 w-8 p-0'>
+          <span className='sr-only'>Open menu</span>
+          <MoreVertical className='h-4 w-4' />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align='end'>
+        <DropdownMenuItem
+          onClick={e => {
+            e.stopPropagation()
+            router.push(`/academic-year/${row.original.id}/edit`)
+          }}
+        >
+          Update
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
 
 const AcademicYear = () => {
   const router = useRouter()
-  const { mutateAsync } = useMutate()
-  const setDialog = useSetRecoilState(dialogState)
+  const [auth] = useRecoilState(authState)
   const { data, isLoading } = useFetchListing<AcademicYearRes>('academicInfos')
 
   const academicYears = data?.data?.academicInfos ?? []
 
   return (
-    <section className='p-5'>
+    <section className='p-2 md:p-5'>
       <div className='flex justify-between'>
         <h2 className='font-bold text-xl'>Academic Year</h2>
-        <Button onClick={() => router.push('/academic-year/create')}>Create</Button>
+        {auth?.staff.role === 'ADMIN' && <Button onClick={() => router.push('/academic-year/create')}>Create</Button>}
       </div>
       <div className='mt-3'>
         <DataTable
