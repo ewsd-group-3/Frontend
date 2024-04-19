@@ -17,20 +17,22 @@ interface DataPaginationProps {
 function paginate({ current, max }: { current: number; max: number }) {
   if (!current || !max) return null
 
-  let prev = current === 1 ? null : current - 1,
-    next = current === max ? null : current + 1,
-    items: [string | number] = [1]
+  let prev = current === 1 ? null : current - 1
+  let next = current === max ? null : current + 1
+  let items: [string | number] = [1]
 
   if (current === 1 && max === 1) return { current, prev, next, items }
-  if (current > 2) items.push('...')
 
-  let r = 1,
-    r1 = current - r,
-    r2 = current + r
+  if (current > 2 && max > 3) items.push('...') // Only add ellipsis if max > 3
+
+  let r = 1
+  let r1 = current - r
+  let r2 = current + r
 
   for (let i = r1 > 2 ? r1 : 2; i <= Math.min(max, r2); i++) items.push(i)
 
-  if (r2 + 1 < max) items.push('...')
+  if (max > 3 && r2 + 1 < max) items.push('...') // Only add trailing ellipsis if max > 3
+
   if (r2 < max) items.push(max)
 
   return { current, prev, next, items }
