@@ -54,7 +54,7 @@ const AcademicYearForm = ({
               <h4 className='my-5 font-bold mb-3 text-xl'>Academic year</h4>
 
               <div className=' grid grid-cols-academicForm gap-5 grid-flow-row'>
-                <DatePicker name='startDate' label='Start date' disabled={isEdit} />
+                <DatePicker name='startDate' label='Start date' />
                 <DatePicker name='endDate' label='End date' minDate={isEdit ? secondSemFinalClosureDate : startDate} disabled={!startDate} />
                 <div />
               </div>

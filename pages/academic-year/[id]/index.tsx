@@ -57,7 +57,7 @@ const AcademicYearDetailC = () => {
       />
       <div className='flex justify-between mt-5'>
         <h2 className='font-bold text-3xl mb-10'>{academicYearData.name}</h2>
-        {auth?.staff.role === 'QA_MANAGER' && true && <Button onClick={handleDownloadData}>Download Data</Button>}
+        {auth?.staff.role === 'QA_MANAGER' && <Button onClick={handleDownloadData}>Download Data</Button>}
       </div>
 
       <div>

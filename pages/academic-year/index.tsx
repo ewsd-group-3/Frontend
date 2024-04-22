@@ -46,15 +46,18 @@ export const academicYearCols: ColumnDef<Partial<AcademicYearT>>[] = [
 
 const Actions = ({ row }: any) => {
   const router = useRouter()
+  const [auth] = useRecoilState(authState)
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='h-8 w-8 p-0'>
-          <span className='sr-only'>Open menu</span>
-          <MoreVertical className='h-4 w-4' />
-        </Button>
-      </DropdownMenuTrigger>
+      {auth?.staff.role === 'ADMIN' && (
+        <DropdownMenuTrigger asChild>
+          <Button variant='ghost' className='h-8 w-8 p-0'>
+            <span className='sr-only'>Open menu</span>
+            <MoreVertical className='h-4 w-4' />
+          </Button>
+        </DropdownMenuTrigger>
+      )}
       <DropdownMenuContent align='end'>
         <DropdownMenuItem
           onClick={e => {
